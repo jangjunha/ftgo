@@ -1,4 +1,4 @@
-package me.jangjunha.ftgo.common;
+package me.jangjunha.ftgo.common_jpa;
 
 import jakarta.persistence.Access;
 import jakarta.persistence.AccessType;

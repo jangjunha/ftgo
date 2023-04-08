@@ -1,7 +1,7 @@
 package me.jangjunha.ftgo.restaurant_service.domain;
 
 import jakarta.persistence.*;
-import me.jangjunha.ftgo.common.Money;
+import me.jangjunha.ftgo.common_jpa.Money;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 @Embeddable
