@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    url: jdbc:${DATABASE_URI}
+  jpa:
+    generate-ddl: true
+    show-sql: ${SHOW_SQL:false}
+    properties:
+      hibernate:
+        format_sql: ${SHOW_SQL:false}
