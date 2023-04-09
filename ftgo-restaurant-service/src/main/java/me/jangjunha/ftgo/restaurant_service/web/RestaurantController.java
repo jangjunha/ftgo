@@ -2,7 +2,7 @@ package me.jangjunha.ftgo.restaurant_service.web;
 
 import me.jangjunha.ftgo.restaurant_service.domain.CreateRestaurantRequest;
 import me.jangjunha.ftgo.restaurant_service.domain.Restaurant;
-import me.jangjunha.ftgo.restaurant_service.service.RestaurantService;
+import me.jangjunha.ftgo.restaurant_service.domain.RestaurantService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -1,9 +1,6 @@
-package me.jangjunha.ftgo.restaurant_service.service;
+package me.jangjunha.ftgo.restaurant_service.domain;
 
 import jakarta.transaction.Transactional;
-import me.jangjunha.ftgo.restaurant_service.domain.CreateRestaurantRequest;
-import me.jangjunha.ftgo.restaurant_service.domain.Restaurant;
-import me.jangjunha.ftgo.restaurant_service.domain.RestaurantRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
