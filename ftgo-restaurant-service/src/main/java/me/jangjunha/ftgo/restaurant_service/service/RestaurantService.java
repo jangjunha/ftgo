@@ -1,10 +1,11 @@
 package me.jangjunha.ftgo.restaurant_service.service;
 
 import jakarta.transaction.Transactional;
+import me.jangjunha.ftgo.restaurant_service.api.MenuItem;
 import me.jangjunha.ftgo.restaurant_service.domain.CreateRestaurantRequest;
 import me.jangjunha.ftgo.restaurant_service.domain.Restaurant;
 import me.jangjunha.ftgo.restaurant_service.domain.RestaurantRepository;
-import me.jangjunha.ftgo.restaurant_service.events.RestaurantCreated;
+import me.jangjunha.ftgo.restaurant_service.api.events.RestaurantCreated;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,7 +29,7 @@ public class RestaurantService {
         Restaurant restaurant = new Restaurant(request.name, request.menuItems);
         restaurantRepository.save(restaurant);
         restaurantDomainEventPublisher.publish(restaurant, Collections.singletonList(
-                new RestaurantCreated(restaurant.getName(), restaurant.getMenuItems())
+                new RestaurantCreated(restaurant.getName(), restaurant.getMenuItems().stream().map(m -> new MenuItem(m.getId(), m.getName(), m.getPrice())).toList())
         ));
         return restaurant;
     }

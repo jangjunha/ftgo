@@ -1,8 +1,11 @@
 rootProject.name = 'ftgo'
 
+include 'ftgo-common'
 include 'ftgo-common-jpa'
+include 'ftgo-restaurant-service-api'
 include 'ftgo-restaurant-service'
 include 'ftgo-customer-service'
 include 'ftgo-kitchen-service'
 include 'ftgo-accounting-service'
 include 'ftgo-order-service'
+

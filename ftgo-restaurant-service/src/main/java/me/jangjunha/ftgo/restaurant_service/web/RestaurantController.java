@@ -1,5 +1,8 @@
 package me.jangjunha.ftgo.restaurant_service.web;
 
+import me.jangjunha.ftgo.restaurant_service.api.MenuItem;
+import me.jangjunha.ftgo.restaurant_service.api.web.CreateRestaurantResponse;
+import me.jangjunha.ftgo.restaurant_service.api.web.GetRestaurantResponse;
 import me.jangjunha.ftgo.restaurant_service.domain.CreateRestaurantRequest;
 import me.jangjunha.ftgo.restaurant_service.domain.Restaurant;
 import me.jangjunha.ftgo.restaurant_service.service.RestaurantService;
@@ -29,7 +32,11 @@ public class RestaurantController {
     @RequestMapping(method = RequestMethod.GET, path = "/{restaurantId}/")
     public ResponseEntity<GetRestaurantResponse> get(@PathVariable UUID restaurantId) {
         return restaurantService.get(restaurantId)
-                .map(r -> new ResponseEntity<>(new GetRestaurantResponse(r.getId(), r.getName(), r.getMenuItems()), HttpStatus.OK))
+                .map(r -> new ResponseEntity<>(new GetRestaurantResponse(
+                        r.getId(),
+                        r.getName(),
+                        r.getMenuItems().stream().map(m -> new MenuItem(m.getId(), m.getName(), m.getPrice())).toList()
+                ), HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 }

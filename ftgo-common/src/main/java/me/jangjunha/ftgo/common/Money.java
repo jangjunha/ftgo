@@ -1,16 +1,11 @@
-package me.jangjunha.ftgo.common_jpa;
+package me.jangjunha.ftgo.common;
 
-import jakarta.persistence.Access;
-import jakarta.persistence.AccessType;
-import jakarta.persistence.Embeddable;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 import java.math.BigDecimal;
 
-@Embeddable
-@Access(AccessType.FIELD)
-public final class Money {
+public class Money {
     public static Money ZERO = new Money(0);
 
     private BigDecimal amount;
@@ -27,7 +22,7 @@ public final class Money {
         this.amount = new BigDecimal(amount);
     }
 
-    public Money() { }
+    private Money() { }
 
     public BigDecimal getAmount() {
         return amount;

@@ -1,6 +1,6 @@
-package me.jangjunha.ftgo.restaurant_service.events;
+package me.jangjunha.ftgo.restaurant_service.api.events;
 
-import me.jangjunha.ftgo.restaurant_service.domain.MenuItem;
+import me.jangjunha.ftgo.restaurant_service.api.MenuItem;
 
 import java.util.List;
 

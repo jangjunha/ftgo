@@ -1,6 +1,6 @@
-package me.jangjunha.ftgo.restaurant_service.web;
+package me.jangjunha.ftgo.restaurant_service.api.web;
 
-import me.jangjunha.ftgo.restaurant_service.domain.MenuItem;
+import me.jangjunha.ftgo.restaurant_service.api.MenuItem;
 
 import java.util.List;
 import java.util.UUID;

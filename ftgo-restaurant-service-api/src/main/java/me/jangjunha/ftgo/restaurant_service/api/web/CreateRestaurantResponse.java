@@ -1,4 +1,4 @@
-package me.jangjunha.ftgo.restaurant_service.web;
+package me.jangjunha.ftgo.restaurant_service.api.web;
 
 import java.util.UUID;
 

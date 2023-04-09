@@ -1,4 +1,4 @@
-package me.jangjunha.ftgo.common_jpa;
+package me.jangjunha.ftgo.common;
 
 import org.junit.jupiter.api.Test;
 

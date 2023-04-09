@@ -21,7 +21,10 @@ dependencies {
 
 	implementation "org.springframework.boot:spring-boot-starter-web:$springBootVersion"
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0'
+
 	implementation project(':ftgo-common-jpa')
+	implementation project(':ftgo-restaurant-service-api')
+
 	developmentOnly "org.springframework.boot:spring-boot-devtools:$springBootVersion"
 	runtimeOnly 'org.postgresql:postgresql'
 	testImplementation "org.springframework.boot:spring-boot-starter-test:$springBootVersion"
