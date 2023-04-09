@@ -1,0 +1,49 @@
+services:
+
+  zookeeper:
+    image: eventuateio/eventuate-zookeeper:0.17.0.RELEASE
+    ports:
+      - 2181:2181
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      KAFKA_HEAP_OPTS: -Xmx64m
+
+  kafka:
+    image: eventuateio/eventuate-kafka:0.17.0.RELEASE
+    ports:
+      - 9092:9092
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_LISTENERS: LC://kafka:29092,LX://kafka:9092
+      KAFKA_ADVERTISED_LISTENERS: LC://kafka:29092,LX://${DOCKER_HOST_IP:-localhost}:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: LC:PLAINTEXT,LX:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: LC
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_HEAP_OPTS: -Xmx192m
+
+  restaurant-service-db:
+    restart: always
+    build:
+      context: ./database
+    volumes:
+      - restaurant-service-db-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust
+      - POSTGRES_DB=ftgo-restaurant-service
+
+  restaurant-service-app:
+    build:
+      context: .
+      target: restaurant-service
+    ports:
+      - 8101:8101
+    depends_on:
+      - restaurant-service-db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://restaurant-service-db/ftgo-restaurant-service
+      SPRING_DATASOURCE_USERNAME: postgres
+
+volumes:
+  restaurant-service-db-data: {}

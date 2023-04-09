@@ -1,6 +1,5 @@
 spring:
   datasource:
-    url: jdbc:${DATABASE_URI}
     driver-class-name: org.postgresql.Driver
   jpa:
     generate-ddl: true
@@ -12,4 +11,4 @@ eventuate:
   outbox:
     id: 8101
 server:
-  port: 8101
+  port: ${PORT:8101}

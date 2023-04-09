@@ -1,0 +1,11 @@
+.idea
+*.iml
+*.iws
+.git
+.gitignore
+.gradle
+*/build
+*/out
+*/target
+Dockerfile
+README.md

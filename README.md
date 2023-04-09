@@ -25,10 +25,17 @@
    ```
 
 
-## Run Service
+## Run Service via Compose
 
 ```bash
-$ DATABASE_URI='postgresql:///ftgo-restaurant-service' \
+$ docker-compose up -d
+```
+
+
+## Run Service on Local machine
+
+```bash
+$ SPRING_DATABASE_URL='jdbc:postgresql:///ftgo-restaurant-service' \
     ./gradlew :ftgo-order-service:bootRun
 ```
 
