@@ -8,4 +8,4 @@ spring:
       hibernate:
         format_sql: ${SHOW_SQL:false}
 server:
-  port: 8101
+  port: 8103
