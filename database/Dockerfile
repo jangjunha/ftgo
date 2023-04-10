@@ -23,4 +23,4 @@ RUN wget -q -P /docker-entrypoint-initdb.d 'https://raw.githubusercontent.com/ev
 RUN wget -q -P /docker-entrypoint-initdb.d 'https://raw.githubusercontent.com/eventuate-foundation/eventuate-common/0.17.0.RELEASE/postgres/4.initialize-database-json.sql'
 RUN wget -q -P /docker-entrypoint-initdb.d 'https://raw.githubusercontent.com/eventuate-foundation/eventuate-common/0.17.0.RELEASE/postgres/5.initialize-database-db-id.sql'
 
-CMD ["postgres", "-c", "listen_addresses='*'", "-c", "wal_level=logical"]
+CMD ["postgres", "-c", "listen_addresses=*", "-c", "wal_level=logical"]
