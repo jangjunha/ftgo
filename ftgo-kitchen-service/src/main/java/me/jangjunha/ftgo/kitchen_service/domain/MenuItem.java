@@ -1,16 +1,13 @@
 package me.jangjunha.ftgo.kitchen_service.domain;
 
 import jakarta.persistence.*;
-import me.jangjunha.ftgo.common_jpa.Money;
+import me.jangjunha.ftgo.common.Money;
 
 @Embeddable
 @Access(AccessType.FIELD)
 public class MenuItem {
     private String id;
     private String name;
-
-    @Embedded
-    @AttributeOverride(name="amount", column = @Column(name="price"))
     private Money price;
 
     public MenuItem() {
