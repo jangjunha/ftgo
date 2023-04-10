@@ -2,6 +2,8 @@ services:
 
   zookeeper:
     image: eventuateio/eventuate-zookeeper:0.17.0.RELEASE
+    volumes:
+      - zookeeper-data:/usr/local/zookeeper-data
     ports:
       - 2181:2181
     environment:
@@ -81,5 +83,6 @@ services:
       SPRING_DATASOURCE_USERNAME: postgres
 
 volumes:
+  zookeeper-data: {}
   kafka-data: {}
   restaurant-service-db-data: {}
