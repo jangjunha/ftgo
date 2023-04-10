@@ -10,6 +10,8 @@ services:
 
   kafka:
     image: eventuateio/eventuate-kafka:0.17.0.RELEASE
+    volumes:
+      - kafka-data:/tmp/kafka-logs
     ports:
       - 9092:9092
     depends_on:
@@ -46,4 +48,5 @@ services:
       SPRING_DATASOURCE_USERNAME: postgres
 
 volumes:
+  kafka-data: {}
   restaurant-service-db-data: {}
