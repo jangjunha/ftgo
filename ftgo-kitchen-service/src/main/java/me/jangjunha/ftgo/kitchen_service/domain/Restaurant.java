@@ -20,6 +20,11 @@ public class Restaurant {
     public Restaurant() {
     }
 
+    public Restaurant(UUID id, List<MenuItem> menuItems) {
+        this.id = id;
+        this.menuItems = menuItems;
+    }
+
     public UUID getId() {
         return id;
     }
