@@ -13,10 +13,15 @@ import java.util.UUID;
 @Service
 @Transactional
 public class KitchenService {
+    private final TicketRepository ticketRepository;
     private final RestaurantRepository restaurantRepository;
 
     @Autowired
-    public KitchenService(RestaurantRepository restaurantRepository) {
+    public KitchenService(
+            TicketRepository ticketRepository,
+            RestaurantRepository restaurantRepository
+    ) {
+        this.ticketRepository = ticketRepository;
         this.restaurantRepository = restaurantRepository;
     }
 
