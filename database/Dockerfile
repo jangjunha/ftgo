@@ -7,14 +7,6 @@ RUN apk add --no-cache --virtual .wal2json-build-deps gcc clang llvm git make mu
     && (cd /root/wal2json && make && make install) \
     && rm -rf wal2json \
     && apk del .wal2json-build-deps
-#RUN apk add --no-cache --virtual .wal2json-build-deps gcc clang llvm git make musl-dev pkgconf \
-#    && git clone https://github.com/debezium/postgres-decoderbufs -b $PLUGIN_VERSION --single-branch \
-#    && (cd /postgres-decoderbufs && make && make install) \
-#    && rm -rf postgres-decoderbufs \
-#    && git clone https://github.com/eulerto/wal2json -b $WAL2JSON_TAG --single-branch \
-#    && (cd /wal2json && make && make install) \
-#    && rm -rf wal2json \
-#    && apk del .wal2json-build-deps
 
 RUN mkdir -p /docker-entrypoint-initdb.d
 RUN wget -q -P /docker-entrypoint-initdb.d 'https://raw.githubusercontent.com/eventuate-foundation/eventuate-common/0.17.0.RELEASE/postgres/1.initialize-database.sql'
