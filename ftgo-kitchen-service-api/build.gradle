@@ -1,0 +1,24 @@
+plugins {
+    id 'java-library'
+}
+
+group = 'me.jangjunha.ftgo'
+version = '0.0.1-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    api(platform("io.eventuate.platform:eventuate-platform-dependencies:$eventuatePlatformVersion"))
+    api "io.eventuate.tram.core:eventuate-tram-spring-events"
+
+    implementation project(':ftgo-common')
+
+    testImplementation platform('org.junit:junit-bom:5.9.1')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+}
+
+test {
+    useJUnitPlatform()
+}
