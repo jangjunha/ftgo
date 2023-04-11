@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 @Component
 public class KitchenServiceEventConsumer {
-    private KitchenService kitchenService;
+    private final KitchenService kitchenService;
 
     @Autowired
     public KitchenServiceEventConsumer(KitchenService kitchenService) {

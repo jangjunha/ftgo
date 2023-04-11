@@ -1,11 +1,16 @@
 package me.jangjunha.ftgo.kitchen_service.domain;
 
 import jakarta.persistence.*;
+import me.jangjunha.ftgo.common.UnsupportedStateTransitionException;
+import me.jangjunha.ftgo.kitchen_service.api.events.TicketAcceptedEvent;
+import me.jangjunha.ftgo.kitchen_service.api.events.TicketDomainEvent;
 
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
+import static java.util.Collections.singletonList;
 
 
 @Entity
@@ -47,6 +52,19 @@ public class Ticket {
                         li.getName()
                 ))
                 .collect(Collectors.toList());
+    }
+
+    public List<TicketDomainEvent> accept(OffsetDateTime readyBy) {
+        switch (state) {
+            case AWAITING_ACCEPTANCE:
+                this.acceptTime = OffsetDateTime.now();
+                if (!acceptTime.isBefore(readyBy))
+                    throw new IllegalArgumentException(String.format("readyBy %s is not after now %s", readyBy, acceptTime));
+                this.readyBy = readyBy;
+                return singletonList(new TicketAcceptedEvent(readyBy));
+            default:
+                throw new UnsupportedStateTransitionException(state);
+        }
     }
 
     public Long getId() {
