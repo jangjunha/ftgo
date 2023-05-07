@@ -1,6 +1,8 @@
 package me.jangjunha.ftgo.kitchen_service.service;
 
+import io.eventuate.tram.events.aggregates.ResultWithDomainEvents;
 import jakarta.transaction.Transactional;
+import me.jangjunha.ftgo.kitchen_service.api.TicketDetails;
 import me.jangjunha.ftgo.kitchen_service.api.events.TicketDomainEvent;
 import me.jangjunha.ftgo.kitchen_service.domain.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +27,19 @@ public class KitchenService {
         this.ticketDomainEventPublisher = ticketDomainEventPublisher;
         this.ticketRepository = ticketRepository;
         this.restaurantRepository = restaurantRepository;
+    }
+
+    @Transactional
+    public Ticket createTicket(UUID restaurantId, UUID orderId, TicketDetails ticketDetails) {
+        if (!restaurantRepository.existsById(restaurantId)) {
+            throw new RestaurantDetailsVerificationException();
+        }
+        long sequence = ticketRepository.getLastSequence(restaurantId) + 1;
+
+        ResultWithDomainEvents<Ticket, TicketDomainEvent> twe = Ticket.create(orderId, restaurantId, sequence, ticketDetails);
+        ticketRepository.save(twe.result);
+        ticketDomainEventPublisher.publish(twe.result, twe.events);
+        return twe.result;
     }
 
     @Transactional
