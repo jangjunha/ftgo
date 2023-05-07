@@ -28,9 +28,9 @@ public class KitchenService {
     }
 
     @Transactional
-    public void accept(long ticketId, OffsetDateTime readyBy) {
-        Ticket ticket = ticketRepository.findById(ticketId)
-                .orElseThrow(() -> new TicketNotFoundException(ticketId));
+    public void accept(UUID id, OffsetDateTime readyBy) {
+        Ticket ticket = ticketRepository.findById(id)
+                .orElseThrow(() -> new TicketNotFoundException(id));
         List<TicketDomainEvent> events = ticket.accept(readyBy);
         ticketDomainEventPublisher.publish(ticket, events);
     }

@@ -1,7 +1,9 @@
 package me.jangjunha.ftgo.kitchen_service.domain;
 
+import java.util.UUID;
+
 public class TicketNotFoundException extends RuntimeException {
-    public TicketNotFoundException(long ticketId) {
-        super(String.format("Ticket not found: %d", ticketId));
+    public TicketNotFoundException(UUID id) {
+        super(String.format("Ticket not found: %s", id.toString()));
     }
 }
