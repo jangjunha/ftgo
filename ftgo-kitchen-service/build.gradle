@@ -26,6 +26,11 @@ dependencies {
 	implementation project(':ftgo-kitchen-service-api')
 	implementation project(':ftgo-restaurant-service-api')
 
+	implementation "com.querydsl:querydsl-jpa:$queryDslVersion"
+	implementation "com.querydsl:querydsl-apt:$queryDslVersion"
+	annotationProcessor "com.querydsl:querydsl-apt:$queryDslVersion:jakarta"
+	annotationProcessor("org.springframework.boot:spring-boot-starter-data-jpa:$springBootVersion")
+
 	testImplementation "org.springframework.boot:spring-boot-starter-test:$springBootVersion"
 
 	developmentOnly "org.springframework.boot:spring-boot-devtools:$springBootVersion"
