@@ -43,6 +43,7 @@ services:
     depends_on:
       - kafka
       - restaurant-service-db  # ?
+      - kitchen-service-db
     environment:
       SPRING_PROFILE_ACTIVE: PostgresWal
 
@@ -59,6 +60,17 @@ services:
       EVENTUATE_CDC_READER_READER1_DATASOURCEPASSWORD: ''
       EVENTUATE_CDC_READER_READER1_LEADERSHIPLOCKPATH: /eventuate/cdc/leader/reader-restaurant-db
       EVENTUATE_CDC_READER_READER1_OUTBOXID: 8101
+
+      EVENTUATE_CDC_PIPELINE_PIPELINE2_TYPE: eventuate-tram
+      EVENTUATE_CDC_PIPELINE_PIPELINE2_READER: reader2
+      EVENTUATE_CDC_PIPELINE_PIPELINE2_EVENTUATEDATABASESCHEMA: ftgo-kitchen-service
+      EVENTUATE_CDC_READER_READER2_TYPE: postgres-wal
+      EVENTUATE_CDC_READER_READER2_DATASOURCEDRIVERCLASSNAME: org.postgresql.Driver
+      EVENTUATE_CDC_READER_READER2_DATASOURCEURL: jdbc:postgresql://kitchen-service-db/ftgo-kitchen-service
+      EVENTUATE_CDC_READER_READER2_DATASOURCEUSERNAME: postgres
+      EVENTUATE_CDC_READER_READER2_DATASOURCEPASSWORD: ''
+      EVENTUATE_CDC_READER_READER2_LEADERSHIPLOCKPATH: /eventuate/cdc/leader/reader-kitchen-db
+      EVENTUATE_CDC_READER_READER2_OUTBOXID: 8105
 
 
   ### Databases ###

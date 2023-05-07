@@ -43,6 +43,22 @@ public class KitchenService {
     }
 
     @Transactional
+    public void confirmCreateTicket(UUID id) {
+        Ticket ticket = ticketRepository.findById(id)
+                .orElseThrow(() -> new TicketNotFoundException(id));
+        List<TicketDomainEvent> events = ticket.confirmCreate();
+        ticketDomainEventPublisher.publish(ticket, events);
+    }
+
+    @Transactional
+    public void cancelCreateTicket(UUID id) {
+        Ticket ticket = ticketRepository.findById(id)
+                .orElseThrow(() -> new TicketNotFoundException(id));
+        List<TicketDomainEvent> events = ticket.cancelCreate();
+        ticketDomainEventPublisher.publish(ticket, events);
+    }
+
+    @Transactional
     public void accept(UUID id, OffsetDateTime readyBy) {
         Ticket ticket = ticketRepository.findById(id)
                 .orElseThrow(() -> new TicketNotFoundException(id));

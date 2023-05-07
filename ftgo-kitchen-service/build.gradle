@@ -19,6 +19,7 @@ dependencies {
 	implementation "io.eventuate.tram.core:eventuate-tram-spring-producer-jdbc"
 	implementation "io.eventuate.tram.core:eventuate-tram-spring-consumer-kafka"
 	implementation "io.eventuate.tram.core:eventuate-tram-aggregate-domain-events"
+	implementation "io.eventuate.tram.sagas:eventuate-tram-sagas-spring-orchestration-simple-dsl"
 
 	implementation "org.springframework.boot:spring-boot-starter-web:$springBootVersion"
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0'
