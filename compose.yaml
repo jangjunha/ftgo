@@ -101,7 +101,7 @@ services:
       context: .
       target: kitchen-service
     ports:
-      - 8102:8102
+      - 8105:8105
     depends_on:
       - kitchen-service-db
       - kafka
