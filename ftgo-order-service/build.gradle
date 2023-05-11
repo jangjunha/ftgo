@@ -1,8 +1,10 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
 	id 'org.springframework.boot' version "$springBootVersion"
 	id 'io.spring.dependency-management' version '1.1.0'
-	id 'org.jetbrains.kotlin.jvm' version '1.8.0'
-	id 'org.jetbrains.kotlin.plugin.spring' version '1.8.0'
+	id 'org.jetbrains.kotlin.jvm' version "$kotlinVersion"
+	id 'org.jetbrains.kotlin.plugin.spring' version "$kotlinVersion"
 }
 
 group = 'me.jangjunha.ftgo'
@@ -26,6 +28,12 @@ dependencies {
 	developmentOnly "org.springframework.boot:spring-boot-devtools:$springBootVersion"
 
 	runtimeOnly 'org.postgresql:postgresql'
+}
+
+compileKotlin {
+	compilerOptions {
+		jvmTarget.set(JvmTarget.JVM_17)
+	}
 }
 
 tasks.named('test') {
