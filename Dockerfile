@@ -39,3 +39,20 @@ COPY --from=build-kitchen-service ${DEPENDENCY}/BOOT-INF/lib /app/lib
 COPY --from=build-kitchen-service ${DEPENDENCY}/META-INF /app/META-INF
 COPY --from=build-kitchen-service ${DEPENDENCY}/BOOT-INF/classes /app
 ENTRYPOINT ["java","-cp",".:./lib/*","me.jangjunha.ftgo.kitchen_service.KitchenServiceApplication"]
+
+
+### Order Service ###
+FROM build-base AS build-order-service
+ARG TARGET_PROJECT=ftgo-order-service
+ENV TARGET_PROJECT=${TARGET_PROJECT}
+RUN --mount=type=cache,target=/root/.gradle ./gradlew \
+      clean build \
+      -p ${TARGET_PROJECT}
+RUN mkdir -p ${TARGET_PROJECT}/build/dependency && (cd ${TARGET_PROJECT}/build/dependency; jar -xf ../libs/*-SNAPSHOT.jar)
+
+FROM app-base AS order-service
+ARG DEPENDENCY=/app/ftgo-order-service/build/dependency
+COPY --from=build-order-service ${DEPENDENCY}/BOOT-INF/lib /app/lib
+COPY --from=build-order-service ${DEPENDENCY}/META-INF /app/META-INF
+COPY --from=build-order-service ${DEPENDENCY}/BOOT-INF/classes /app
+ENTRYPOINT ["java","-cp",".:./lib/*","me.jangjunha.ftgo.order_service.OrderServiceApplicationKt"]
