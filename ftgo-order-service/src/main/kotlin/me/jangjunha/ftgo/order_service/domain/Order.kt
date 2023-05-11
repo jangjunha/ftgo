@@ -1,12 +1,6 @@
 package me.jangjunha.ftgo.order_service.domain
 
-import jakarta.persistence.Access
-import jakarta.persistence.AccessType
-import jakarta.persistence.Embedded
-import jakarta.persistence.Entity
-import jakarta.persistence.Id
-import jakarta.persistence.Table
-import jakarta.persistence.Version
+import jakarta.persistence.*
 import me.jangjunha.ftgo.common.Money
 import me.jangjunha.ftgo.order_service.api.OrderState
 import java.util.*
@@ -19,9 +13,9 @@ data class Order (
     var id: UUID,
 
     @Version
-    var version: Long,
+    var version: Long = 1,
 
-    var state: OrderState,
+    var state: OrderState = OrderState.APPROVAL_PENDING,
 
     var consumerId: UUID,
     var restaurantId: UUID,
@@ -33,7 +27,7 @@ data class Order (
     var deliveryInformation: DeliveryInformation,
 
     @Embedded
-    var paymentInformation: PaymentInformation,
+    var paymentInformation: PaymentInformation? = null,
 
     @Embedded
     var orderMinimum: Money = Money(Integer.MAX_VALUE)
