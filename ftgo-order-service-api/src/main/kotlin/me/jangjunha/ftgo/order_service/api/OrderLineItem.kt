@@ -1,8 +1,10 @@
 package me.jangjunha.ftgo.order_service.api
 
+import jakarta.persistence.Embeddable
 import me.jangjunha.ftgo.common.Money
 
 
+@Embeddable
 data class OrderLineItem(
     var quantity: Int = 1,
     var menuItemId: String,
