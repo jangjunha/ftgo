@@ -10,7 +10,7 @@ import me.jangjunha.ftgo.order_service.api.OrderLineItem
 data class OrderLineItems (
     @ElementCollection
     @CollectionTable(name = "order_line_items")
-    var lineItems: List<OrderLineItem>
+    var lineItems: MutableList<OrderLineItem>
 ) {
     val orderTotal: Money
         get() = this.lineItems.stream()
