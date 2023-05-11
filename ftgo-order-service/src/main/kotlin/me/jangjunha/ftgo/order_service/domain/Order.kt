@@ -10,6 +10,7 @@ import java.util.*
 @Access(AccessType.FIELD)
 data class Order (
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     var id: UUID,
 
     @Version
