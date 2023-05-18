@@ -2,7 +2,7 @@ FROM postgres:15-alpine
 
 ENV WAL2JSON_TAG=wal2json_2_5
 
-RUN apk add --no-cache --virtual .wal2json-build-deps gcc clang llvm git make musl-dev \
+RUN apk add --no-cache --virtual .wal2json-build-deps gcc clang15 llvm15 git make musl-dev \
     && git clone -b $WAL2JSON_TAG --single-branch https://github.com/eulerto/wal2json /root/wal2json \
     && (cd /root/wal2json && make && make install) \
     && rm -rf wal2json \
