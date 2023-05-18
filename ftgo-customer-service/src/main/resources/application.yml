@@ -7,8 +7,5 @@ spring:
     properties:
       hibernate:
         format_sql: ${SHOW_SQL:false}
-eventuate:
-  outbox:
-    id: 8105
 server:
-  port: 8105
+  port: 8102
