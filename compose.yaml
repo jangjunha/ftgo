@@ -42,7 +42,7 @@ services:
       - 8099:8080
     depends_on:
       - kafka
-      - restaurant-service-db  # ?
+      - restaurant-service-db
       - kitchen-service-db
     environment:
       SPRING_PROFILE_ACTIVE: PostgresWal
@@ -50,27 +50,25 @@ services:
       EVENTUATELOCAL_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
       EVENTUATELOCAL_ZOOKEEPER_CONNECTION_STRING: zookeeper:2181
 
-      EVENTUATE_CDC_PIPELINE_PIPELINE1_TYPE: eventuate-tram
-      EVENTUATE_CDC_PIPELINE_PIPELINE1_READER: reader1
-      EVENTUATE_CDC_PIPELINE_PIPELINE1_EVENTUATEDATABASESCHEMA: ftgo-restaurant-service
-      EVENTUATE_CDC_READER_READER1_TYPE: postgres-wal
-      EVENTUATE_CDC_READER_READER1_DATASOURCEDRIVERCLASSNAME: org.postgresql.Driver
-      EVENTUATE_CDC_READER_READER1_DATASOURCEURL: jdbc:postgresql://restaurant-service-db/ftgo-restaurant-service
-      EVENTUATE_CDC_READER_READER1_DATASOURCEUSERNAME: postgres
-      EVENTUATE_CDC_READER_READER1_DATASOURCEPASSWORD: ''
-      EVENTUATE_CDC_READER_READER1_LEADERSHIPLOCKPATH: /eventuate/cdc/leader/reader-restaurant-db
-      EVENTUATE_CDC_READER_READER1_OUTBOXID: 8101
+      EVENTUATE_CDC_PIPELINE_RESTAURANT_TYPE: eventuate-tram
+      EVENTUATE_CDC_PIPELINE_RESTAURANT_READER: restaurantservice
+      EVENTUATE_CDC_READER_RESTAURANTSERVICE_TYPE: postgres-wal
+      EVENTUATE_CDC_READER_RESTAURANTSERVICE_DATASOURCEDRIVERCLASSNAME: org.postgresql.Driver
+      EVENTUATE_CDC_READER_RESTAURANTSERVICE_DATASOURCEURL: jdbc:postgresql://restaurant-service-db/ftgo-restaurant-service
+      EVENTUATE_CDC_READER_RESTAURANTSERVICE_DATASOURCEUSERNAME: postgres
+      EVENTUATE_CDC_READER_RESTAURANTSERVICE_DATASOURCEPASSWORD: ''
+      EVENTUATE_CDC_READER_RESTAURANTSERVICE_LEADERSHIPLOCKPATH: /eventuate/cdc/leader/reader-restaurant-db
+      EVENTUATE_CDC_READER_RESTAURANTSERVICE_OUTBOXID: 8101
 
-      EVENTUATE_CDC_PIPELINE_PIPELINE2_TYPE: eventuate-tram
-      EVENTUATE_CDC_PIPELINE_PIPELINE2_READER: reader2
-      EVENTUATE_CDC_PIPELINE_PIPELINE2_EVENTUATEDATABASESCHEMA: ftgo-kitchen-service
-      EVENTUATE_CDC_READER_READER2_TYPE: postgres-wal
-      EVENTUATE_CDC_READER_READER2_DATASOURCEDRIVERCLASSNAME: org.postgresql.Driver
-      EVENTUATE_CDC_READER_READER2_DATASOURCEURL: jdbc:postgresql://kitchen-service-db/ftgo-kitchen-service
-      EVENTUATE_CDC_READER_READER2_DATASOURCEUSERNAME: postgres
-      EVENTUATE_CDC_READER_READER2_DATASOURCEPASSWORD: ''
-      EVENTUATE_CDC_READER_READER2_LEADERSHIPLOCKPATH: /eventuate/cdc/leader/reader-kitchen-db
-      EVENTUATE_CDC_READER_READER2_OUTBOXID: 8105
+      EVENTUATE_CDC_PIPELINE_KITCHEN_TYPE: eventuate-tram
+      EVENTUATE_CDC_PIPELINE_KITCHEN_READER: kitchenservice
+      EVENTUATE_CDC_READER_KITCHENSERVICE_TYPE: postgres-wal
+      EVENTUATE_CDC_READER_KITCHENSERVICE_DATASOURCEDRIVERCLASSNAME: org.postgresql.Driver
+      EVENTUATE_CDC_READER_KITCHENSERVICE_DATASOURCEURL: jdbc:postgresql://kitchen-service-db/ftgo-kitchen-service
+      EVENTUATE_CDC_READER_KITCHENSERVICE_DATASOURCEUSERNAME: postgres
+      EVENTUATE_CDC_READER_KITCHENSERVICE_DATASOURCEPASSWORD: ''
+      EVENTUATE_CDC_READER_KITCHENSERVICE_LEADERSHIPLOCKPATH: /eventuate/cdc/leader/reader-kitchen-db
+      EVENTUATE_CDC_READER_KITCHENSERVICE_OUTBOXID: 8105
 
 
   ### Databases ###
@@ -83,6 +81,7 @@ services:
     environment:
       - POSTGRES_HOST_AUTH_METHOD=trust
       - POSTGRES_DB=ftgo-restaurant-service
+      - USE_DB_ID=true
 
   kitchen-service-db:
     restart: always
@@ -93,6 +92,7 @@ services:
     environment:
       - POSTGRES_HOST_AUTH_METHOD=trust
       - POSTGRES_DB=ftgo-kitchen-service
+      - USE_DB_ID=true
 
   order-service-db:
     restart: always
@@ -103,6 +103,7 @@ services:
     environment:
       - POSTGRES_HOST_AUTH_METHOD=trust
       - POSTGRES_DB=ftgo-order-service
+      - USE_DB_ID=true
 
 
   ### Applications ###
@@ -133,7 +134,6 @@ services:
       SPRING_DATASOURCE_USERNAME: postgres
       EVENTUATELOCAL_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
       EVENTUATELOCAL_ZOOKEEPER_CONNECTION_STRING: zookeeper:2181
-      EVENTUATE_DATABASE_SCHEMA: ftgo-kitchen-service
 
   order-service-app:
     build:
@@ -150,7 +150,6 @@ services:
       SPRING_DATASOURCE_USERNAME: postgres
       EVENTUATELOCAL_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
       EVENTUATELOCAL_ZOOKEEPER_CONNECTION_STRING: zookeeper:2181
-      EVENTUATE_DATABASE_SCHEMA: ftgo-order-service
 
 volumes:
   zookeeper-data: {}
