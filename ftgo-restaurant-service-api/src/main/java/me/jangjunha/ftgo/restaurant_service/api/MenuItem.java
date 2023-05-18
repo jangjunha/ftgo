@@ -8,6 +8,8 @@ public class MenuItem {
     private String name;
     private Money price;
 
+    protected MenuItem() {}
+
     public MenuItem(String id, String name, Money price) {
         this.id = id;
         this.name = name;
