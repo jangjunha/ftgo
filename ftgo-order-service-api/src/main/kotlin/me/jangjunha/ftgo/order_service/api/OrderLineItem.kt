@@ -13,4 +13,8 @@ data class OrderLineItem(
 ) {
     val total: Money
         get() = this.price.multiply(this.quantity)
+
+    fun deltaPriceForChangedQuantity(newQuantity: Int): Money {
+        return price.multiply(newQuantity - quantity)
+    }
 }

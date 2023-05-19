@@ -3,11 +3,12 @@ package me.jangjunha.ftgo.order_service.domain
 import io.eventuate.tram.events.aggregates.ResultWithDomainEvents
 import jakarta.persistence.*
 import me.jangjunha.ftgo.common.Money
+import me.jangjunha.ftgo.common.UnsupportedStateTransitionException
 import me.jangjunha.ftgo.order_service.api.OrderDetails
 import me.jangjunha.ftgo.order_service.api.OrderLineItem
+import me.jangjunha.ftgo.order_service.api.OrderRevision
 import me.jangjunha.ftgo.order_service.api.OrderState
-import me.jangjunha.ftgo.order_service.api.events.OrderCreated
-import me.jangjunha.ftgo.order_service.api.events.OrderDomainEvent
+import me.jangjunha.ftgo.order_service.api.events.*
 import java.util.*
 
 @Entity
@@ -65,6 +66,46 @@ data class Order (
                 )
             )
             return ResultWithDomainEvents(order, events);
+        }
+    }
+
+    fun noteApproved(): List<OrderDomainEvent> {
+        when (state) {
+            OrderState.APPROVAL_PENDING -> {
+                this.state = OrderState.APPROVED
+                return listOf(OrderAuthorized())
+            }
+            else -> {
+                throw UnsupportedStateTransitionException(state)
+            }
+        }
+    }
+
+    fun noteRejected(): List<OrderDomainEvent> {
+        when (state) {
+            OrderState.APPROVAL_PENDING -> {
+                this.state = OrderState.REJECTED
+                return listOf(OrderRejected())
+            }
+            else -> {
+                throw UnsupportedStateTransitionException(state)
+            }
+        }
+    }
+
+    fun revise(orderRevision: OrderRevision): ResultWithDomainEvents<LineItemQuantityChange, OrderDomainEvent> {
+        when (state) {
+            OrderState.APPROVED -> {
+                val change = orderLineItems.lineItemQuantityChange(orderRevision)
+                if (!change.newOrderTotal.isGreaterThanOrEqual(orderMinimum)) {
+                    throw OrderMinimumNotMetException()
+                }
+                this.state = OrderState.REVISION_PENDING
+                return ResultWithDomainEvents(change, listOf(
+                    OrderRevisionProposed(orderRevision, change.currentOrderTotal, change.newOrderTotal),
+                ))
+            }
+            else -> throw UnsupportedStateTransitionException(state)
         }
     }
 }
