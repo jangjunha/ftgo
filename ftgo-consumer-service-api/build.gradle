@@ -1,0 +1,32 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version '1.8.21'
+}
+
+group = 'me.jangjunha.ftgo'
+version = '0.0.1-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    api(platform("io.eventuate.platform:eventuate-platform-dependencies:$eventuatePlatformVersion"))
+    api "io.eventuate.tram.core:eventuate-tram-commands"
+    api "io.eventuate.tram.core:eventuate-tram-events"
+
+    implementation project(':ftgo-common-jpa')
+
+    testImplementation 'org.jetbrains.kotlin:kotlin-test'
+}
+
+compileKotlin {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_17)
+    }
+}
+
+test {
+    useJUnitPlatform()
+}
