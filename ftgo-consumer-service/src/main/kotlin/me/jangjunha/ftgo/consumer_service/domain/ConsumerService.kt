@@ -24,4 +24,9 @@ class ConsumerService @Autowired constructor(
     fun findById(id: UUID): Consumer? {
         return consumerRepository.findByIdOrNull(id)
     }
+
+    fun validateOrderForConsumer(id: UUID, orderTotal: Money) {
+        val consumer = consumerRepository.findByIdOrNull(id) ?: throw ConsumerNotFoundException()
+        consumer.validateOrderByConsumer(orderTotal)
+    }
 }
