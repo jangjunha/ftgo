@@ -9,10 +9,10 @@ RUN apk add --no-cache --virtual .wal2json-build-deps gcc clang15 llvm15 git mak
     && apk del .wal2json-build-deps
 
 RUN mkdir -p /docker-entrypoint-initdb.d
-RUN wget -q -P /docker-entrypoint-initdb.d 'https://raw.githubusercontent.com/eventuate-foundation/eventuate-common/0.17.0.RELEASE/postgres/1.initialize-database.sql'
-RUN wget -q -P /docker-entrypoint-initdb.d 'https://raw.githubusercontent.com/eventuate-foundation/eventuate-common/0.17.0.RELEASE/postgres/2.initialize-database.sql'
-RUN wget -q -P /docker-entrypoint-initdb.d 'https://raw.githubusercontent.com/eventuate-foundation/eventuate-common/0.17.0.RELEASE/postgres/3.initialize-database.sql'
-RUN wget -q -P /docker-entrypoint-initdb.d 'https://raw.githubusercontent.com/eventuate-foundation/eventuate-common/0.17.0.RELEASE/postgres/4.initialize-database-json.sql'
-RUN wget -q -P /docker-entrypoint-initdb.d 'https://raw.githubusercontent.com/eventuate-foundation/eventuate-common/0.17.0.RELEASE/postgres/5.initialize-database-db-id.sql'
+ADD --chmod=644 https://raw.githubusercontent.com/eventuate-foundation/eventuate-common/0.17.0.RELEASE/postgres/1.initialize-database.sql /docker-entrypoint-initdb.d/
+ADD --chmod=644 https://raw.githubusercontent.com/eventuate-foundation/eventuate-common/0.17.0.RELEASE/postgres/2.initialize-database.sql /docker-entrypoint-initdb.d/
+ADD --chmod=644 https://raw.githubusercontent.com/eventuate-foundation/eventuate-common/0.17.0.RELEASE/postgres/3.initialize-database.sql /docker-entrypoint-initdb.d/
+ADD --chmod=644 https://raw.githubusercontent.com/eventuate-foundation/eventuate-common/0.17.0.RELEASE/postgres/4.initialize-database-json.sql /docker-entrypoint-initdb.d/
+ADD --chmod=644 https://raw.githubusercontent.com/eventuate-foundation/eventuate-common/0.17.0.RELEASE/postgres/5.initialize-database-db-id.sql /docker-entrypoint-initdb.d/
 
 CMD ["postgres", "-c", "listen_addresses=*", "-c", "wal_level=logical"]
