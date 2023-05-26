@@ -6,6 +6,7 @@ import io.eventuate.tram.commands.consumer.CommandHandlers
 import io.eventuate.tram.commands.consumer.CommandMessage
 import io.eventuate.tram.messaging.common.Message
 import io.eventuate.tram.sagas.participant.SagaCommandHandlersBuilder
+import me.jangjunha.ftgo.consumer_service.api.ConsumerServiceChannels
 import me.jangjunha.ftgo.consumer_service.api.command.ValidateOrderByConsumer
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -16,7 +17,7 @@ class ConsumerServiceCommandHandlers @Autowired constructor(
 ) {
     fun commandHandlers(): CommandHandlers {
         return SagaCommandHandlersBuilder
-            .fromChannel("consumerService")
+            .fromChannel(ConsumerServiceChannels.consumerServiceChannel)
             .onMessage(ValidateOrderByConsumer::class.java, this::validateOrderForConsumer)
             .build()
     }
