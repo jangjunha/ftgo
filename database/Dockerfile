@@ -1,4 +1,4 @@
-FROM postgres:15-alpine
+FROM postgres:15-alpine AS base
 
 ENV WAL2JSON_TAG=wal2json_2_5
 
@@ -16,3 +16,6 @@ ADD --chmod=644 https://raw.githubusercontent.com/eventuate-foundation/eventuate
 ADD --chmod=644 https://raw.githubusercontent.com/eventuate-foundation/eventuate-common/0.17.0.RELEASE/postgres/5.initialize-database-db-id.sql /docker-entrypoint-initdb.d/
 
 CMD ["postgres", "-c", "listen_addresses=*", "-c", "wal_level=logical"]
+
+FROM base AS saga
+ADD --chmod=644 https://raw.githubusercontent.com/eventuate-tram/eventuate-tram-sagas/0.21.0.RELEASE/postgres/tram-saga-schema.sql /docker-entrypoint-initdb.d/

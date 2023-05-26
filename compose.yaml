@@ -76,6 +76,7 @@ services:
     restart: always
     build:
       context: ./database
+      target: base
     volumes:
       - restaurant-service-db-data:/var/lib/postgresql/data
     environment:
@@ -87,6 +88,7 @@ services:
     restart: always
     build:
       context: ./database
+      target: base
     volumes:
       - consumer-service-db-data:/var/lib/postgresql/data
     environment:
@@ -98,6 +100,7 @@ services:
     restart: always
     build:
       context: ./database
+      target: saga
     volumes:
       - kitchen-service-db-data:/var/lib/postgresql/data
     environment:
@@ -109,6 +112,7 @@ services:
     restart: always
     build:
       context: ./database
+      target: saga
     volumes:
       - order-service-db-data:/var/lib/postgresql/data
     environment:
