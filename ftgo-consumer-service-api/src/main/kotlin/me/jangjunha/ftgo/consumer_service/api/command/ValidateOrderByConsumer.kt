@@ -8,4 +8,6 @@ data class ValidateOrderByConsumer(
     val consumerId: UUID,
     val orderId: UUID,
     val orderTotal: Money,
-): Command
+): Command {
+    protected constructor(): this(UUID(0, 0), UUID(0, 0), Money.ZERO)
+}
