@@ -4,10 +4,7 @@ import io.eventuate.tram.events.aggregates.ResultWithDomainEvents
 import jakarta.persistence.*
 import me.jangjunha.ftgo.common.Money
 import me.jangjunha.ftgo.common.UnsupportedStateTransitionException
-import me.jangjunha.ftgo.order_service.api.OrderDetails
-import me.jangjunha.ftgo.order_service.api.OrderLineItem
-import me.jangjunha.ftgo.order_service.api.OrderRevision
-import me.jangjunha.ftgo.order_service.api.OrderState
+import me.jangjunha.ftgo.order_service.api.*
 import me.jangjunha.ftgo.order_service.api.events.*
 import java.util.*
 
@@ -17,7 +14,7 @@ import java.util.*
 data class Order (
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    var id: UUID,
+    var id: UUID = UUID(0, 0),
 
     @Version
     var version: Long = 1,
@@ -47,7 +44,6 @@ data class Order (
             deliveryInformation: DeliveryInformation,
         ): ResultWithDomainEvents<Order, OrderDomainEvent> {
             val order = Order(
-                null!!,
                 consumerId = consumerId,
                 restaurantId = restaurant.id,
                 orderLineItems = OrderLineItems(orderLineItems.toMutableList()),
