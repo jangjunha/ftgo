@@ -4,7 +4,9 @@ import io.eventuate.tram.events.subscriber.DomainEventDispatcher
 import io.eventuate.tram.events.subscriber.DomainEventDispatcherFactory
 import io.eventuate.tram.sagas.participant.SagaCommandDispatcher
 import io.eventuate.tram.sagas.participant.SagaCommandDispatcherFactory
+import io.eventuate.tram.sagas.spring.orchestration.SagaOrchestratorConfiguration
 import io.eventuate.tram.sagas.spring.participant.SagaParticipantConfiguration
+import io.eventuate.tram.spring.commands.common.TramCommandsCommonAutoConfiguration
 import io.eventuate.tram.spring.consumer.common.TramNoopDuplicateMessageDetectorConfiguration
 import io.eventuate.tram.spring.consumer.kafka.EventuateTramKafkaMessageConsumerConfiguration
 import io.eventuate.tram.spring.events.common.TramEventsCommonAutoConfiguration
@@ -28,6 +30,8 @@ import org.springframework.context.annotation.Import
     SagaParticipantConfiguration::class,
     TramEventsPublisherConfiguration::class,
     TramMessageProducerJdbcConfiguration::class,
+    SagaOrchestratorConfiguration::class,
+    TramCommandsCommonAutoConfiguration::class,
 ])
 class OrderServiceConfiguration {
     @Bean

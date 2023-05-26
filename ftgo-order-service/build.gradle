@@ -18,6 +18,7 @@ repositories {
 
 dependencies {
 	implementation(platform("io.eventuate.platform:eventuate-platform-dependencies:$eventuatePlatformVersion"))
+	implementation "io.eventuate.tram.sagas:eventuate-tram-sagas-spring-orchestration-simple-dsl"
 	implementation "io.eventuate.tram.sagas:eventuate-tram-sagas-spring-orchestration"
 	implementation "io.eventuate.tram.core:eventuate-tram-aggregate-domain-events"
 	implementation "io.eventuate.tram.core:eventuate-tram-spring-consumer-kafka"
