@@ -1,4 +1,4 @@
-package me.jangjunha.ftgo.order_service.domain
+package me.jangjunha.ftgo.order_service.api
 
 import jakarta.persistence.Access
 import jakarta.persistence.AccessType
