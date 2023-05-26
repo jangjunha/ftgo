@@ -8,8 +8,10 @@ import io.eventuate.tram.sagas.spring.participant.SagaParticipantConfiguration
 import io.eventuate.tram.spring.consumer.common.TramNoopDuplicateMessageDetectorConfiguration
 import io.eventuate.tram.spring.consumer.kafka.EventuateTramKafkaMessageConsumerConfiguration
 import io.eventuate.tram.spring.events.common.TramEventsCommonAutoConfiguration
+import io.eventuate.tram.spring.events.publisher.TramEventsPublisherConfiguration
 import io.eventuate.tram.spring.events.subscriber.TramEventSubscriberConfiguration
 import io.eventuate.tram.spring.messaging.common.TramMessagingCommonAutoConfiguration
+import io.eventuate.tram.spring.messaging.producer.jdbc.TramMessageProducerJdbcConfiguration
 import me.jangjunha.ftgo.order_service.messaging.OrderEventConsumer
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
@@ -24,6 +26,8 @@ import org.springframework.context.annotation.Import
     TramNoopDuplicateMessageDetectorConfiguration::class,
     TramEventsCommonAutoConfiguration::class,
     SagaParticipantConfiguration::class,
+    TramEventsPublisherConfiguration::class,
+    TramMessageProducerJdbcConfiguration::class,
 ])
 class OrderServiceConfiguration {
     @Bean
