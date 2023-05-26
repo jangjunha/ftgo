@@ -4,8 +4,8 @@ import io.eventuate.tram.commands.consumer.CommandHandlers;
 import io.eventuate.tram.commands.consumer.CommandMessage;
 import io.eventuate.tram.messaging.common.Message;
 import io.eventuate.tram.sagas.participant.SagaCommandHandlersBuilder;
-import me.jangjunha.ftgo.kitchen_service.KitchenServiceChannels;
 import me.jangjunha.ftgo.kitchen_service.api.CreateTicketReply;
+import me.jangjunha.ftgo.kitchen_service.api.KitchenServiceChannels;
 import me.jangjunha.ftgo.kitchen_service.api.TicketDetails;
 import me.jangjunha.ftgo.kitchen_service.api.commands.CancelCreateTicket;
 import me.jangjunha.ftgo.kitchen_service.api.commands.ConfirmCreateTicket;
@@ -23,7 +23,7 @@ import static io.eventuate.tram.sagas.participant.SagaReplyMessageBuilder.withLo
 
 @Component
 public class KitchenServiceCommandHandler {
-    private KitchenService kitchenService;
+    private final KitchenService kitchenService;
 
     @Autowired
     public KitchenServiceCommandHandler(KitchenService kitchenService) {
