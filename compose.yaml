@@ -44,6 +44,7 @@ services:
       - kafka
       - restaurant-service-db
       - kitchen-service-db
+      - order-service-db
     environment:
       SPRING_PROFILE_ACTIVE: PostgresWal
 
@@ -59,6 +60,26 @@ services:
       EVENTUATE_CDC_READER_RESTAURANTSERVICE_DATASOURCEPASSWORD: ''
       EVENTUATE_CDC_READER_RESTAURANTSERVICE_LEADERSHIPLOCKPATH: /eventuate/cdc/leader/reader-restaurant-db
       EVENTUATE_CDC_READER_RESTAURANTSERVICE_OUTBOXID: 8101
+
+      EVENTUATE_CDC_PIPELINE_CONSUMER_TYPE: eventuate-tram
+      EVENTUATE_CDC_PIPELINE_CONSUMER_READER: consumerservice
+      EVENTUATE_CDC_READER_CONSUMERSERVICE_TYPE: postgres-wal
+      EVENTUATE_CDC_READER_CONSUMERSERVICE_DATASOURCEDRIVERCLASSNAME: org.postgresql.Driver
+      EVENTUATE_CDC_READER_CONSUMERSERVICE_DATASOURCEURL: jdbc:postgresql://consumer-service-db/ftgo-consumer-service
+      EVENTUATE_CDC_READER_CONSUMERSERVICE_DATASOURCEUSERNAME: postgres
+      EVENTUATE_CDC_READER_CONSUMERSERVICE_DATASOURCEPASSWORD: ''
+      EVENTUATE_CDC_READER_CONSUMERSERVICE_LEADERSHIPLOCKPATH: /eventuate/cdc/leader/reader-consumer-db
+      EVENTUATE_CDC_READER_CONSUMERSERVICE_OUTBOXID: 8102
+
+      EVENTUATE_CDC_PIPELINE_ORDER_TYPE: eventuate-tram
+      EVENTUATE_CDC_PIPELINE_ORDER_READER: orderservice
+      EVENTUATE_CDC_READER_ORDERSERVICE_TYPE: postgres-wal
+      EVENTUATE_CDC_READER_ORDERSERVICE_DATASOURCEDRIVERCLASSNAME: org.postgresql.Driver
+      EVENTUATE_CDC_READER_ORDERSERVICE_DATASOURCEURL: jdbc:postgresql://order-service-db/ftgo-order-service
+      EVENTUATE_CDC_READER_ORDERSERVICE_DATASOURCEUSERNAME: postgres
+      EVENTUATE_CDC_READER_ORDERSERVICE_DATASOURCEPASSWORD: ''
+      EVENTUATE_CDC_READER_ORDERSERVICE_LEADERSHIPLOCKPATH: /eventuate/cdc/leader/reader-order-db
+      EVENTUATE_CDC_READER_ORDERSERVICE_OUTBOXID: 8103
 
       EVENTUATE_CDC_PIPELINE_KITCHEN_TYPE: eventuate-tram
       EVENTUATE_CDC_PIPELINE_KITCHEN_READER: kitchenservice
@@ -76,6 +97,7 @@ services:
     restart: always
     build:
       context: ./database
+      target: base
     volumes:
       - restaurant-service-db-data:/var/lib/postgresql/data
     environment:
@@ -83,10 +105,23 @@ services:
       - POSTGRES_DB=ftgo-restaurant-service
       - USE_DB_ID=true
 
+  consumer-service-db:
+    restart: always
+    build:
+      context: ./database
+      target: base
+    volumes:
+      - consumer-service-db-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust
+      - POSTGRES_DB=ftgo-consumer-service
+      - USE_DB_ID=true
+
   kitchen-service-db:
     restart: always
     build:
       context: ./database
+      target: saga
     volumes:
       - kitchen-service-db-data:/var/lib/postgresql/data
     environment:
@@ -98,6 +133,7 @@ services:
     restart: always
     build:
       context: ./database
+      target: saga
     volumes:
       - order-service-db-data:/var/lib/postgresql/data
     environment:
@@ -118,6 +154,22 @@ services:
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://restaurant-service-db/ftgo-restaurant-service
       SPRING_DATASOURCE_USERNAME: postgres
+
+  consumer-service-app:
+    build:
+      context: .
+      target: consumer-service
+    ports:
+      - 8102:8102
+    depends_on:
+      - consumer-service-db
+      - kafka
+      - zookeeper
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://consumer-service-db/ftgo-consumer-service
+      SPRING_DATASOURCE_USERNAME: postgres
+      EVENTUATELOCAL_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      EVENTUATELOCAL_ZOOKEEPER_CONNECTION_STRING: zookeeper:2181
 
   kitchen-service-app:
     build:
@@ -155,5 +207,6 @@ volumes:
   zookeeper-data: {}
   kafka-data: {}
   restaurant-service-db-data: {}
+  consumer-service-db-data: {}
   kitchen-service-db-data: {}
   order-service-db-data: {}

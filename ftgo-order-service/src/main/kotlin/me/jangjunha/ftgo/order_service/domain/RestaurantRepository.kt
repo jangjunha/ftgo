@@ -5,4 +5,4 @@ import org.springframework.stereotype.Repository
 import java.util.*
 
 @Repository
-interface RestaurantRepository: CrudRepository<Restaurant, UUID> {}
+interface RestaurantRepository: CrudRepository<Restaurant, UUID>

@@ -17,13 +17,21 @@ repositories {
 }
 
 dependencies {
+	implementation(platform("io.eventuate.platform:eventuate-platform-dependencies:$eventuatePlatformVersion"))
+	implementation "io.eventuate.tram.sagas:eventuate-tram-sagas-spring-orchestration-simple-dsl"
+	implementation "io.eventuate.tram.sagas:eventuate-tram-sagas-spring-orchestration"
 	implementation "io.eventuate.tram.core:eventuate-tram-aggregate-domain-events"
 	implementation "io.eventuate.tram.core:eventuate-tram-spring-consumer-kafka"
+	implementation "io.eventuate.tram.core:eventuate-tram-spring-producer-jdbc"
+	implementation "io.eventuate.tram.core:eventuate-tram-spring-events-publisher"
 
 	implementation "org.springframework.boot:spring-boot-starter-web:$springBootVersion"
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0'
 	implementation 'org.jetbrains.kotlin:kotlin-reflect'
 	implementation project(':ftgo-common-jpa')
+	implementation project(':ftgo-accounting-service-api')
+	implementation project(':ftgo-consumer-service-api')
+	implementation project(':ftgo-kitchen-service-api')
 	implementation project(':ftgo-restaurant-service-api')
 	implementation project(':ftgo-order-service-api')
 

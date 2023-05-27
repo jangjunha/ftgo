@@ -9,4 +9,6 @@ data class OrderDetails(
 
     var restaurantId: UUID,
     var consumerId: UUID
-)
+) {
+    protected constructor(): this(listOf(), Money.ZERO, UUID(0, 0), UUID(0, 0))
+}

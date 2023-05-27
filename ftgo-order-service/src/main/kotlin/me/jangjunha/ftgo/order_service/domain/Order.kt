@@ -4,10 +4,7 @@ import io.eventuate.tram.events.aggregates.ResultWithDomainEvents
 import jakarta.persistence.*
 import me.jangjunha.ftgo.common.Money
 import me.jangjunha.ftgo.common.UnsupportedStateTransitionException
-import me.jangjunha.ftgo.order_service.api.OrderDetails
-import me.jangjunha.ftgo.order_service.api.OrderLineItem
-import me.jangjunha.ftgo.order_service.api.OrderRevision
-import me.jangjunha.ftgo.order_service.api.OrderState
+import me.jangjunha.ftgo.order_service.api.*
 import me.jangjunha.ftgo.order_service.api.events.*
 import java.util.*
 
@@ -17,27 +14,28 @@ import java.util.*
 data class Order (
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    var id: UUID,
+    val id: UUID = UUID(0, 0),
 
     @Version
-    var version: Long = 1,
+    val version: Long = 1,
 
-    var state: OrderState = OrderState.APPROVAL_PENDING,
+    @Enumerated(EnumType.STRING)
+    val state: OrderState = OrderState.APPROVAL_PENDING,
 
-    var consumerId: UUID,
-    var restaurantId: UUID,
-
-    @Embedded
-    var orderLineItems: OrderLineItems,
+    val consumerId: UUID,
+    val restaurantId: UUID,
 
     @Embedded
-    var deliveryInformation: DeliveryInformation,
+    val orderLineItems: OrderLineItems,
 
     @Embedded
-    var paymentInformation: PaymentInformation? = null,
+    val deliveryInformation: DeliveryInformation,
 
     @Embedded
-    var orderMinimum: Money = Money(Integer.MAX_VALUE)
+    val paymentInformation: PaymentInformation? = null,
+
+    @Embedded
+    val orderMinimum: Money = Money(Integer.MAX_VALUE)
 ) {
     companion object {
         fun createOrder(
@@ -47,7 +45,6 @@ data class Order (
             deliveryInformation: DeliveryInformation,
         ): ResultWithDomainEvents<Order, OrderDomainEvent> {
             val order = Order(
-                null!!,
                 consumerId = consumerId,
                 restaurantId = restaurant.id,
                 orderLineItems = OrderLineItems(orderLineItems.toMutableList()),
@@ -69,11 +66,13 @@ data class Order (
         }
     }
 
-    fun noteApproved(): List<OrderDomainEvent> {
+    fun noteApproved(): ResultWithDomainEvents<Order, OrderDomainEvent> {
         when (state) {
             OrderState.APPROVAL_PENDING -> {
-                this.state = OrderState.APPROVED
-                return listOf(OrderAuthorized())
+                return ResultWithDomainEvents(
+                    this.copy(state = OrderState.APPROVED),
+                    OrderAuthorized()
+                )
             }
             else -> {
                 throw UnsupportedStateTransitionException(state)
@@ -81,11 +80,13 @@ data class Order (
         }
     }
 
-    fun noteRejected(): List<OrderDomainEvent> {
+    fun noteRejected(): ResultWithDomainEvents<Order, OrderDomainEvent> {
         when (state) {
             OrderState.APPROVAL_PENDING -> {
-                this.state = OrderState.REJECTED
-                return listOf(OrderRejected())
+                return ResultWithDomainEvents(
+                    this.copy(state = OrderState.REJECTED),
+                    OrderRejected(),
+                )
             }
             else -> {
                 throw UnsupportedStateTransitionException(state)
@@ -93,17 +94,20 @@ data class Order (
         }
     }
 
-    fun revise(orderRevision: OrderRevision): ResultWithDomainEvents<LineItemQuantityChange, OrderDomainEvent> {
+    fun revise(orderRevision: OrderRevision): ResultWithDomainEvents<Pair<Order, LineItemQuantityChange>, OrderDomainEvent> {
         when (state) {
             OrderState.APPROVED -> {
                 val change = orderLineItems.lineItemQuantityChange(orderRevision)
                 if (!change.newOrderTotal.isGreaterThanOrEqual(orderMinimum)) {
                     throw OrderMinimumNotMetException()
                 }
-                this.state = OrderState.REVISION_PENDING
-                return ResultWithDomainEvents(change, listOf(
+                return ResultWithDomainEvents(
+                    Pair(
+                        this.copy(state = OrderState.REVISION_PENDING),
+                        change,
+                    ),
                     OrderRevisionProposed(orderRevision, change.currentOrderTotal, change.newOrderTotal),
-                ))
+                )
             }
             else -> throw UnsupportedStateTransitionException(state)
         }

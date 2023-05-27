@@ -5,6 +5,8 @@ import java.util.List;
 public class TicketDetails {
     private List<TicketLineItem> lineItems;
 
+    public TicketDetails() {}
+
     public TicketDetails(List<TicketLineItem> lineItems) {
         this.lineItems = lineItems;
     }

@@ -6,6 +6,9 @@ public class CreateTicketReply {
     private UUID ticketId;
     private long sequence;
 
+    public CreateTicketReply() {
+    }
+
     public CreateTicketReply(UUID ticketId, long sequence) {
         this.ticketId = ticketId;
         this.sequence = sequence;
