@@ -1,5 +1,6 @@
 package me.jangjunha.ftgo.order_service.service
 
+import io.eventuate.tram.events.aggregates.ResultWithDomainEvents
 import io.eventuate.tram.sagas.orchestration.SagaInstanceFactory
 import jakarta.transaction.Transactional
 import me.jangjunha.ftgo.order_service.api.DeliveryInformation
@@ -85,13 +86,15 @@ class OrderService @Autowired constructor(
         return order
     }
 
+    @Transactional
     private fun updateOrder(
         id: UUID,
-        updater: (Order) -> List<OrderDomainEvent>,
+        updater: (Order) -> ResultWithDomainEvents<Order, OrderDomainEvent>,
     ): Order {
         val order = orderRepository.findByIdOrNull(id) ?: throw OrderNotFoundException(id)
-        val events = updater(order)
-        orderEventPublisher.publish(order, events)
+        val rwe = updater(order)
+        orderRepository.save(rwe.result)
+        orderEventPublisher.publish(rwe.result, rwe.events)
         return order
     }
 
