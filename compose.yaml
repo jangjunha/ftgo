@@ -141,6 +141,29 @@ services:
       - POSTGRES_DB=ftgo-order-service
       - USE_DB_ID=true
 
+  accounting-service-db:
+    image: eventstore/eventstore:22.10.1-alpha-arm64v8
+#    image: eventstore/eventstore:22.10.1-buster-slim
+    environment:
+      - EVENTSTORE_CLUSTER_SIZE=1
+      - EVENTSTORE_RUN_PROJECTIONS=All
+      - EVENTSTORE_START_STANDARD_PROJECTIONS=true
+      - EVENTSTORE_EXT_TCP_PORT=1113
+      - EVENTSTORE_HTTP_PORT=2113
+      - EVENTSTORE_INSECURE=true
+      - EVENTSTORE_ENABLE_EXTERNAL_TCP=true
+      - EVENTSTORE_ENABLE_ATOM_PUB_OVER_HTTP=true
+    ports:
+      - "1113:1113"
+      - "2113:2113"
+    volumes:
+      - type: volume
+        source: accounting-service-db-data
+        target: /var/lib/eventstore
+      - type: volume
+        source: accounting-service-db-logs
+        target: /var/log/eventstore
+
 
   ### Applications ###
   restaurant-service-app:
@@ -203,6 +226,17 @@ services:
       EVENTUATELOCAL_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
       EVENTUATELOCAL_ZOOKEEPER_CONNECTION_STRING: zookeeper:2181
 
+  accounting-service-app:
+    build:
+      context: .
+      target: accounting-service
+    ports:
+      - 8104:8104
+    depends_on:
+      - accounting-service-db
+    environment:
+      DATABASE_URI: esdb://accounting-service-db:2113?tls=false
+
 volumes:
   zookeeper-data: {}
   kafka-data: {}
@@ -210,3 +244,5 @@ volumes:
   consumer-service-db-data: {}
   kitchen-service-db-data: {}
   order-service-db-data: {}
+  accounting-service-db-data: {}
+  accounting-service-db-logs: {}

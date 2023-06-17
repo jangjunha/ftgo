@@ -1,7 +1,10 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
-	id 'java'
 	id 'org.springframework.boot' version "$springBootVersion"
 	id 'io.spring.dependency-management' version '1.1.0'
+	id 'org.jetbrains.kotlin.jvm' version "$kotlinVersion"
+	id 'org.jetbrains.kotlin.plugin.spring' version "$kotlinVersion"
 }
 
 group = 'me.jangjunha.ftgo'
@@ -15,10 +18,18 @@ repositories {
 dependencies {
 	implementation "org.springframework.boot:spring-boot-starter-web:$springBootVersion"
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0'
-	implementation project(':ftgo-common-jpa')
+	implementation 'com.eventstore:db-client-java:4.2.0'
+	implementation project(':ftgo-common')
+	implementation project(':ftgo-accounting-service-api')
 	developmentOnly "org.springframework.boot:spring-boot-devtools:$springBootVersion"
 	runtimeOnly 'org.postgresql:postgresql'
 	testImplementation "org.springframework.boot:spring-boot-starter-test:$springBootVersion"
+}
+
+compileKotlin {
+	compilerOptions {
+		jvmTarget.set(JvmTarget.JVM_17)
+	}
 }
 
 tasks.named('test') {
