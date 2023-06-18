@@ -20,7 +20,7 @@ data class Account(
 
     fun withdraw(amount: Money, description: String? = null): AccountEvent {
         if (!balance.isGreaterThanOrEqual(amount)) {
-            throw RuntimeException("Cannot withdraw more than balance")
+            throw AccountLimitExceededException(amount, balance)
         }
         return AccountWithdrawn(amount, description)
     }

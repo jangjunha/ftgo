@@ -1,7 +1,14 @@
 package me.jangjunha.ftgo.accounting_service.api.events
 
 
-// TODO: success / fail
-data class SagaReplyRequested(
+class SagaReplyRequested(
     val correlationHeaders: Map<String, String> = emptyMap(),
-): AccountEvent()
+    val status: SagaReplyStatus = SagaReplyStatus.SUCCESS,
+    val reply: Any? = null
+): AccountEvent() {
+
+    enum class SagaReplyStatus {
+        SUCCESS,
+        FAILURE,
+    }
+}

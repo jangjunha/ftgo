@@ -53,7 +53,23 @@ class SagaReplyRequestedEventSubscriptionWorker
         }
         val event = envelope.data
 
-        val reply = CommandHandlerReplyBuilder.withSuccess()
+        val reply = when (event.status) {
+            SagaReplyRequested.SagaReplyStatus.SUCCESS -> {
+                if (event.reply == null) {
+                    CommandHandlerReplyBuilder.withSuccess()
+                } else {
+                    CommandHandlerReplyBuilder.withSuccess(event.reply)
+                }
+            }
+
+            SagaReplyRequested.SagaReplyStatus.FAILURE -> {
+                if (event.reply == null) {
+                    CommandHandlerReplyBuilder.withFailure()
+                } else {
+                    CommandHandlerReplyBuilder.withFailure(event.reply)
+                }
+            }
+        }
         val destination = event.correlationHeaders[
             CommandMessageHeaders.inReply(CommandMessageHeaders.REPLY_TO)
         ]

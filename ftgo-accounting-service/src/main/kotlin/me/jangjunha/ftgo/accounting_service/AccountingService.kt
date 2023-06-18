@@ -4,6 +4,7 @@ import com.eventstore.dbclient.ExpectedRevision
 import me.jangjunha.ftgo.accounting_service.api.events.SagaReplyRequested
 import me.jangjunha.ftgo.accounting_service.domain.Account
 import me.jangjunha.ftgo.accounting_service.domain.AccountAggregateStore
+import me.jangjunha.ftgo.accounting_service.domain.AccountLimitExceededException
 import me.jangjunha.ftgo.accounting_service.domain.gettingaccounts.AccountInfo
 import me.jangjunha.ftgo.accounting_service.domain.gettingaccounts.AccountInfoRepository
 import me.jangjunha.ftgo.accounting_service.domain.gettingbyid.AccountDetails
@@ -67,17 +68,34 @@ class AccountingService
     ): Account {
         val account = accountAggregateStore.get(accountId)
 
-        val events = listOf(
-            Pair(eventId, account.withdraw(amount, description))
-        ) + if (replyingHeaders != null) {
-            listOf(Pair(null, SagaReplyRequested(replyingHeaders)))
-        } else {
-            emptyList()
+        val event = try {
+            account.withdraw(amount, description)
+        } catch (e: AccountLimitExceededException) {
+            if (replyingHeaders != null) {
+                accountAggregateStore.append(
+                    account.id,
+                    listOf(
+                        Pair(
+                            null,
+                            SagaReplyRequested(replyingHeaders, status = SagaReplyRequested.SagaReplyStatus.FAILURE)
+                        )
+                    ),
+                    ExpectedRevision.streamExists()
+                )
+            }
+            throw e
         }
 
-        for (event in events) {
-            account.apply(event.second)
-        }
+        account.apply(event)
+
+        val events = listOfNotNull(
+            Pair(eventId, event),
+            if (replyingHeaders != null) {
+                Pair(null, SagaReplyRequested(replyingHeaders))
+            } else {
+                null
+            }
+        )
         accountAggregateStore.append(account.id, events, ExpectedRevision.streamExists())
 
         return account

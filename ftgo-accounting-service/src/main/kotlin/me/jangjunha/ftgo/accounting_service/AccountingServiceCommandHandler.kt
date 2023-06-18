@@ -6,6 +6,7 @@ import io.eventuate.tram.commands.consumer.CommandMessage
 import me.jangjunha.ftgo.accounting_service.api.AccountingServiceChannels
 import me.jangjunha.ftgo.accounting_service.api.DepositCommand
 import me.jangjunha.ftgo.accounting_service.api.WithdrawCommand
+import me.jangjunha.ftgo.accounting_service.domain.AccountLimitExceededException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import java.util.UUID
@@ -34,14 +35,16 @@ class AccountingServiceCommandHandler
     }
 
     fun handleWithdraw(cm: CommandMessage<WithdrawCommand>) {
-        cm.messageId
-        accountingService.withdrawAccount(
-            cm.command.accountId,
-            cm.command.amount,
-            cm.command.description,
-            eventId = parseMessageIdAsUUID(cm.messageId),
-            replyingHeaders = cm.correlationHeaders
-        )
+        try {
+            accountingService.withdrawAccount(
+                cm.command.accountId,
+                cm.command.amount,
+                cm.command.description,
+                eventId = parseMessageIdAsUUID(cm.messageId),
+                replyingHeaders = cm.correlationHeaders
+            )
+        } catch (_: AccountLimitExceededException) {
+        }
     }
 
     companion object {
