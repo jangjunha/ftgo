@@ -164,6 +164,15 @@ services:
         source: accounting-service-db-logs
         target: /var/log/eventstore
 
+  accounting-service-projection-db:
+    restart: always
+    image: postgres:15-alpine
+    volumes:
+      - accounting-service-projection-db-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust
+      - POSTGRES_DB=ftgo-accounting-service
+
 
   ### Applications ###
   restaurant-service-app:
@@ -234,8 +243,11 @@ services:
       - 8104:8104
     depends_on:
       - accounting-service-db
+      - accounting-service-projection-db
     environment:
       DATABASE_URI: esdb://accounting-service-db:2113?tls=false
+      SPRING_DATASOURCE_URL: jdbc:postgresql://accounting-service-projection-db/ftgo-accounting-service
+      SPRING_DATASOURCE_USERNAME: postgres
 
 volumes:
   zookeeper-data: {}
@@ -246,3 +258,5 @@ volumes:
   order-service-db-data: {}
   accounting-service-db-data: {}
   accounting-service-db-logs: {}
+  accounting-service-projection-db-data: {}
+

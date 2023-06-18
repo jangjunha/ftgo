@@ -3,8 +3,11 @@ package me.jangjunha.ftgo.accounting_service
 import com.eventstore.dbclient.ExpectedRevision
 import me.jangjunha.ftgo.accounting_service.domain.Account
 import me.jangjunha.ftgo.accounting_service.domain.AccountAggregateStore
+import me.jangjunha.ftgo.accounting_service.domain.gettingbyid.AccountDetails
+import me.jangjunha.ftgo.accounting_service.domain.gettingbyid.AccountDetailsRepository
 import me.jangjunha.ftgo.common.Money
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import java.util.*
 
@@ -12,6 +15,7 @@ import java.util.*
 class AccountingService
 @Autowired constructor(
     val accountAggregateStore: AccountAggregateStore,
+    val accountDetailsRepository: AccountDetailsRepository,
 ) {
 
     fun createAccount(): Account {
@@ -19,7 +23,7 @@ class AccountingService
 
         val events = account.open()
         for (event in events) {
-            account.apply(event.data)
+            account.apply(event)
         }
         accountAggregateStore.append(account.id, events, ExpectedRevision.noStream())
 
@@ -31,7 +35,7 @@ class AccountingService
 
         val events = account.deposit(amount)
         for (event in events) {
-            account.apply(event.data)
+            account.apply(event)
         }
         accountAggregateStore.append(account.id, events, ExpectedRevision.streamExists())
 
@@ -43,14 +47,14 @@ class AccountingService
 
         val events = account.withdraw(amount)
         for (event in events) {
-            account.apply(event.data)
+            account.apply(event)
         }
         accountAggregateStore.append(account.id, events, ExpectedRevision.streamExists())
 
         return account
     }
 
-    fun getAccount(id: UUID): Account {
-        return accountAggregateStore.get(id)
+    fun getAccount(id: UUID): AccountDetails? {
+        return accountDetailsRepository.findByIdOrNull(id)
     }
 }

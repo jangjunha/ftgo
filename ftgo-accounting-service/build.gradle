@@ -5,6 +5,7 @@ plugins {
 	id 'io.spring.dependency-management' version '1.1.0'
 	id 'org.jetbrains.kotlin.jvm' version "$kotlinVersion"
 	id 'org.jetbrains.kotlin.plugin.spring' version "$kotlinVersion"
+	id 'org.jetbrains.kotlin.plugin.jpa' version "$kotlinVersion"
 }
 
 group = 'me.jangjunha.ftgo'
@@ -16,10 +17,12 @@ repositories {
 }
 
 dependencies {
+	implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
 	implementation "org.springframework.boot:spring-boot-starter-web:$springBootVersion"
+	implementation 'org.springframework.retry:spring-retry:2.0.1'
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0'
 	implementation 'com.eventstore:db-client-java:4.2.0'
-	implementation project(':ftgo-common')
+	implementation project(':ftgo-common-jpa')
 	implementation project(':ftgo-accounting-service-api')
 	developmentOnly "org.springframework.boot:spring-boot-devtools:$springBootVersion"
 	runtimeOnly 'org.postgresql:postgresql'
@@ -30,6 +33,16 @@ compileKotlin {
 	compilerOptions {
 		jvmTarget.set(JvmTarget.JVM_17)
 	}
+}
+
+allOpen {
+	annotation("jakarta.persistence.Entity")
+	annotation("jakarta.persistence.Embeddable")
+}
+
+noArg {
+	annotation("jakarta.persistence.Entity")
+	annotation("jakarta.persistence.Embeddable")
 }
 
 tasks.named('test') {

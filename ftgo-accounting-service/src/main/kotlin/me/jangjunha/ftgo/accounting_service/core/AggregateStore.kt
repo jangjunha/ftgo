@@ -12,11 +12,11 @@ open class AggregateStore<A : Aggregate<ID, E>, ID, E : Any>(
 ) {
     fun append(
         id: ID,
-        events: List<EventEnvelope<E>>,
+        events: List<E>,
         expectedRevision: ExpectedRevision = ExpectedRevision.any()
     ): ExpectedRevision {
         val streamId = mapToStreamId(id)
-        val serializedEvents = events.map { it.serialize() }
+        val serializedEvents = events.map(EventSerializer::serialize)
         val result = client.appendToStream(
             streamId,
             AppendToStreamOptions.get().expectedRevision(expectedRevision),
@@ -29,7 +29,7 @@ open class AggregateStore<A : Aggregate<ID, E>, ID, E : Any>(
         val streamId = mapToStreamId(id)
         val result = client.readStream(streamId, ReadStreamOptions.get().fromStart()).get()
         return result.events
-            .map { EventEnvelope.deserialize<E>(it) }
+            .map { EventSerializer.deserialize<E>(it) }
             .fold(getEmpty(id)) { aggregate, event ->
                 aggregate.apply(event.data)
                 aggregate

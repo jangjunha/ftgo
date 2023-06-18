@@ -13,6 +13,14 @@ class AccountAggregateStore
     client: EventStoreDBClient,
 ) : AggregateStore<Account, UUID, AccountEvent>(
     client,
-    { id -> "Account-%s".format(id.toString().replace("-", "")) },
+    { id -> "Account-%s".format(id.toString()) },
     Account::empty
-)
+) {
+    companion object {
+        fun idFromStreamId(streamId: String): UUID {
+            return UUID.fromString(
+                streamId.split('-', limit = 2).get(1)
+            )
+        }
+    }
+}

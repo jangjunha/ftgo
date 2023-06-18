@@ -5,7 +5,6 @@ import me.jangjunha.ftgo.accounting_service.api.events.AccountEvent
 import me.jangjunha.ftgo.accounting_service.api.events.AccountOpened
 import me.jangjunha.ftgo.accounting_service.api.events.AccountWithdrawn
 import me.jangjunha.ftgo.accounting_service.core.Aggregate
-import me.jangjunha.ftgo.accounting_service.core.EventEnvelope
 import me.jangjunha.ftgo.common.Money
 import java.util.UUID
 
@@ -14,19 +13,19 @@ data class Account(
     var balance: Money,
 ): Aggregate<UUID, AccountEvent> {
 
-    fun open(): List<EventEnvelope<AccountEvent>> {
-        return listOf(EventEnvelope(AccountOpened))
+    fun open(): List<AccountEvent> {
+        return listOf(AccountOpened)
     }
 
-    fun deposit(amount: Money): List<EventEnvelope<AccountEvent>> {
-        return listOf(EventEnvelope(AccountDeposited(amount)))
+    fun deposit(amount: Money): List<AccountEvent> {
+        return listOf(AccountDeposited(amount))
     }
 
-    fun withdraw(amount: Money): List<EventEnvelope<AccountEvent>> {
+    fun withdraw(amount: Money): List<AccountEvent> {
         if (!balance.isGreaterThanOrEqual(amount)) {
             throw RuntimeException("Cannot withdraw more than balance")
         }
-        return listOf(EventEnvelope(AccountWithdrawn(amount)))
+        return listOf(AccountWithdrawn(amount))
     }
 
     override fun apply(event: AccountEvent) {

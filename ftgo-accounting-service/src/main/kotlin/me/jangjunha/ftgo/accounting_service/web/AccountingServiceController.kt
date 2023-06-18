@@ -2,12 +2,11 @@ package me.jangjunha.ftgo.accounting_service.web
 
 import me.jangjunha.ftgo.accounting_service.AccountingService
 import me.jangjunha.ftgo.accounting_service.domain.Account
+import me.jangjunha.ftgo.accounting_service.domain.gettingbyid.AccountDetails
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestMethod
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.*
 import java.util.*
 
 @RestController
@@ -23,8 +22,10 @@ class AccountingServiceController
     }
 
     @RequestMapping(method = [RequestMethod.GET], path = ["/{accountId}/"])
-    fun getAccount(@PathVariable accountId: UUID): Account {
-        return accountingService.getAccount(accountId)
+    fun getAccount(@PathVariable accountId: UUID): ResponseEntity<AccountDetails> {
+        val accountDetails = accountingService.getAccount(accountId)
+            ?: return ResponseEntity(HttpStatus.NOT_FOUND)
+        return ResponseEntity.ofNullable(accountDetails)
     }
 
     @RequestMapping(method = [RequestMethod.POST], path = ["/{accountId}/deposit/"])
