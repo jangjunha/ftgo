@@ -2,6 +2,7 @@ package me.jangjunha.ftgo.accounting_service.web
 
 import me.jangjunha.ftgo.accounting_service.AccountingService
 import me.jangjunha.ftgo.accounting_service.domain.Account
+import me.jangjunha.ftgo.accounting_service.domain.gettingaccounts.AccountInfo
 import me.jangjunha.ftgo.accounting_service.domain.gettingbyid.AccountDetails
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
@@ -36,5 +37,13 @@ class AccountingServiceController
     @RequestMapping(method = [RequestMethod.POST], path = ["/{accountId}/withdraw/"])
     fun withdrawAccount(@PathVariable accountId: UUID, @RequestBody requestBody: WithdrawRequest): Account {
         return accountingService.withdrawAccount(accountId, requestBody.amount)
+    }
+
+    @RequestMapping(method=[RequestMethod.GET], path = ["/account-infos/"])
+    fun listAccount(
+        @RequestParam(defaultValue = "0") pageNumber: Int,
+        @RequestParam(defaultValue = "10") pageSize: Int,
+    ): List<AccountInfo> {
+        return accountingService.listAccount(pageNumber, pageSize)
     }
 }
