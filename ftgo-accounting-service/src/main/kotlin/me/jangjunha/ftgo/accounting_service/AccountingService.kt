@@ -26,31 +26,32 @@ class AccountingService
     fun createAccount(id: UUID? = null): Account {
         val account = Account.empty(id ?: UUID.randomUUID())
 
-        val events = account.open()
-        for (event in events) {
-            account.apply(event)
-        }
-        accountAggregateStore.append(account.id, events, ExpectedRevision.noStream())
+        val event = Pair(null, account.open())
+        account.apply(event.second)
+        accountAggregateStore.append(account.id, listOf(event), ExpectedRevision.noStream())
 
         return account
     }
 
     fun depositAccount(
-        id: UUID,
+        accountId: UUID,
         amount: Money,
         description: String? = null,
+        eventId: UUID? = null,
         replyingHeaders: Map<String, String>? = null
     ): Account {
-        val account = accountAggregateStore.get(id)
+        val account = accountAggregateStore.get(accountId)
 
-        val events = account.deposit(amount, description) + if (replyingHeaders != null) {
-            listOf(SagaReplyRequested(replyingHeaders))
+        val events = listOf(
+            Pair(eventId, account.deposit(amount, description))
+        ) + if (replyingHeaders != null) {
+            listOf(Pair(null, SagaReplyRequested(replyingHeaders)))
         } else {
             emptyList()
         }
 
         for (event in events) {
-            account.apply(event)
+            account.apply(event.second)
         }
         accountAggregateStore.append(account.id, events, ExpectedRevision.streamExists())
 
@@ -58,21 +59,24 @@ class AccountingService
     }
 
     fun withdrawAccount(
-        id: UUID,
+        accountId: UUID,
         amount: Money,
         description: String? = null,
+        eventId: UUID? = null,
         replyingHeaders: Map<String, String>? = null
     ): Account {
-        val account = accountAggregateStore.get(id)
+        val account = accountAggregateStore.get(accountId)
 
-        val events = account.withdraw(amount, description) + if (replyingHeaders != null) {
-            listOf(SagaReplyRequested(replyingHeaders))
+        val events = listOf(
+            Pair(eventId, account.withdraw(amount, description))
+        ) + if (replyingHeaders != null) {
+            listOf(Pair(null, SagaReplyRequested(replyingHeaders)))
         } else {
             emptyList()
         }
 
         for (event in events) {
-            account.apply(event)
+            account.apply(event.second)
         }
         accountAggregateStore.append(account.id, events, ExpectedRevision.streamExists())
 

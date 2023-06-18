@@ -44,7 +44,6 @@ class SagaReplyRequestedEventSubscriptionWorker
         .build()
 
     override fun onEvent(subscription: Subscription, re: ResolvedEvent) {
-        logger.debug("onEvent %s/%s".format(re.event.eventType, re.event.eventId))
         val envelope = try {
             EventSerializer.deserialize<SagaReplyRequested>(re)
         } catch (e: Throwable) {
@@ -53,7 +52,6 @@ class SagaReplyRequestedEventSubscriptionWorker
             throw IllegalStateException(msg)
         }
         val event = envelope.data
-        logger.debug(".. deserialized")
 
         val reply = CommandHandlerReplyBuilder.withSuccess()
         val destination = event.correlationHeaders[

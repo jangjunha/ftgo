@@ -4,6 +4,7 @@ import com.eventstore.dbclient.AppendToStreamOptions
 import com.eventstore.dbclient.EventStoreDBClient
 import com.eventstore.dbclient.ExpectedRevision
 import com.eventstore.dbclient.ReadStreamOptions
+import java.util.*
 
 open class AggregateStore<A : Aggregate<ID, E>, ID, E : Any>(
     private val client: EventStoreDBClient,
@@ -12,11 +13,11 @@ open class AggregateStore<A : Aggregate<ID, E>, ID, E : Any>(
 ) {
     fun append(
         id: ID,
-        events: List<E>,
+        events: List<Pair<UUID?, E>>,
         expectedRevision: ExpectedRevision = ExpectedRevision.any()
     ): ExpectedRevision {
         val streamId = mapToStreamId(id)
-        val serializedEvents = events.map(EventSerializer::serialize)
+        val serializedEvents = events.map { EventSerializer.serialize(it.second, it.first) }
         val result = client.appendToStream(
             streamId,
             AppendToStreamOptions.get().expectedRevision(expectedRevision),

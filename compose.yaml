@@ -252,8 +252,6 @@ services:
       SPRING_DATASOURCE_USERNAME: postgres
       EVENTUATELOCAL_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
 
-      LOGGING_LEVEL_ME_JANGJUNHA_FTGO: debug
-
 volumes:
   zookeeper-data: {}
   kafka-data: {}

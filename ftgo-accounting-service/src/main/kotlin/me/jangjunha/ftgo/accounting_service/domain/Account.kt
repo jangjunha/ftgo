@@ -10,19 +10,19 @@ data class Account(
     var balance: Money,
 ) : Aggregate<UUID, AccountEvent> {
 
-    fun open(): List<AccountEvent> {
-        return listOf(AccountOpened)
+    fun open(): AccountEvent {
+        return AccountOpened
     }
 
-    fun deposit(amount: Money, description: String? = null): List<AccountEvent> {
-        return listOf(AccountDeposited(amount, description))
+    fun deposit(amount: Money, description: String? = null): AccountEvent {
+        return AccountDeposited(amount, description)
     }
 
-    fun withdraw(amount: Money, description: String? = null): List<AccountEvent> {
+    fun withdraw(amount: Money, description: String? = null): AccountEvent {
         if (!balance.isGreaterThanOrEqual(amount)) {
             throw RuntimeException("Cannot withdraw more than balance")
         }
-        return listOf(AccountWithdrawn(amount, description))
+        return AccountWithdrawn(amount, description)
     }
 
     override fun apply(event: AccountEvent) {
