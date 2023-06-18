@@ -35,6 +35,12 @@ data class Order (
     val paymentInformation: PaymentInformation? = null,
 
     @Embedded
+    @AttributeOverrides(
+        AttributeOverride(
+            name = "amount",
+            column = Column(name = "order_minimum"),
+        ),
+    )
     val orderMinimum: Money = Money(Integer.MAX_VALUE)
 ) {
     companion object {
