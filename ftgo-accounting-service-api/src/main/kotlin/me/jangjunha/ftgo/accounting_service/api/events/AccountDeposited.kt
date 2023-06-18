@@ -4,4 +4,5 @@ import me.jangjunha.ftgo.common.Money
 
 data class AccountDeposited(
     val amount: Money = Money.ZERO,
+    val description: String? = null,
 ): AccountEvent()

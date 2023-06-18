@@ -18,14 +18,30 @@ repositories {
 
 dependencies {
 	implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
+
+	implementation(platform("io.eventuate.platform:eventuate-platform-dependencies:$eventuatePlatformVersion"))
+	implementation "io.eventuate.tram.core:eventuate-tram-spring-messaging-producer-common"
+	implementation "io.eventuate.tram.core:eventuate-tram-spring-consumer-kafka"
+	implementation "io.eventuate.tram.core:eventuate-tram-spring-consumer-jdbc"
+	implementation "io.eventuate.tram.core:eventuate-tram-spring-events"
+	implementation "io.eventuate.tram.sagas:eventuate-tram-sagas-spring-participant"
+	implementation "io.eventuate.messaging.kafka:eventuate-messaging-kafka-spring-common"
+	implementation project(':eventuate-tram-producer-kafka')
+
 	implementation "org.springframework.boot:spring-boot-starter-web:$springBootVersion"
 	implementation 'org.springframework.retry:spring-retry:2.0.1'
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0'
+
 	implementation 'com.eventstore:db-client-java:4.2.0'
+
 	implementation project(':ftgo-common-jpa')
 	implementation project(':ftgo-accounting-service-api')
+	implementation project(':ftgo-consumer-service-api')
+
 	developmentOnly "org.springframework.boot:spring-boot-devtools:$springBootVersion"
+
 	runtimeOnly 'org.postgresql:postgresql'
+
 	testImplementation "org.springframework.boot:spring-boot-starter-test:$springBootVersion"
 }
 

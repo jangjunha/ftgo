@@ -12,3 +12,5 @@ include 'ftgo-accounting-service-api'
 include 'ftgo-accounting-service'
 include 'ftgo-order-service-api'
 include 'ftgo-order-service'
+include 'eventuate-tram-producer-kafka'
+

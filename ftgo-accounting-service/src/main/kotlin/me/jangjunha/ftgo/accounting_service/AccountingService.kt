@@ -1,6 +1,7 @@
 package me.jangjunha.ftgo.accounting_service
 
 import com.eventstore.dbclient.ExpectedRevision
+import me.jangjunha.ftgo.accounting_service.api.events.SagaReplyRequested
 import me.jangjunha.ftgo.accounting_service.domain.Account
 import me.jangjunha.ftgo.accounting_service.domain.AccountAggregateStore
 import me.jangjunha.ftgo.accounting_service.domain.gettingaccounts.AccountInfo
@@ -22,8 +23,8 @@ class AccountingService
     val accountInfoRepository: AccountInfoRepository,
 ) {
 
-    fun createAccount(): Account {
-        val account = Account.empty(UUID.randomUUID())
+    fun createAccount(id: UUID? = null): Account {
+        val account = Account.empty(id ?: UUID.randomUUID())
 
         val events = account.open()
         for (event in events) {
@@ -34,10 +35,20 @@ class AccountingService
         return account
     }
 
-    fun depositAccount(id: UUID, amount: Money): Account {
+    fun depositAccount(
+        id: UUID,
+        amount: Money,
+        description: String? = null,
+        replyingHeaders: Map<String, String>? = null
+    ): Account {
         val account = accountAggregateStore.get(id)
 
-        val events = account.deposit(amount)
+        val events = account.deposit(amount, description) + if (replyingHeaders != null) {
+            listOf(SagaReplyRequested(replyingHeaders))
+        } else {
+            emptyList()
+        }
+
         for (event in events) {
             account.apply(event)
         }
@@ -46,10 +57,20 @@ class AccountingService
         return account
     }
 
-    fun withdrawAccount(id: UUID, amount: Money): Account {
+    fun withdrawAccount(
+        id: UUID,
+        amount: Money,
+        description: String? = null,
+        replyingHeaders: Map<String, String>? = null
+    ): Account {
         val account = accountAggregateStore.get(id)
 
-        val events = account.withdraw(amount)
+        val events = account.withdraw(amount, description) + if (replyingHeaders != null) {
+            listOf(SagaReplyRequested(replyingHeaders))
+        } else {
+            emptyList()
+        }
+
         for (event in events) {
             account.apply(event)
         }

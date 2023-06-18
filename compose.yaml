@@ -244,10 +244,15 @@ services:
     depends_on:
       - accounting-service-db
       - accounting-service-projection-db
+      - kafka
+      - zookeeper
     environment:
       DATABASE_URI: esdb://accounting-service-db:2113?tls=false
       SPRING_DATASOURCE_URL: jdbc:postgresql://accounting-service-projection-db/ftgo-accounting-service
       SPRING_DATASOURCE_USERNAME: postgres
+      EVENTUATELOCAL_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+
+      LOGGING_LEVEL_ME_JANGJUNHA_FTGO: debug
 
 volumes:
   zookeeper-data: {}

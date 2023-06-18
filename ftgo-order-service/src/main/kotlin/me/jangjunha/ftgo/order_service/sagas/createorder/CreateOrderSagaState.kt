@@ -1,6 +1,7 @@
 package me.jangjunha.ftgo.order_service.sagas.createorder
 
-import me.jangjunha.ftgo.accounting_service.api.AuthorizeCommand
+import me.jangjunha.ftgo.accounting_service.api.DepositCommand
+import me.jangjunha.ftgo.accounting_service.api.WithdrawCommand
 import me.jangjunha.ftgo.common.Money
 import me.jangjunha.ftgo.consumer_service.api.command.ValidateOrderByConsumer
 import me.jangjunha.ftgo.kitchen_service.api.CreateTicketReply
@@ -53,11 +54,20 @@ data class CreateOrderSagaState (
         return CancelCreateTicket(ticketId)
     }
 
-    fun makeAuthorizeCommand(): AuthorizeCommand {
-        return AuthorizeCommand(
+    fun makeWithdrawCommand(): WithdrawCommand {
+        logger.info("makeWithdrawCommand")
+        return WithdrawCommand(
             orderDetails.consumerId,
-            orderId,
             orderDetails.orderTotal,
+            "order:%s".format(orderId),
+        )
+    }
+
+    fun makeDepositCommand(): DepositCommand {
+        return DepositCommand(
+            orderDetails.consumerId,
+            orderDetails.orderTotal,
+            "cancel order:%s".format(orderId),
         )
     }
 

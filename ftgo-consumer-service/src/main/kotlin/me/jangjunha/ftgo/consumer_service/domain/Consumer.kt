@@ -11,7 +11,6 @@ import java.util.UUID
 @Access(AccessType.FIELD)
 data class Consumer(
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     val id: UUID = UUID(0, 0),
     val name: String,
 ) {
@@ -21,8 +20,11 @@ data class Consumer(
 
     companion object {
         fun create(name: String): ResultWithEvents<Consumer> {
-            val consumer = Consumer(name = name)
-            return ResultWithEvents(consumer, ConsumerCreated())
+            val consumer = Consumer(
+                id = UUID.randomUUID(),
+                name = name,
+            )
+            return ResultWithEvents(consumer, ConsumerCreated(consumer.id))
         }
     }
 }

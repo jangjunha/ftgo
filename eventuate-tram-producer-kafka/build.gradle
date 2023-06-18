@@ -1,0 +1,33 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version "$kotlinVersion"
+}
+
+group = 'me.jangjunha.ftgo'
+version = 'unspecified'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation(platform("io.eventuate.platform:eventuate-platform-dependencies:$eventuatePlatformVersion"))
+    api 'io.eventuate.tram.core:eventuate-tram-messaging-producer-common'
+    api 'io.eventuate.messaging.kafka:eventuate-messaging-kafka-producer'
+    implementation "io.eventuate.common:eventuate-common-json-mapper"
+    implementation "io.eventuate.common:eventuate-common-id"
+
+    testImplementation platform('org.junit:junit-bom:5.9.1')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+compileKotlin {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_17)
+    }
+}
