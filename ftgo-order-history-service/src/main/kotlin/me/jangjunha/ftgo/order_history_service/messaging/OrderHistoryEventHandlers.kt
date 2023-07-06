@@ -10,6 +10,8 @@ import me.jangjunha.ftgo.order_history_service.dynamodb.SourceEvent
 import me.jangjunha.ftgo.order_service.api.OrderServiceChannels
 import me.jangjunha.ftgo.order_service.api.OrderState
 import me.jangjunha.ftgo.order_service.api.events.OrderAuthorized
+import me.jangjunha.ftgo.order_service.api.events.OrderCreated
+import me.jangjunha.ftgo.order_service.api.events.OrderRejected
 import org.slf4j.LoggerFactory
 import java.time.OffsetDateTime
 import java.util.*
@@ -24,6 +26,8 @@ class OrderHistoryEventHandlers(
         return DomainEventHandlersBuilder
             .forAggregateType(OrderServiceChannels.ORDER_EVENT_CHANNEL)
             .onEvent(OrderCreated::class.java, this::handleOrderCreated)
+            .onEvent(OrderAuthorized::class.java, this::handleOrderAuthorized)
+            .onEvent(OrderRejected::class.java, this::handleOrderRejected)
             .build()
     }
 
@@ -44,6 +48,28 @@ class OrderHistoryEventHandlers(
             makeSourceEvent(env),
         )
         logger.debug("handleOrderCreated result {} {}", env, result)
+    }
+
+    private fun handleOrderAuthorized(env: DomainEventEnvelope<OrderAuthorized>) {
+        logger.debug("handleOrderAuthorized called {}", env)
+        val orderId = UUID.fromString(env.aggregateId)
+        val result = orderHistoryDAO.updateOrderState(
+            orderId,
+            OrderState.APPROVED,
+            makeSourceEvent(env),
+        )
+        logger.debug("handleOrderAuthorized result {} {}", env, result)
+    }
+
+    private fun handleOrderRejected(env: DomainEventEnvelope<OrderRejected>) {
+        logger.debug("handleOrderRejected called {}", env)
+        val orderId = UUID.fromString(env.aggregateId)
+        val result = orderHistoryDAO.updateOrderState(
+            orderId,
+            OrderState.REJECTED,
+            makeSourceEvent(env),
+        )
+        logger.debug("handleOrderRejected result {} {}", env, result)
     }
 
     companion object {
