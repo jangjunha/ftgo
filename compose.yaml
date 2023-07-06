@@ -173,6 +173,18 @@ services:
       - POSTGRES_HOST_AUTH_METHOD=trust
       - POSTGRES_DB=ftgo-accounting-service
 
+  order-history-service-db:
+    restart: always
+    image: amazon/dynamodb-local
+    command: "-jar DynamoDBLocal.jar -sharedDb -dbPath /home/dynamodblocal/data"
+    user: root
+    ports:
+      - "8086:8000"
+    volumes:
+      - order-history-service-db-data:/home/dynamodblocal/data
+    environment:
+      JAVA_OPTS: -Xmx128m
+
 
   ### Applications ###
   restaurant-service-app:
@@ -258,6 +270,13 @@ services:
       target: order-history-service
     ports:
       - 8106:8106
+    depends_on:
+      - order-history-service-db
+    environment:
+      AWS_DYNAMODB_ENDPOINT_URL: http://order-history-service-db:8000
+      AWS_REGION: ${AWS_REGION:-ap-northeast-2}
+      AWS_ACCESS_KEY_ID: "dummy"
+      AWS_SECRET_ACCESS_KEY: "dummy"
 volumes:
   zookeeper-data: {}
   kafka-data: {}
@@ -268,4 +287,4 @@ volumes:
   accounting-service-db-data: {}
   accounting-service-db-logs: {}
   accounting-service-projection-db-data: {}
-
+  order-history-service-db-data: {}

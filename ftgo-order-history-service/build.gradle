@@ -18,6 +18,10 @@ repositories {
 dependencies {
     implementation(platform("io.eventuate.platform:eventuate-platform-dependencies:$eventuatePlatformVersion"))
 
+    implementation platform('software.amazon.awssdk:bom:2.20.96')
+    implementation 'software.amazon.awssdk:dynamodb-enhanced'
+    implementation 'software.amazon.awssdk:dynamodb'
+
     implementation "org.springframework.boot:spring-boot-starter-web:$springBootVersion"
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0'
 
