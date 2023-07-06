@@ -4,11 +4,9 @@ import me.jangjunha.ftgo.common.Money
 import java.util.UUID
 
 data class OrderDetails(
-    var lineItems: List<OrderLineItem>,
-    var orderTotal: Money,
+    var lineItems: List<OrderLineItem> = listOf(),
+    var orderTotal: Money = Money.ZERO,
 
-    var restaurantId: UUID,
-    var consumerId: UUID
-) {
-    protected constructor(): this(listOf(), Money.ZERO, UUID(0, 0), UUID(0, 0))
-}
+    var restaurantId: UUID = UUID(0, 0),
+    var consumerId: UUID = UUID(0, 0),
+)

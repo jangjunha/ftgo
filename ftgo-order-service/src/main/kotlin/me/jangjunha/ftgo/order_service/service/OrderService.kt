@@ -3,20 +3,16 @@ package me.jangjunha.ftgo.order_service.service
 import io.eventuate.tram.events.aggregates.ResultWithDomainEvents
 import io.eventuate.tram.sagas.orchestration.SagaInstanceFactory
 import jakarta.transaction.Transactional
-import me.jangjunha.ftgo.order_service.api.DeliveryInformation
 import me.jangjunha.ftgo.order_service.api.OrderDetails
-import me.jangjunha.ftgo.order_service.api.OrderLineItem
 import me.jangjunha.ftgo.order_service.api.events.OrderDomainEvent
 import me.jangjunha.ftgo.order_service.domain.*
 import me.jangjunha.ftgo.order_service.sagas.createorder.CreateOrderSaga
 import me.jangjunha.ftgo.order_service.sagas.createorder.CreateOrderSagaState
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.data.repository.CrudRepository
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import java.lang.RuntimeException
 import java.util.UUID
-import java.util.stream.Stream
 
 @Service
 class OrderService @Autowired constructor(
@@ -75,7 +71,7 @@ class OrderService @Autowired constructor(
         val sagaState = CreateOrderSagaState(
             order.id,
             OrderDetails(
-                orderLineItems,
+                orderLineItems.map(OrderLineItem::export),
                 order.orderLineItems.orderTotal,
                 restaurantId,
                 consumerId,

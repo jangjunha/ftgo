@@ -3,7 +3,6 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
     id 'org.jetbrains.kotlin.jvm' version '1.8.21'
     id 'org.jetbrains.kotlin.plugin.spring' version "$kotlinVersion"
-    id 'org.jetbrains.kotlin.plugin.jpa' version "$kotlinVersion"
 }
 
 group = 'me.jangjunha.ftgo'
@@ -17,7 +16,7 @@ dependencies {
     api(platform("io.eventuate.platform:eventuate-platform-dependencies:$eventuatePlatformVersion"))
     api "io.eventuate.tram.core:eventuate-tram-spring-events"
 
-    implementation project(':ftgo-common-jpa')
+    implementation project(':ftgo-common')
 
     implementation 'org.jetbrains.kotlin:kotlin-reflect'
 
@@ -28,14 +27,6 @@ compileKotlin {
     compilerOptions {
         jvmTarget.set(JvmTarget.JVM_17)
     }
-}
-
-allOpen {
-    annotation("jakarta.persistence.Entity")
-}
-
-noArg {
-    annotation("jakarta.persistence.Entity")
 }
 
 test {

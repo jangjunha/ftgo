@@ -1,6 +1,6 @@
 package me.jangjunha.ftgo.order_service.web
 
-import me.jangjunha.ftgo.order_service.api.DeliveryInformation
+import me.jangjunha.ftgo.order_service.domain.DeliveryInformation
 import me.jangjunha.ftgo.order_service.service.OrderService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.RequestBody
