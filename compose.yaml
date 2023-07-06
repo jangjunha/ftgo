@@ -252,6 +252,12 @@ services:
       SPRING_DATASOURCE_USERNAME: postgres
       EVENTUATELOCAL_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
 
+  order-history-service-app:
+    build:
+      context: .
+      target: order-history-service
+    ports:
+      - 8106:8106
 volumes:
   zookeeper-data: {}
   kafka-data: {}

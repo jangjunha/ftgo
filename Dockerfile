@@ -90,3 +90,20 @@ COPY --from=build-accounting-service ${DEPENDENCY}/BOOT-INF/lib /app/lib
 COPY --from=build-accounting-service ${DEPENDENCY}/META-INF /app/META-INF
 COPY --from=build-accounting-service ${DEPENDENCY}/BOOT-INF/classes /app
 ENTRYPOINT ["java","-cp",".:./lib/*","me.jangjunha.ftgo.accounting_service.AccountingServiceApplicationKt"]
+
+
+### Order History Service ###
+FROM build-base AS build-order-history-service
+ARG TARGET_PROJECT=ftgo-order-history-service
+ENV TARGET_PROJECT=${TARGET_PROJECT}
+RUN --mount=type=cache,target=/root/.gradle ./gradlew \
+      clean build \
+      -p ${TARGET_PROJECT}
+RUN mkdir -p ${TARGET_PROJECT}/build/dependency && (cd ${TARGET_PROJECT}/build/dependency; jar -xf ../libs/*-SNAPSHOT.jar)
+
+FROM app-base AS order-history-service
+ARG DEPENDENCY=/app/ftgo-order-history-service/build/dependency
+COPY --from=build-order-history-service ${DEPENDENCY}/BOOT-INF/lib /app/lib
+COPY --from=build-order-history-service ${DEPENDENCY}/META-INF /app/META-INF
+COPY --from=build-order-history-service ${DEPENDENCY}/BOOT-INF/classes /app
+ENTRYPOINT ["java","-cp",".:./lib/*","me.jangjunha.ftgo.order_history_service.OrderHistoryServiceMainKt"]
