@@ -7,6 +7,7 @@ import io.eventuate.tram.spring.consumer.kafka.EventuateTramKafkaMessageConsumer
 import io.eventuate.tram.spring.events.common.TramEventsCommonAutoConfiguration
 import io.eventuate.tram.spring.events.subscriber.TramEventSubscriberConfiguration
 import io.eventuate.tram.spring.messaging.common.TramMessagingCommonAutoConfiguration
+import me.jangjunha.ftgo.order_history_service.OrderHistoryDAO
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -24,8 +25,8 @@ import org.springframework.context.annotation.Import
 class OrderHistoryServiceMessagingConfiguration {
 
     @Bean
-    fun orderHistoryEventHandlers(): OrderHistoryEventHandlers {
-        return OrderHistoryEventHandlers()
+    fun orderHistoryEventHandlers(orderHistoryDAO: OrderHistoryDAO): OrderHistoryEventHandlers {
+        return OrderHistoryEventHandlers(orderHistoryDAO)
     }
 
     @Bean

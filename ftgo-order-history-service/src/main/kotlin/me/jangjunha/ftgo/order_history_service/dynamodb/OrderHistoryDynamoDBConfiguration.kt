@@ -1,5 +1,6 @@
 package me.jangjunha.ftgo.order_history_service.dynamodb
 
+import me.jangjunha.ftgo.order_history_service.OrderHistoryDAO
 import me.jangjunha.ftgo.order_history_service.domain.Order
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
@@ -37,5 +38,10 @@ class OrderHistoryDynamoDBConfiguration {
     @Bean
     fun orderTable(db: DynamoDbEnhancedClient): DynamoDbTable<Order> {
         return db.table("Order", TableSchema.fromBean(Order::class.java))
+    }
+
+    @Bean
+    fun orderHistoryDAO(orderTable: DynamoDbTable<Order>): OrderHistoryDAO {
+        return OrderHistoryDAODynamoDb(orderTable)
     }
 }
