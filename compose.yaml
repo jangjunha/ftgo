@@ -277,6 +277,28 @@ services:
       AWS_REGION: ${AWS_REGION:-ap-northeast-2}
       AWS_ACCESS_KEY_ID: "dummy"
       AWS_SECRET_ACCESS_KEY: "dummy"
+      EVENTUATELOCAL_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+
+  order-history-service-db-init:
+    build:
+      context: .
+      target: order-history-service
+    entrypoint:
+      - "java"
+      - "-cp"
+      - ".:./lib/*"
+      - "-Dspring.profiles.active=cli"
+      - "me.jangjunha.ftgo.order_history_service.OrderHistoryServiceMainKt"
+      - "db"
+      - "create"
+    depends_on:
+      - order-history-service-db
+    environment:
+      AWS_DYNAMODB_ENDPOINT_URL: http://order-history-service-db:8000
+      AWS_REGION: ${AWS_REGION:-ap-northeast-2}
+      AWS_ACCESS_KEY_ID: "dummy"
+      AWS_SECRET_ACCESS_KEY: "dummy"
+
 volumes:
   zookeeper-data: {}
   kafka-data: {}

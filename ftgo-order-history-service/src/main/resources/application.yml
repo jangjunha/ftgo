@@ -2,5 +2,9 @@ spring:
   application:
     name: ftgo-order-history-service
 
+logging:
+  level:
+    me.jangjunha.ftgo.order_history_service: DEBUG
+
 server:
   port: 8106
