@@ -272,6 +272,8 @@ services:
       - 8106:8106
     depends_on:
       - order-history-service-db
+      - kafka
+      - zookeeper
     environment:
       AWS_DYNAMODB_ENDPOINT_URL: http://order-history-service-db:8000
       AWS_REGION: ${AWS_REGION:-ap-northeast-2}
@@ -293,11 +295,14 @@ services:
       - "create"
     depends_on:
       - order-history-service-db
+      - kafka
+      - zookeeper
     environment:
       AWS_DYNAMODB_ENDPOINT_URL: http://order-history-service-db:8000
       AWS_REGION: ${AWS_REGION:-ap-northeast-2}
       AWS_ACCESS_KEY_ID: "dummy"
       AWS_SECRET_ACCESS_KEY: "dummy"
+      EVENTUATELOCAL_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
 
 volumes:
   zookeeper-data: {}
