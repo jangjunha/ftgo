@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
     id 'java-library'
     id 'org.jetbrains.kotlin.jvm' version '1.8.21'
+    id 'com.google.protobuf' version '0.9.3'
 }
 
 group = 'me.jangjunha.ftgo'
@@ -17,6 +18,10 @@ dependencies {
     api "io.eventuate.tram.core:eventuate-tram-spring-events"
     api "io.eventuate.tram.sagas:eventuate-tram-sagas-spring-participant"
 
+    implementation 'com.google.protobuf:protobuf-java:3.23.4'
+    implementation 'io.grpc:grpc-stub:1.56.1'
+    implementation 'io.grpc:grpc-protobuf:1.56.1'
+
     implementation project(':ftgo-common')
 
     testImplementation platform('org.junit:junit-bom:5.9.1')
@@ -27,6 +32,18 @@ dependencies {
 compileKotlin {
     compilerOptions {
         jvmTarget.set(JvmTarget.JVM_17)
+    }
+}
+
+protobuf {
+    protoc { artifact = "com.google.protobuf:protoc:3.23.4" }
+    plugins {
+        grpc { artifact = "io.grpc:protoc-gen-grpc-java:1.56.1" }
+    }
+    generateProtoTasks {
+        all()*.plugins {
+            grpc {}
+        }
     }
 }
 

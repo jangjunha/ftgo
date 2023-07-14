@@ -26,6 +26,14 @@ public class TicketLineItem {
         this.name = name;
     }
 
+    public me.jangjunha.ftgo.kitchen_service.api.TicketLineItem toAPI() {
+        return me.jangjunha.ftgo.kitchen_service.api.TicketLineItem.newBuilder()
+                .setQuantity(getQuantity())
+                .setMenuItemId(getMenuItemId())
+                .setName(getName())
+                .build();
+    }
+
     public static Stream<TicketLineItem> fromTicketDetails(me.jangjunha.ftgo.kitchen_service.api.TicketDetails details) {
         return details.getLineItems().stream()
                 .map(li -> new TicketLineItem(
@@ -36,11 +44,7 @@ public class TicketLineItem {
     }
 
     public static me.jangjunha.ftgo.kitchen_service.api.TicketDetails toTicketDetails(Stream<TicketLineItem> items) {
-        return new TicketDetails(items.map(li -> new me.jangjunha.ftgo.kitchen_service.api.TicketLineItem(
-            li.getQuantity(),
-            li.getMenuItemId(),
-            li.getName()
-        )).collect(Collectors.toList()));
+        return new TicketDetails(items.map(TicketLineItem::toAPI).collect(Collectors.toList()));
     }
 
     public int getQuantity() {
