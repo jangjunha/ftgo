@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "me.jangjunha.ftgo.kitchen_service.api";
+
+package me.jangjunha.ftgo.kitchen_service;
+
+import "tickets.proto";
+
+service KitchenService {
+  rpc GetTicket(GetTicketPayload) returns (Ticket) {}
+}
+
+message GetTicketPayload {
+  string ticketId = 1;
+}

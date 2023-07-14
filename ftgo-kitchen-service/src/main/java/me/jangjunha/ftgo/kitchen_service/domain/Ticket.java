@@ -37,7 +37,7 @@ public class Ticket {
     private UUID restaurantId;
     private Long sequence;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "ticket_line_items")
     private List<TicketLineItem> lineItems;
 
@@ -114,6 +114,14 @@ public class Ticket {
         this.id = id;
     }
 
+    public TicketState getState() {
+        return state;
+    }
+
+    public void setState(TicketState state) {
+        this.state = state;
+    }
+
     public UUID getRestaurantId() {
         return restaurantId;
     }
@@ -136,5 +144,45 @@ public class Ticket {
 
     public void setLineItems(List<TicketLineItem> lineItems) {
         this.lineItems = lineItems;
+    }
+
+    public OffsetDateTime getReadyBy() {
+        return readyBy;
+    }
+
+    public void setReadyBy(OffsetDateTime readyBy) {
+        this.readyBy = readyBy;
+    }
+
+    public OffsetDateTime getAcceptTime() {
+        return acceptTime;
+    }
+
+    public void setAcceptTime(OffsetDateTime acceptTime) {
+        this.acceptTime = acceptTime;
+    }
+
+    public OffsetDateTime getPreparingTime() {
+        return preparingTime;
+    }
+
+    public void setPreparingTime(OffsetDateTime preparingTime) {
+        this.preparingTime = preparingTime;
+    }
+
+    public OffsetDateTime getPickedUpTime() {
+        return pickedUpTime;
+    }
+
+    public void setPickedUpTime(OffsetDateTime pickedUpTime) {
+        this.pickedUpTime = pickedUpTime;
+    }
+
+    public OffsetDateTime getReadyForPickupTime() {
+        return readyForPickupTime;
+    }
+
+    public void setReadyForPickupTime(OffsetDateTime readyForPickupTime) {
+        this.readyForPickupTime = readyForPickupTime;
     }
 }

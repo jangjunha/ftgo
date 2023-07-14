@@ -10,5 +10,6 @@ spring:
 eventuate:
   outbox:
     id: 8105
-server:
-  port: 8105
+grpc:
+  server:
+    port: 8105

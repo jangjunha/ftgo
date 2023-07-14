@@ -29,6 +29,11 @@ public class KitchenService {
         this.restaurantRepository = restaurantRepository;
     }
 
+    public Ticket getTicket(UUID id) {
+        return ticketRepository.findById(id)
+                .orElseThrow(() -> new TicketNotFoundException(id));
+    }
+
     @Transactional
     public Ticket createTicket(UUID restaurantId, UUID orderId, TicketDetails ticketDetails) {
         if (!restaurantRepository.existsById(restaurantId)) {
