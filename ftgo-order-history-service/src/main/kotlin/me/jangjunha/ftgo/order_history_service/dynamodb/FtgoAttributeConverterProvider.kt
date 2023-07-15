@@ -14,6 +14,7 @@ class FtgoAttributeConverterProvider : AttributeConverterProvider {
     )
 
     override fun <T : Any?> converterFor(enhancedType: EnhancedType<T>?): AttributeConverter<T>? {
+        @Suppress("UNCHECKED_CAST")
         return converters[enhancedType] as AttributeConverter<T>?
     }
 }

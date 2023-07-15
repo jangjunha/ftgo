@@ -76,11 +76,13 @@ class OrderHistoryDAODynamoDb(
             } else {
                 null
             }
-            q.filterExpression(Expression.join(
-                keywordsExpr,
-                statusExpr,
-                " AND "
-            ))
+            q.filterExpression(
+                Expression.join(
+                    keywordsExpr,
+                    statusExpr,
+                    " AND "
+                )
+            )
 
             if (filter.startKeyToken != null) {
                 q.exclusiveStartKey(StartKeyToken.deserialize(filter.startKeyToken))
@@ -119,6 +121,7 @@ class OrderHistoryDAODynamoDb(
         }
 
         fun deserialize(token: String): Map<String, AttributeValue> {
+            @Suppress("UNCHECKED_CAST")
             val mapped = mapper.readValue(token, Map::class.java) as Map<String, *>
             return mapped.mapValues { (key, value) ->
                 when (value) {

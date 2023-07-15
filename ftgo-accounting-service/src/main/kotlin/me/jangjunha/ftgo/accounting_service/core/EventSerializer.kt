@@ -16,6 +16,7 @@ object EventSerializer {
     }
 
     fun <E : Any> deserialize(re: ResolvedEvent): EventEnvelope<E> {
+        @Suppress("UNCHECKED_CAST")
         val dataCls: Class<E> = EventTypeMapper.toClass(re.event.eventType) as Class<E>
         val data = mapper.readValue(re.event.eventData, dataCls)
         val metadata = EventMetadata(
