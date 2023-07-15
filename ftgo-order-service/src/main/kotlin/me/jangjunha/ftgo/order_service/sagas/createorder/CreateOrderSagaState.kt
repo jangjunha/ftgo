@@ -39,7 +39,11 @@ data class CreateOrderSagaState (
     fun makeCreateTicketCommand(): CreateTicket {
         logger.info("makeCreateTicketCommand")
         val ticketDetails = TicketDetails(orderDetails.lineItems.map {
-            TicketLineItem(it.quantity, it.menuItemId, it.name)
+            TicketLineItem.newBuilder()
+                .setQuantity(it.quantity)
+                .setMenuItemId(it.menuItemId)
+                .setName(it.name)
+                .build()
         })
         return CreateTicket(orderId, ticketDetails, orderDetails.restaurantId)
     }
