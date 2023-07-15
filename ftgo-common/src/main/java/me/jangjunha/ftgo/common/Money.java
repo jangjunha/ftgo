@@ -46,6 +46,12 @@ public class Money {
                 .toString();
     }
 
+    public me.jangjunha.ftgo.common.api.Money toAPI() {
+        return me.jangjunha.ftgo.common.api.Money.newBuilder()
+                .setAmount(amount.toString())
+                .build();
+    }
+
     public Money add(Money delta) {
         return new Money(amount.add(delta.amount));
     }
