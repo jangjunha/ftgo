@@ -1,5 +1,6 @@
 package me.jangjunha.ftgo.order_service.domain
 
+import com.google.protobuf.Timestamp
 import io.eventuate.tram.events.aggregates.ResultWithDomainEvents
 import jakarta.persistence.*
 import me.jangjunha.ftgo.common.Money
@@ -11,7 +12,7 @@ import java.util.*
 @Entity
 @Table(name = "orders")
 @Access(AccessType.FIELD)
-data class Order (
+data class Order(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     val id: UUID = UUID(0, 0),
@@ -80,6 +81,7 @@ data class Order (
                     OrderAuthorized()
                 )
             }
+
             else -> {
                 throw UnsupportedStateTransitionException(state)
             }
@@ -94,6 +96,7 @@ data class Order (
                     OrderRejected(),
                 )
             }
+
             else -> {
                 throw UnsupportedStateTransitionException(state)
             }
@@ -115,7 +118,54 @@ data class Order (
                     OrderRevisionProposed(orderRevision, change.currentOrderTotal, change.newOrderTotal),
                 )
             }
+
             else -> throw UnsupportedStateTransitionException(state)
         }
+    }
+
+    fun toAPI(): me.jangjunha.ftgo.order_service.api.Order {
+        return me.jangjunha.ftgo.order_service.api.Order.newBuilder()
+            .setId(id.toString())
+            .setState(state)
+            .setConsumerId(consumerId.toString())
+            .setRestaurantId(restaurantId.toString())
+            .addAllLineItems(orderLineItems.lineItems.map {
+                me.jangjunha.ftgo.order_service.api.OrderLineItem.newBuilder()
+                    .setQuantity(it.quantity)
+                    .setMenuItemId(it.menuItemId)
+                    .setName(it.name)
+                    .setPrice(
+                        me.jangjunha.ftgo.common.api.Money.newBuilder()
+                            .setAmount(it.price.amount.toString())
+                            .build()
+                    )
+                    .build()
+            })
+            .setDeliveryInformation(
+                me.jangjunha.ftgo.order_service.api.DeliveryInformation.newBuilder()
+                    .setDeliveryTime(deliveryInformation.deliveryTime.run {
+                        val instant = toInstant()
+                        Timestamp.newBuilder()
+                            .setSeconds(instant.epochSecond)
+                            .setNanos(instant.nano)
+                            .build()
+                    })
+                    .setDeliveryAddress(deliveryInformation.deliveryAddress)
+                    .build()
+            )
+            .also { builder ->
+                paymentInformation?.run {
+                    builder.setPaymentInformation(
+                        me.jangjunha.ftgo.order_service.api.PaymentInformation.newBuilder()
+                            .setPaymentToken(paymentToken)
+                            .build()
+                    )
+                }
+            }
+            .setOrderMinimum(me.jangjunha.ftgo.common.api.Money.newBuilder()
+                .setAmount(orderMinimum.amount.toString())
+                .build()
+            )
+            .build()
     }
 }

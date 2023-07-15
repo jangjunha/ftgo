@@ -9,3 +9,6 @@ spring:
         format_sql: ${SHOW_SQL:false}
 server:
   port: 8103
+grpc:
+  server:
+    port: 8107

@@ -46,6 +46,10 @@ class OrderService @Autowired constructor(
         }
     }
 
+    fun getOrder(id: UUID): Order {
+        return orderRepository.findByIdOrNull(id) ?: throw OrderNotFoundException(id)
+    }
+
     @Transactional
     fun createOrder(
         consumerId: UUID,

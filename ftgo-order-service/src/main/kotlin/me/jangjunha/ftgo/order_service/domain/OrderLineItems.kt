@@ -3,12 +3,13 @@ package me.jangjunha.ftgo.order_service.domain
 import jakarta.persistence.CollectionTable
 import jakarta.persistence.ElementCollection
 import jakarta.persistence.Embeddable
+import jakarta.persistence.FetchType
 import me.jangjunha.ftgo.common.Money
 import me.jangjunha.ftgo.order_service.api.OrderRevision
 
 @Embeddable
 data class OrderLineItems (
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "order_line_items")
     var lineItems: MutableList<OrderLineItem>
 ) {

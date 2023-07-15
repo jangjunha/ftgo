@@ -237,6 +237,7 @@ services:
       target: order-service
     ports:
       - 8103:8103
+      - 8107:8107
     depends_on:
       - order-service-db
       - kafka
