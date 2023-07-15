@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
     id 'org.jetbrains.kotlin.jvm' version '1.8.21'
     id 'org.jetbrains.kotlin.plugin.spring' version "$kotlinVersion"
+    id 'com.google.protobuf' version "$protobufPluginVersion"
 }
 
 group = 'me.jangjunha.ftgo'
@@ -16,16 +17,45 @@ dependencies {
     api(platform("io.eventuate.platform:eventuate-platform-dependencies:$eventuatePlatformVersion"))
     api "io.eventuate.tram.core:eventuate-tram-spring-events"
 
+    api "com.google.protobuf:protobuf-kotlin:$protobufVersion"
+    implementation "io.grpc:grpc-kotlin-stub:$grpcKotlinVersion"
+    implementation "io.grpc:grpc-protobuf:$grpcVersion"
+
     implementation project(':ftgo-common')
 
     implementation 'org.jetbrains.kotlin:kotlin-reflect'
 
     testImplementation 'org.jetbrains.kotlin:kotlin-test'
+
+    protobuf project(":ftgo-common")
 }
 
 compileKotlin {
     compilerOptions {
         jvmTarget.set(JvmTarget.JVM_17)
+    }
+}
+
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:$protobufVersion"
+    }
+    plugins {
+        grpc {
+            artifact = "io.grpc:protoc-gen-grpc-java:$grpcVersion"
+        }
+        grpckt {
+            artifact = "io.grpc:protoc-gen-grpc-kotlin:$grpcKotlinVersion:jdk8@jar"
+        }
+    }
+    generateProtoTasks {
+        all()*.plugins {
+            grpc
+            grpckt
+        }
+        all()*.builtins {
+            kotlin
+        }
     }
 }
 
