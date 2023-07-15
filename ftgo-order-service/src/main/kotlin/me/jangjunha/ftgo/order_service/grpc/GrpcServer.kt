@@ -25,7 +25,7 @@ class GrpcServer(
             logger.error("gRPC server raises error", e)
             throw RuntimeException(e)
         }
-        logger.info("gRPC server started, listening on %d".formatted(port))
+        logger.info("gRPC server started, listening on %d".format(port))
     }
 
     override fun stop() {
