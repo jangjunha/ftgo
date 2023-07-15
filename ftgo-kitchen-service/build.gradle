@@ -21,8 +21,8 @@ dependencies {
 	implementation "io.eventuate.tram.core:eventuate-tram-aggregate-domain-events"
 	implementation "io.eventuate.tram.sagas:eventuate-tram-sagas-spring-orchestration-simple-dsl"
 
-	implementation "io.grpc:grpc-netty:1.56.1"
-	implementation "io.grpc:grpc-stub:1.53.0"
+	implementation "io.grpc:grpc-netty:$grpcVersion"
+	implementation "io.grpc:grpc-stub:$grpcVersion"
 
 	implementation project(':ftgo-common-jpa')
 	implementation project(':ftgo-kitchen-service-api')
