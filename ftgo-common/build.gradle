@@ -1,6 +1,6 @@
 plugins {
     id 'java-library'
-    id 'com.google.protobuf' version "$protobufPluginVersion"
+    id 'com.google.protobuf'
 }
 
 group = 'me.jangjunha.ftgo'
