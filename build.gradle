@@ -6,3 +6,13 @@ plugins {
     id 'org.jetbrains.kotlin.plugin.spring' version "$kotlinVersion" apply false
     id 'org.jetbrains.kotlin.plugin.jpa' version "$kotlinVersion" apply false
 }
+
+subprojects {
+    apply {
+        plugin 'java'
+    }
+
+    dependencies {
+        implementation platform("io.eventuate.platform:eventuate-platform-dependencies:$eventuatePlatformVersion")
+    }
+}

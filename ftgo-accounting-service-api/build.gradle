@@ -12,7 +12,6 @@ repositories {
 }
 
 dependencies {
-    api(platform("io.eventuate.platform:eventuate-platform-dependencies:$eventuatePlatformVersion"))
     api "io.eventuate.tram.core:eventuate-tram-commands"
 
     implementation project(':ftgo-common')

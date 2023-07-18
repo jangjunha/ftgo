@@ -14,8 +14,7 @@ repositories {
 }
 
 dependencies {
-    api(platform("io.eventuate.platform:eventuate-platform-dependencies:$eventuatePlatformVersion"))
-    api "io.eventuate.tram.core:eventuate-tram-spring-events"
+    implementation "io.eventuate.tram.core:eventuate-tram-events"
 
     api "com.google.protobuf:protobuf-kotlin:$protobufVersion"
     implementation "io.grpc:grpc-kotlin-stub:$grpcKotlinVersion"

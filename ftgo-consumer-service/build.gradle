@@ -17,7 +17,6 @@ repositories {
 }
 
 dependencies {
-    implementation(platform("io.eventuate.platform:eventuate-platform-dependencies:$eventuatePlatformVersion"))
     implementation "io.eventuate.tram.sagas:eventuate-tram-sagas-spring-participant"
     implementation "io.eventuate.tram.core:eventuate-tram-spring-producer-jdbc"
     implementation "io.eventuate.tram.core:eventuate-tram-spring-events-publisher"
