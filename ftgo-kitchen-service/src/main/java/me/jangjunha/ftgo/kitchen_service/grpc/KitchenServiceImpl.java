@@ -38,7 +38,8 @@ public class KitchenServiceImpl extends KitchenServiceGrpc.KitchenServiceImplBas
         Ticket.Builder builder = Ticket.newBuilder()
                 .setId(ticket.getId().toString())
                 .setState(ticket.getState().toAPI())
-                .addAllLineItems(ticket.getLineItems().stream().map(TicketLineItem::toAPI).collect(Collectors.toList()));
+                .addAllLineItems(ticket.getLineItems().stream().map(TicketLineItem::toAPI).collect(Collectors.toList()))
+                .setRestaurantId(ticket.getRestaurantId().toString());
         if (ticket.getSequence() != null) {
             builder.setSequence(ticket.getSequence().intValue());
         }
