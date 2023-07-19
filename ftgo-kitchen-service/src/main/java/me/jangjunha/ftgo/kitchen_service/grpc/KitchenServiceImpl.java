@@ -1,7 +1,9 @@
 package me.jangjunha.ftgo.kitchen_service.grpc;
 
+import com.google.protobuf.Empty;
 import io.grpc.stub.StreamObserver;
 import me.jangjunha.ftgo.common.protobuf.TimestampUtils;
+import me.jangjunha.ftgo.kitchen_service.api.AcceptTicketPayload;
 import me.jangjunha.ftgo.kitchen_service.api.GetTicketPayload;
 import me.jangjunha.ftgo.kitchen_service.api.KitchenServiceGrpc;
 import me.jangjunha.ftgo.kitchen_service.api.Ticket;
@@ -62,4 +64,14 @@ public class KitchenServiceImpl extends KitchenServiceGrpc.KitchenServiceImplBas
         responseObserver.onCompleted();
     }
 
+    @Override
+    public void acceptTicket(AcceptTicketPayload request, StreamObserver<Empty> responseObserver) {
+        UUID ticketId = UUID.fromString(request.getTicketId());
+        OffsetDateTime readyBy = TimestampUtils.fromTimestamp(request.getReadyBy());
+
+        kitchenService.accept(ticketId, readyBy);
+
+        responseObserver.onNext(Empty.newBuilder().build());
+        responseObserver.onCompleted();
+    }
 }
