@@ -5,6 +5,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 @ConfigurationProperties(prefix = "destinations")
 data class Destinations(
     val orderServiceUrl: String,
+    val orderHistoryServiceUrl: String,
     val kitchenServiceUrl: String,
     val restaurantServiceUrl: String,
 )
