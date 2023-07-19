@@ -305,6 +305,14 @@ services:
       AWS_SECRET_ACCESS_KEY: "dummy"
       EVENTUATELOCAL_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
 
+  ### Etc ###
+  api-gateway:
+    build:
+      context: .
+      target: api-gateway
+    ports:
+      - 8199:8199
+
 volumes:
   zookeeper-data: {}
   kafka-data: {}

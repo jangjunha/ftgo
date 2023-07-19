@@ -107,3 +107,20 @@ COPY --from=build-order-history-service ${DEPENDENCY}/BOOT-INF/lib /app/lib
 COPY --from=build-order-history-service ${DEPENDENCY}/META-INF /app/META-INF
 COPY --from=build-order-history-service ${DEPENDENCY}/BOOT-INF/classes /app
 ENTRYPOINT ["java","-cp",".:./lib/*","me.jangjunha.ftgo.order_history_service.OrderHistoryServiceMainKt"]
+
+
+### API Gateway ###
+FROM build-base AS build-api-gateway
+ARG TARGET_PROJECT=ftgo-api-gateway
+ENV TARGET_PROJECT=${TARGET_PROJECT}
+RUN --mount=type=cache,target=/root/.gradle ./gradlew \
+      clean build \
+      -p ${TARGET_PROJECT}
+RUN mkdir -p ${TARGET_PROJECT}/build/dependency && (cd ${TARGET_PROJECT}/build/dependency; jar -xf ../libs/*-SNAPSHOT.jar)
+
+FROM app-base AS api-gateway
+ARG DEPENDENCY=/app/ftgo-api-gateway/build/dependency
+COPY --from=build-api-gateway ${DEPENDENCY}/BOOT-INF/lib /app/lib
+COPY --from=build-api-gateway ${DEPENDENCY}/META-INF /app/META-INF
+COPY --from=build-api-gateway ${DEPENDENCY}/BOOT-INF/classes /app
+ENTRYPOINT ["java","-cp",".:./lib/*","me.jangjunha.ftgo.apigateway.APIGatewayApplicationKt"]
