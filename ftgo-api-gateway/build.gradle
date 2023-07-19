@@ -25,14 +25,23 @@ dependencies {
     implementation 'org.jetbrains.kotlin:kotlin-reflect'
     implementation 'io.projectreactor.kotlin:reactor-kotlin-extensions'
 
+    implementation "io.grpc:grpc-api:$grpcVersion"
+    implementation "io.grpc:grpc-netty:$grpcVersion"
+    implementation "io.grpc:grpc-kotlin-stub:$grpcKotlinVersion"
+
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
     implementation 'org.springframework.cloud:spring-cloud-starter-gateway'
 
     implementation 'com.fasterxml.jackson.module:jackson-module-kotlin'
 
 
-    implementation project(':ftgo-common')
+    implementation(project(':ftgo-common')) {
+        capabilities {
+            requireCapability('me.jangjunha.ftgo:ftgo-common-protobuf')
+        }
+    }
     implementation project(':ftgo-restaurant-service-api')
+    implementation project(':ftgo-kitchen-service-api')
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'io.projectreactor:reactor-test'

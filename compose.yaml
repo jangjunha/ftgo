@@ -313,6 +313,7 @@ services:
     ports:
       - 8199:8199
     environment:
+      DESTINATIONS_KITCHEN_SERVICE_URL: kitchen-service-app:8105
       DESTINATIONS_RESTAURANT_SERVICE_URL: http://restaurant-service-app:8101/
 
 volumes:
