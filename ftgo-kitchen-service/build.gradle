@@ -24,6 +24,11 @@ dependencies {
 	implementation "io.grpc:grpc-netty:$grpcVersion"
 	implementation "io.grpc:grpc-stub:$grpcVersion"
 
+	implementation(project(':ftgo-common')) {
+		capabilities {
+			requireCapability('me.jangjunha.ftgo:ftgo-common-protobuf')
+		}
+	}
 	implementation project(':ftgo-common-jpa')
 	implementation project(':ftgo-kitchen-service-api')
 	implementation project(':ftgo-restaurant-service-api')
