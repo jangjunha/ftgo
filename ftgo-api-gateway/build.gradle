@@ -31,6 +31,9 @@ dependencies {
     implementation 'com.fasterxml.jackson.module:jackson-module-kotlin'
 
 
+    implementation project(':ftgo-common')
+    implementation project(':ftgo-restaurant-service-api')
+
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'io.projectreactor:reactor-test'
 }

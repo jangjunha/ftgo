@@ -312,6 +312,8 @@ services:
       target: api-gateway
     ports:
       - 8199:8199
+    environment:
+      DESTINATIONS_RESTAURANT_SERVICE_URL: http://restaurant-service-app:8101/
 
 volumes:
   zookeeper-data: {}
