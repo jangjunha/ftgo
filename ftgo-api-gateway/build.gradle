@@ -42,6 +42,7 @@ dependencies {
     }
     implementation project(':ftgo-restaurant-service-api')
     implementation project(':ftgo-kitchen-service-api')
+    implementation project(':ftgo-order-service-api')
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'io.projectreactor:reactor-test'
