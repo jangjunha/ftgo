@@ -44,7 +44,7 @@ public class TicketLineItem {
     }
 
     public static me.jangjunha.ftgo.kitchen_service.api.TicketDetails toTicketDetails(Stream<TicketLineItem> items) {
-        return new TicketDetails(items.map(TicketLineItem::toAPI).collect(Collectors.toList()));
+        return new TicketDetails(items.map(it -> new TicketDetails.LineItem(it.getQuantity(), it.getMenuItemId(), it.getName())).collect(Collectors.toList()));
     }
 
     public int getQuantity() {
