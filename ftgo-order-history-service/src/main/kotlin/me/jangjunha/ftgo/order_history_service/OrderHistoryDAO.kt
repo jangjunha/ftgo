@@ -12,5 +12,7 @@ interface OrderHistoryDAO {
 
     fun updateOrderState(id: UUID, state: OrderState, eventSource: SourceEvent): Boolean
 
+    fun findOrderById(id: UUID): Order
+
     fun findOrderHistory(consumerId: UUID, filter: OrderHistoryFilter): OrderHistory
 }

@@ -46,6 +46,11 @@ class OrderHistoryDAODynamoDb(
         }
     }
 
+    override fun findOrderById(id: UUID): Order {
+        val key = Key.builder().partitionValue(id.toString()).build()
+        return orderTable.getItem(key) ?: throw OrderNotFoundException(id)
+    }
+
     override fun findOrderHistory(consumerId: UUID, filter: OrderHistoryFilter): OrderHistory {
         val index = orderTable.index(Order.consumerCreationDateIndexName)
         val pagedResult = index.query { q ->
