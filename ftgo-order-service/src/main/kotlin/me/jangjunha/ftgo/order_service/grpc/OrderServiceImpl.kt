@@ -1,5 +1,6 @@
 package me.jangjunha.ftgo.order_service.grpc
 
+import io.grpc.Status
 import io.grpc.stub.StreamObserver
 import me.jangjunha.ftgo.order_service.api.GetOrderPayload
 import me.jangjunha.ftgo.order_service.api.Order
@@ -16,7 +17,7 @@ class OrderServiceImpl(
         val order = try {
             orderService.getOrder(UUID.fromString(request.id))
         } catch (e: OrderNotFoundException) {
-            responseObserver.onError(e)
+            responseObserver.onError(Status.NOT_FOUND.withCause(e).asRuntimeException())
             return
         }
         responseObserver.onNext(order.toAPI())
