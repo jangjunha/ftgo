@@ -1,7 +1,7 @@
 package me.jangjunha.ftgo.order_history_service.domain
 
 import me.jangjunha.ftgo.common.Money
-import me.jangjunha.ftgo.order_service.api.OrderLineItem as OrderLineItemAPI
+import me.jangjunha.ftgo.order_service.api.OrderDetails as OrderDetailsAPI
 import me.jangjunha.ftgo.order_history_service.dynamodb.FtgoAttributeConverterProvider
 import software.amazon.awssdk.enhanced.dynamodb.DefaultAttributeConverterProvider
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean
@@ -19,7 +19,7 @@ data class OrderLineItem(
     var price: Money = Money.ZERO,
 ) {
     companion object {
-        fun from(li: OrderLineItemAPI): OrderLineItem {
+        fun from(li: OrderDetailsAPI.LineItem): OrderLineItem {
             return OrderLineItem(
                 li.quantity,
                 li.menuItemId,

@@ -75,7 +75,12 @@ class OrderService @Autowired constructor(
         val sagaState = CreateOrderSagaState(
             order.id,
             OrderDetails(
-                orderLineItems.map(OrderLineItem::export),
+                orderLineItems.map { OrderDetails.LineItem(
+                    it.quantity,
+                    it.menuItemId,
+                    it.name,
+                    it.price,
+                ) },
                 order.orderLineItems.orderTotal,
                 restaurantId,
                 consumerId,

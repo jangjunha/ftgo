@@ -60,7 +60,12 @@ data class Order(
             val events = listOf(
                 OrderCreated(
                     OrderDetails(
-                        orderLineItems.map(OrderLineItem::export),
+                        orderLineItems.map { OrderDetails.LineItem(
+                            it.quantity,
+                            it.menuItemId,
+                            it.name,
+                            it.price,
+                        ) },
                         order.orderLineItems.orderTotal,
                         restaurant.id,
                         consumerId,
