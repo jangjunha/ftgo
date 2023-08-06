@@ -26,7 +26,7 @@ data class OrderLineItem(
             .setQuantity(quantity)
             .setMenuItemId(menuItemId)
             .setName(name)
-            .setPrice(MoneyAPI.newBuilder().setAmount(price.amount.toString()).build())
+            .setPrice(price.toAPI())
             .build()
     }
 }

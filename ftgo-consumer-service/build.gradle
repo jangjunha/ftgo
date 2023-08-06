@@ -30,7 +30,6 @@ dependencies {
     implementation project(':ftgo-common-jpa')
     implementation project(':ftgo-consumer-service-api')
 
-
     testImplementation "org.springframework.boot:spring-boot-starter-test:$springBootVersion"
 
     developmentOnly "org.springframework.boot:spring-boot-devtools:$springBootVersion"
