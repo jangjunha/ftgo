@@ -13,6 +13,8 @@ repositories {
 }
 
 dependencies {
+	implementation "org.springframework.boot:spring-boot-starter-json:$springBootVersion"
+
 	implementation "io.eventuate.tram.core:eventuate-tram-spring-events"
 	implementation "io.eventuate.tram.core:eventuate-tram-spring-events-publisher"
 	implementation "io.eventuate.tram.core:eventuate-tram-spring-producer-jdbc"
