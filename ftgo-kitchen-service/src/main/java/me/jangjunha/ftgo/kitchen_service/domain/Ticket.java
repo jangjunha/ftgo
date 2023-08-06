@@ -6,7 +6,6 @@ import me.jangjunha.ftgo.common.UnsupportedStateTransitionException;
 import me.jangjunha.ftgo.kitchen_service.api.events.TicketAcceptedEvent;
 import me.jangjunha.ftgo.kitchen_service.api.events.TicketCreatedEvent;
 import me.jangjunha.ftgo.kitchen_service.api.events.TicketDomainEvent;
-import org.hibernate.cfg.NotYetImplementedException;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -78,7 +77,13 @@ public class Ticket {
     }
 
     public List<TicketDomainEvent> cancelCreate() {
-        throw new NotYetImplementedException();
+        switch (state) {
+            case CREATE_PENDING:
+                this.state = TicketState.CANCELLED;
+                return emptyList();
+            default:
+                throw new UnsupportedStateTransitionException(state);
+        }
     }
 
     public List<TicketDomainEvent> accept(OffsetDateTime readyBy) {
