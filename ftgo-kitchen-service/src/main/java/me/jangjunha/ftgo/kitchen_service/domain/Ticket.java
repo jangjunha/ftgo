@@ -88,14 +88,16 @@ public class Ticket {
 
     public List<TicketDomainEvent> accept(OffsetDateTime readyBy) {
         switch (state) {
-            case AWAITING_ACCEPTANCE:
+            case AWAITING_ACCEPTANCE -> {
+                this.state = TicketState.ACCEPTED;
                 this.acceptTime = OffsetDateTime.now();
                 if (!acceptTime.isBefore(readyBy))
                     throw new IllegalArgumentException(String.format("readyBy %s is not after now %s", readyBy, acceptTime));
                 this.readyBy = readyBy;
                 return singletonList(new TicketAcceptedEvent(readyBy));
-            default:
-                throw new UnsupportedStateTransitionException(state);
+            }
+            case ACCEPTED -> throw new AlreadyAcceptedException();
+            default -> throw new UnsupportedStateTransitionException(state);
         }
     }
 
