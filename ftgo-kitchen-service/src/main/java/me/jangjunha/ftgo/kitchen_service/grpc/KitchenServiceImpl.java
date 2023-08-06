@@ -1,12 +1,15 @@
 package me.jangjunha.ftgo.kitchen_service.grpc;
 
 import com.google.protobuf.Empty;
+import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
+import me.jangjunha.ftgo.common.UnsupportedStateTransitionException;
 import me.jangjunha.ftgo.common.protobuf.TimestampUtils;
 import me.jangjunha.ftgo.kitchen_service.api.AcceptTicketPayload;
 import me.jangjunha.ftgo.kitchen_service.api.GetTicketPayload;
 import me.jangjunha.ftgo.kitchen_service.api.KitchenServiceGrpc;
 import me.jangjunha.ftgo.kitchen_service.api.Ticket;
+import me.jangjunha.ftgo.kitchen_service.domain.AlreadyAcceptedException;
 import me.jangjunha.ftgo.kitchen_service.domain.TicketLineItem;
 import me.jangjunha.ftgo.kitchen_service.domain.TicketNotFoundException;
 import me.jangjunha.ftgo.kitchen_service.service.KitchenService;
@@ -32,7 +35,7 @@ public class KitchenServiceImpl extends KitchenServiceGrpc.KitchenServiceImplBas
         try {
             ticket = kitchenService.getTicket(ticketId);
         } catch (TicketNotFoundException e) {
-            responseObserver.onError(e);
+            responseObserver.onError(Status.NOT_FOUND.withCause(e).withDescription("ticket %s not found".formatted(ticketId)).asRuntimeException());
             return;
         }
 
@@ -69,7 +72,18 @@ public class KitchenServiceImpl extends KitchenServiceGrpc.KitchenServiceImplBas
         UUID ticketId = UUID.fromString(request.getTicketId());
         OffsetDateTime readyBy = TimestampUtils.fromTimestamp(request.getReadyBy());
 
-        kitchenService.accept(ticketId, readyBy);
+        try {
+            kitchenService.accept(ticketId, readyBy);
+        } catch (TicketNotFoundException e) {
+            responseObserver.onError(Status.NOT_FOUND.withCause(e).withDescription("ticket %s not found".formatted(ticketId)).asRuntimeException());
+            return;
+        } catch (AlreadyAcceptedException e) {
+            responseObserver.onError(Status.ALREADY_EXISTS.asRuntimeException());
+            return;
+        } catch (UnsupportedStateTransitionException e) {
+            responseObserver.onError(Status.FAILED_PRECONDITION.asRuntimeException());
+            return;
+        }
 
         responseObserver.onNext(Empty.newBuilder().build());
         responseObserver.onCompleted();
