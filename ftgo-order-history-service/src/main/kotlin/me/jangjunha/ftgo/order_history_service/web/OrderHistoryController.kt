@@ -35,6 +35,14 @@ class OrderHistoryController
             order.status,
             order.restaurantId,
             order.restaurantName,
+            order.consumerId,
+            order.creationDate,
+            order.lineItems.map { GetOrderResponse.LineItem(
+                it.quantity,
+                it.menuItemId,
+                it.name,
+                it.price,
+            ) },
         )
     }
 }
