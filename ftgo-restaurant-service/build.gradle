@@ -8,10 +8,6 @@ group = 'me.jangjunha.ftgo'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '17'
 
-repositories {
-	mavenCentral()
-}
-
 dependencies {
 	implementation "io.eventuate.tram.core:eventuate-tram-spring-events"
 	implementation "io.eventuate.tram.core:eventuate-tram-aggregate-domain-events"

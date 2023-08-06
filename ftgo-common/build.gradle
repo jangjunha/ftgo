@@ -1,17 +1,12 @@
 plugins {
     id 'java-library'
-    id 'com.google.protobuf'
 }
 
 group = 'me.jangjunha.ftgo'
 version = 'unspecified'
 
-repositories {
-    mavenCentral()
-}
-
 java {
-    registerFeature('protobuf') {
+    registerFeature('proto') {
         usingSourceSet(sourceSets.main)
     }
 }
@@ -19,26 +14,11 @@ java {
 dependencies {
     api 'commons-lang:commons-lang:2.6'
 
-    api "com.google.protobuf:protobuf-java:$protobufVersion"
-    implementation "io.grpc:grpc-stub:$grpcVersion"
-    implementation "io.grpc:grpc-protobuf:$grpcVersion"
-
-    protobufApi "com.google.protobuf:protobuf-java:$protobufVersion"
+    protoApi 'me.jangjunha.ftgo:proto:0.1.0'
+    protoApi "com.google.protobuf:protobuf-java:$protobufVersion"
 
     testImplementation platform('org.junit:junit-bom:5.9.1')
     testImplementation 'org.junit.jupiter:junit-jupiter'
-}
-
-protobuf {
-    protoc { artifact = "com.google.protobuf:protoc:$protobufVersion" }
-    plugins {
-        grpc { artifact = "io.grpc:protoc-gen-grpc-java:$grpcVersion" }
-    }
-    generateProtoTasks {
-        all()*.plugins {
-            grpc {}
-        }
-    }
 }
 
 test {

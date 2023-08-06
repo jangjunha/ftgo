@@ -12,6 +12,13 @@ subprojects {
         plugin 'java'
     }
 
+    repositories {
+        mavenCentral()
+        maven {
+            url = uri("https://asia-northeast3-maven.pkg.dev/ftgo-jangjunha/maven-public/")
+        }
+    }
+
     dependencies {
         implementation platform("io.eventuate.platform:eventuate-platform-dependencies:$eventuatePlatformVersion")
     }

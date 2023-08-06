@@ -11,10 +11,6 @@ group = 'me.jangjunha.ftgo'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '17'
 
-repositories {
-    mavenCentral()
-}
-
 dependencies {
     implementation 'io.eventuate.tram.core:eventuate-tram-spring-consumer-kafka'
     implementation "io.eventuate.tram.core:eventuate-tram-spring-events"
@@ -28,6 +24,11 @@ dependencies {
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0'
 
     implementation project(':ftgo-common')
+    runtimeOnly(project(':ftgo-common')) {
+        capabilities {
+            requireCapability('me.jangjunha.ftgo:ftgo-common-proto')
+        }
+    }
     implementation project(':ftgo-order-service-api')
 
     testImplementation "org.springframework.boot:spring-boot-starter-test:$springBootVersion"

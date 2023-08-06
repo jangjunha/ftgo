@@ -7,10 +7,6 @@ plugins {
 group = 'me.jangjunha.ftgo'
 version = '0.0.1-SNAPSHOT'
 
-repositories {
-    mavenCentral()
-}
-
 dependencies {
     api "io.eventuate.tram.core:eventuate-tram-commands"
 

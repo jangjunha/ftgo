@@ -3,25 +3,20 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
     id 'java-library'
     id 'org.jetbrains.kotlin.jvm'
-    id 'com.google.protobuf'
 }
 
 group = 'me.jangjunha.ftgo'
 version = '0.0.1-SNAPSHOT'
 
-repositories {
-    mavenCentral()
-}
-
 dependencies {
     implementation "io.eventuate.tram.core:eventuate-tram-commands"
     implementation "io.eventuate.tram.core:eventuate-tram-events"
 
-    api "com.google.protobuf:protobuf-java:$protobufVersion"
-    implementation "io.grpc:grpc-stub:$grpcVersion"
-    implementation "io.grpc:grpc-protobuf:$grpcVersion"
-
-    implementation project(':ftgo-common')
+    api(project(':ftgo-common')) {
+        capabilities {
+            requireCapability('me.jangjunha.ftgo:ftgo-common-proto')
+        }
+    }
 
     testImplementation platform('org.junit:junit-bom:5.9.1')
     testImplementation 'org.junit.jupiter:junit-jupiter'
@@ -31,18 +26,6 @@ dependencies {
 compileKotlin {
     compilerOptions {
         jvmTarget.set(JvmTarget.JVM_17)
-    }
-}
-
-protobuf {
-    protoc { artifact = "com.google.protobuf:protoc:$protobufVersion" }
-    plugins {
-        grpc { artifact = "io.grpc:protoc-gen-grpc-java:$grpcVersion" }
-    }
-    generateProtoTasks {
-        all()*.plugins {
-            grpc {}
-        }
     }
 }
 

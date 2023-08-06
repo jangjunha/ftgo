@@ -7,10 +7,6 @@ plugins {
 group = 'me.jangjunha.ftgo'
 version = 'unspecified'
 
-repositories {
-    mavenCentral()
-}
-
 dependencies {
     api 'io.eventuate.tram.core:eventuate-tram-messaging-producer-common'
     api 'io.eventuate.messaging.kafka:eventuate-messaging-kafka-producer'

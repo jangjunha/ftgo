@@ -12,10 +12,6 @@ group = 'me.jangjunha.ftgo'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '17'
 
-repositories {
-	mavenCentral()
-}
-
 dependencies {
 	implementation "io.eventuate.tram.sagas:eventuate-tram-sagas-spring-orchestration-simple-dsl"
 	implementation "io.eventuate.tram.sagas:eventuate-tram-sagas-spring-orchestration"

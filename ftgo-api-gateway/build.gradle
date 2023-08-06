@@ -11,10 +11,6 @@ group = 'me.jangjunha.ftgo'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = 17
 
-repositories {
-    mavenCentral()
-}
-
 ext {
     set('springCloudVersion', "2022.0.3")
 }
@@ -34,13 +30,7 @@ dependencies {
 
     implementation 'com.fasterxml.jackson.module:jackson-module-kotlin'
 
-//    implementation 'me.jangjunha.ftgo:proto:0.0.0-RELEASE'
-
-    implementation(project(':ftgo-common')) {
-        capabilities {
-            requireCapability('me.jangjunha.ftgo:ftgo-common-protobuf')
-        }
-    }
+    implementation project(':ftgo-common')
     implementation project(':ftgo-restaurant-service-api')
     implementation project(':ftgo-kitchen-service-api')
     implementation project(':ftgo-order-service-api')

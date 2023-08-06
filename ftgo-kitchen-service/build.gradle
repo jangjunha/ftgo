@@ -8,10 +8,6 @@ group = 'me.jangjunha.ftgo'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '17'
 
-repositories {
-	mavenCentral()
-}
-
 dependencies {
 	implementation "org.springframework.boot:spring-boot-starter-json:$springBootVersion"
 
@@ -28,7 +24,7 @@ dependencies {
 
 	implementation(project(':ftgo-common')) {
 		capabilities {
-			requireCapability('me.jangjunha.ftgo:ftgo-common-protobuf')
+			requireCapability('me.jangjunha.ftgo:ftgo-common-proto')
 		}
 	}
 	implementation project(':ftgo-common-jpa')
