@@ -4,10 +4,7 @@ import com.google.protobuf.Empty
 import io.grpc.ManagedChannelBuilder
 import io.grpc.stub.StreamObserver
 import me.jangjunha.ftgo.apigateway.Destinations
-import me.jangjunha.ftgo.kitchen_service.api.AcceptTicketPayload
-import me.jangjunha.ftgo.kitchen_service.api.GetTicketPayload
-import me.jangjunha.ftgo.kitchen_service.api.KitchenServiceGrpc
-import me.jangjunha.ftgo.kitchen_service.api.Ticket
+import me.jangjunha.ftgo.kitchen_service.api.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.util.*
@@ -25,8 +22,9 @@ class KitchenService
     )
 
     suspend fun findTicketById(id: UUID): Ticket = suspendCoroutine { cont ->
-        val payload = GetTicketPayload.newBuilder().setTicketId(id.toString()).build()
-
+        val payload = getTicketPayload {
+            ticketId = id.toString()
+        }
         stub.getTicket(payload, object : StreamObserver<Ticket> {
             override fun onNext(value: Ticket?) {
                 if (value == null) {
@@ -45,8 +43,9 @@ class KitchenService
     }
 
     suspend fun acceptTicket(id: UUID): Unit = suspendCoroutine { cont ->
-        val payload = AcceptTicketPayload.newBuilder().setTicketId(id.toString()).build()
-
+        val payload = acceptTicketPayload {
+            ticketId = id.toString()
+        }
         stub.acceptTicket(payload, object : StreamObserver<Empty> {
             override fun onNext(value: Empty?) {
                 cont.resume(Unit)

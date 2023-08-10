@@ -129,29 +129,25 @@ data class Order(
         }
     }
 
-    fun toAPI(): me.jangjunha.ftgo.order_service.api.Order {
-        return me.jangjunha.ftgo.order_service.api.Order.newBuilder()
-            .setId(id.toString())
-            .setState(state)
-            .setConsumerId(consumerId.toString())
-            .setRestaurantId(restaurantId.toString())
-            .addAllLineItems(orderLineItems.lineItems.map { it.export() })
-            .setDeliveryInformation(
-                me.jangjunha.ftgo.order_service.api.DeliveryInformation.newBuilder()
-                    .setDeliveryTime(deliveryInformation.deliveryTime.run(TimestampUtils::toTimestamp))
-                    .setDeliveryAddress(deliveryInformation.deliveryAddress)
-                    .build()
-            )
-            .also { builder ->
-                paymentInformation?.apply {
-                    builder.setPaymentInformation(
-                        me.jangjunha.ftgo.order_service.api.PaymentInformation.newBuilder()
-                            .setPaymentToken(paymentToken)
-                            .build()
-                    )
+    fun toAPI(): me.jangjunha.ftgo.order_service.api.Order = let { o ->
+        order {
+            id = o.id.toString()
+            state = o.state
+            consumerId = o.consumerId.toString()
+            restaurantId = o.restaurantId.toString()
+            lineItems.addAll(o.orderLineItems.lineItems.map { it.export() })
+            deliveryInformation = o.deliveryInformation.let { d ->
+                deliveryInformation {
+                    deliveryTime = d.deliveryTime.run(TimestampUtils::toTimestamp)
+                    deliveryAddress = d.deliveryAddress
                 }
             }
-            .setOrderMinimum(orderMinimum.toAPI())
-            .build()
+            o.paymentInformation?.also { p ->
+                paymentInformation = paymentInformation {
+                    paymentToken = p.paymentToken
+                }
+            }
+            orderMinimum = o.orderMinimum.toAPI()
+        }
     }
 }

@@ -2,9 +2,9 @@ package me.jangjunha.ftgo.apigateway.proxies
 
 import io.grpc.ManagedChannelBuilder
 import me.jangjunha.ftgo.apigateway.Destinations
-import me.jangjunha.ftgo.order_service.api.GetOrderPayload
 import me.jangjunha.ftgo.order_service.api.Order
 import me.jangjunha.ftgo.order_service.api.OrderServiceGrpcKt
+import me.jangjunha.ftgo.order_service.api.getOrderPayload
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.util.UUID
@@ -19,7 +19,9 @@ class OrderService
     )
 
     suspend fun findOrderById(id: UUID): Order {
-        val payload = GetOrderPayload.newBuilder().setId(id.toString()).build()
+        val payload = getOrderPayload {
+            this.id = id.toString()
+        }
         return stub.getOrder(payload)
     }
 }

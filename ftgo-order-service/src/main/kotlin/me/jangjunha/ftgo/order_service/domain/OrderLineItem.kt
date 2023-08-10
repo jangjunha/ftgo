@@ -5,6 +5,7 @@ import jakarta.persistence.Transient
 import me.jangjunha.ftgo.common.Money
 import me.jangjunha.ftgo.common.api.Money as MoneyAPI
 import me.jangjunha.ftgo.order_service.api.OrderLineItem as OrderLineItemAPI
+import me.jangjunha.ftgo.order_service.api.orderLineItem as orderLineItemAPI
 
 @Embeddable
 data class OrderLineItem(
@@ -21,12 +22,12 @@ data class OrderLineItem(
         return price.multiply(newQuantity - quantity)
     }
 
-    fun export(): OrderLineItemAPI {
-        return OrderLineItemAPI.newBuilder()
-            .setQuantity(quantity)
-            .setMenuItemId(menuItemId)
-            .setName(name)
-            .setPrice(price.toAPI())
-            .build()
+    fun export(): OrderLineItemAPI = let { li ->
+        orderLineItemAPI {
+            quantity = li.quantity
+            menuItemId = li.menuItemId
+            name = li.name
+            price = li.price.toAPI()
+        }
     }
 }
