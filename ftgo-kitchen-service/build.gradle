@@ -6,7 +6,6 @@ plugins {
 
 group = 'me.jangjunha.ftgo'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '17'
 
 dependencies {
 	implementation "org.springframework.boot:spring-boot-starter-json:$springBootVersion"

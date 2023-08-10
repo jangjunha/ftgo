@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 plugins {
     id 'org.jetbrains.kotlin.jvm'
     id 'org.jetbrains.kotlin.plugin.spring'
@@ -20,12 +18,6 @@ dependencies {
     implementation 'org.jetbrains.kotlin:kotlin-reflect'
 
     testImplementation 'org.jetbrains.kotlin:kotlin-test'
-}
-
-compileKotlin {
-    compilerOptions {
-        jvmTarget.set(JvmTarget.JVM_17)
-    }
 }
 
 test {
