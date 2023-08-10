@@ -1,6 +1,8 @@
 package me.jangjunha.ftgo.restaurant_service.api;
 
 import me.jangjunha.ftgo.common.Money;
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 public class MenuItem {
@@ -42,5 +44,15 @@ public class MenuItem {
 
     public void setPrice(Money price) {
         this.price = price;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return EqualsBuilder.reflectionEquals(this, o);
+    }
+
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
     }
 }

@@ -1,6 +1,8 @@
 package me.jangjunha.ftgo.restaurant_service.api.web;
 
 import me.jangjunha.ftgo.restaurant_service.api.MenuItem;
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import java.util.List;
 import java.util.UUID;
@@ -13,5 +15,15 @@ public class GetRestaurantResponse {
         this.id = id;
         this.name = name;
         this.menuItems = menuItems;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return EqualsBuilder.reflectionEquals(this, o);
+    }
+
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
     }
 }
