@@ -23,6 +23,7 @@ dependencies {
 	implementation 'org.jetbrains.kotlin:kotlin-reflect'
 	implementation "io.grpc:grpc-netty:$grpcVersion"
 	implementation "io.grpc:grpc-kotlin-stub:$grpcKotlinVersion"
+	implementation "com.google.protobuf:protobuf-kotlin:$protobufVersion"
 
 	implementation project(':ftgo-common-jpa')
 	implementation project(':ftgo-accounting-service-api')
