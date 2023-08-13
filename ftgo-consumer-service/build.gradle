@@ -23,7 +23,11 @@ dependencies {
     implementation project(':ftgo-common-jpa')
     implementation project(':ftgo-consumer-service-api')
 
-    testImplementation "org.springframework.boot:spring-boot-starter-test:$springBootVersion"
+    testImplementation ("org.springframework.boot:spring-boot-starter-test:$springBootVersion") {
+        exclude module: "mockito-core"
+    }
+    testImplementation "com.ninja-squad:springmockk:4.0.0"
+    testImplementation "io.eventuate.tram.sagas:eventuate-tram-sagas-spring-testing-support"
 
     developmentOnly "org.springframework.boot:spring-boot-devtools:$springBootVersion"
 
