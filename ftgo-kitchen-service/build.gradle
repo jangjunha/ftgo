@@ -37,6 +37,7 @@ dependencies {
 
 	testImplementation "org.springframework.boot:spring-boot-starter-test:$springBootVersion"
 	testImplementation "org.mockito:mockito-inline"
+	testImplementation "io.eventuate.tram.sagas:eventuate-tram-sagas-spring-testing-support"
 
 	developmentOnly "org.springframework.boot:spring-boot-devtools:$springBootVersion"
 	runtimeOnly 'org.postgresql:postgresql'
