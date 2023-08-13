@@ -19,9 +19,9 @@ data class Consumer(
     }
 
     companion object {
-        fun create(name: String): ResultWithEvents<Consumer> {
+        fun create(name: String, id: UUID? = null): ResultWithEvents<Consumer> {
             val consumer = Consumer(
-                id = UUID.randomUUID(),
+                id = id ?: UUID.randomUUID(),
                 name = name,
             )
             return ResultWithEvents(consumer, ConsumerCreated(consumer.id))
