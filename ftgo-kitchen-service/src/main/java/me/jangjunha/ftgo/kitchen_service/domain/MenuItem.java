@@ -2,6 +2,8 @@ package me.jangjunha.ftgo.kitchen_service.domain;
 
 import jakarta.persistence.*;
 import me.jangjunha.ftgo.common.Money;
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 
 @Embeddable
 @Access(AccessType.FIELD)
@@ -41,5 +43,15 @@ public class MenuItem {
 
     public void setPrice(Money price) {
         this.price = price;
+    }
+
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return EqualsBuilder.reflectionEquals(this, obj);
     }
 }

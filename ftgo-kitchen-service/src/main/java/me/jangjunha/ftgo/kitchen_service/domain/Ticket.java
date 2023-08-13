@@ -6,6 +6,8 @@ import me.jangjunha.ftgo.common.UnsupportedStateTransitionException;
 import me.jangjunha.ftgo.kitchen_service.api.events.TicketAcceptedEvent;
 import me.jangjunha.ftgo.kitchen_service.api.events.TicketCreatedEvent;
 import me.jangjunha.ftgo.kitchen_service.api.events.TicketDomainEvent;
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -191,5 +193,15 @@ public class Ticket {
 
     public void setReadyForPickupTime(OffsetDateTime readyForPickupTime) {
         this.readyForPickupTime = readyForPickupTime;
+    }
+
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return EqualsBuilder.reflectionEquals(this, obj);
     }
 }

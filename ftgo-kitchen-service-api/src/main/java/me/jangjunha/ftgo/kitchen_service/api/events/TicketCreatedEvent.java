@@ -1,6 +1,8 @@
 package me.jangjunha.ftgo.kitchen_service.api.events;
 
 import me.jangjunha.ftgo.kitchen_service.api.TicketDetails;
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import java.util.UUID;
 
@@ -27,5 +29,15 @@ public class TicketCreatedEvent implements TicketDomainEvent {
 
     public void setDetails(TicketDetails details) {
         this.details = details;
+    }
+
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return EqualsBuilder.reflectionEquals(this, obj);
     }
 }
