@@ -62,7 +62,6 @@ class RestaurantServicePactTest {
             kitchenServiceUrl = "",
         ), WebClient.create())
         val restaurant = svc.findRestaurantById(UUID.fromString("97e3c4c2-f336-4435-9314-ad1a633495df"))
-        println(restaurant)
         assert(
             restaurant == Restaurant(
                 UUID.fromString("97e3c4c2-f336-4435-9314-ad1a633495df"),
