@@ -4,9 +4,11 @@ import com.google.protobuf.Empty
 import io.grpc.ManagedChannelBuilder
 import io.grpc.stub.StreamObserver
 import me.jangjunha.ftgo.apigateway.Destinations
+import me.jangjunha.ftgo.common.protobuf.TimestampUtils
 import me.jangjunha.ftgo.kitchen_service.api.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import java.time.OffsetDateTime
 import java.util.*
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -42,9 +44,10 @@ class KitchenService
         })
     }
 
-    suspend fun acceptTicket(id: UUID): Unit = suspendCoroutine { cont ->
+    suspend fun acceptTicket(id: UUID, readyBy: OffsetDateTime): Unit = suspendCoroutine { cont ->
         val payload = acceptTicketPayload {
-            ticketId = id.toString()
+            this.ticketId = id.toString()
+            this.readyBy = TimestampUtils.toTimestamp(readyBy)
         }
         stub.acceptTicket(payload, object : StreamObserver<Empty> {
             override fun onNext(value: Empty?) {

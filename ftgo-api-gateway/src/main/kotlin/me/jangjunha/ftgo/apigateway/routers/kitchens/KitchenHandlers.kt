@@ -7,10 +7,7 @@ import me.jangjunha.ftgo.apigateway.proxies.RestaurantService
 import me.jangjunha.ftgo.common.protobuf.TimestampUtils.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
-import org.springframework.web.reactive.function.server.ServerRequest
-import org.springframework.web.reactive.function.server.ServerResponse
-import org.springframework.web.reactive.function.server.bodyValueAndAwait
-import org.springframework.web.reactive.function.server.buildAndAwait
+import org.springframework.web.reactive.function.server.*
 import java.util.UUID
 
 @Component
@@ -45,7 +42,8 @@ class KitchenHandlers
 
     suspend fun acceptTicket(request: ServerRequest): ServerResponse = coroutineScope {
         val id = UUID.fromString(request.pathVariable("ticketId"))
-        kitchenService.acceptTicket(id)
+        val payload = request.awaitBody(AcceptTicketRequest::class)
+        kitchenService.acceptTicket(id, payload.readyBy)
         ServerResponse.accepted().buildAndAwait()
     }
 }
