@@ -1,0 +1,27 @@
+name: Publish Pact Files
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  ftgo-api-gateway:
+    runs-on: ubuntu-latest
+    environment: pact
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v3
+        with:
+          distribution: liberica
+          java-version: 17
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+      - name: Execute Gradle test
+        run: ./gradlew -p ftgo-api-gateway test --tests '*PactTest'
+      - uses: jangjunha/pact-broker-actions/publish@main
+        with:
+          target: ftgo-api-gateway/build/pacts/
+          version: ${{ github.sha }}
+          broker_url: ${{ vars.PACT_BROKER_URL }}
+          broker_username: ${{ vars.PACT_BROKER_USERNAME }}
+          broker_password: ${{ secrets.PACT_BROKER_PASSWORD }}
