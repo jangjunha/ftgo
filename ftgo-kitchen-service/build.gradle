@@ -1,11 +1,28 @@
 plugins {
 	id 'java'
-	id 'org.springframework.boot' version "$springBootVersion"
-	id 'io.spring.dependency-management' version '1.1.0'
+	id 'org.springframework.boot'
+	id 'io.spring.dependency-management'
+	id 'com.avast.gradle.docker-compose'
 }
 
 group = 'me.jangjunha.ftgo'
 version = '0.0.1-SNAPSHOT'
+
+sourceSets {
+	integrationTest {
+		java {
+			compileClasspath += main.output
+			runtimeClasspath += main.output
+			srcDir 'src/integration-test/java'
+		}
+	}
+}
+
+configurations {
+	integrationTestImplementation.extendsFrom implementation
+	integtationTestApi.extendsFrom api
+	integrationTestRuntimeOnly.extendsFrom runtimeOnly
+}
 
 dependencies {
 	implementation "org.springframework.boot:spring-boot-starter-json:$springBootVersion"
@@ -39,10 +56,36 @@ dependencies {
 	testImplementation "org.mockito:mockito-inline"
 	testImplementation "io.eventuate.tram.sagas:eventuate-tram-sagas-spring-testing-support"
 
+	integrationTestImplementation 'io.eventuate.tram.core:eventuate-tram-spring-in-memory'
+	integrationTestImplementation "org.springframework.boot:spring-boot-starter-test:$springBootVersion"
+
 	developmentOnly "org.springframework.boot:spring-boot-devtools:$springBootVersion"
 	runtimeOnly 'org.postgresql:postgresql'
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+tasks.register("integrationTests", Test) {
+	testClassesDirs = sourceSets.integrationTest.output.classesDirs
+	classpath = sourceSets.integrationTest.runtimeClasspath
+
+	useJUnitPlatform()
+	shouldRunAfter test
+
+	doFirst {
+		def dbInfo = dockerCompose.integrationTests.servicesInfos['kitchen-service-db']
+		environment "SPRING_DATASOURCE_URL", "jdbc:postgresql://${dbInfo.host}:${dbInfo.ports[5432]}/ftgo-kitchen-service"
+		environment "SPRING_DATASOURCE_USERNAME", "postgres"
+	}
+}
+
+dockerCompose {
+	integrationTests {
+		projectName = "ftgo-kitchen-service-integration-test"
+		startedServices = ['kitchen-service-db']
+		downAdditionalArgs = ['-v']
+		isRequiredBy(tasks.integrationTests)
+	}
 }

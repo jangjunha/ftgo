@@ -3,6 +3,8 @@ package me.jangjunha.ftgo.order_service.domain
 import jakarta.persistence.Embeddable
 import jakarta.persistence.Transient
 import me.jangjunha.ftgo.common.Money
+import org.apache.commons.lang.builder.EqualsBuilder
+import org.apache.commons.lang.builder.HashCodeBuilder
 import me.jangjunha.ftgo.common.api.Money as MoneyAPI
 import me.jangjunha.ftgo.order_service.api.OrderLineItem as OrderLineItemAPI
 import me.jangjunha.ftgo.order_service.api.orderLineItem as orderLineItemAPI
@@ -29,5 +31,13 @@ data class OrderLineItem(
             name = li.name
             price = li.price.toAPI()
         }
+    }
+
+    override fun equals(other: Any?): Boolean {
+        return EqualsBuilder.reflectionEquals(this, other)
+    }
+
+    override fun hashCode(): Int {
+        return HashCodeBuilder.reflectionHashCode(this)
     }
 }

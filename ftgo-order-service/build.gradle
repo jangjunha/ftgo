@@ -4,10 +4,27 @@ plugins {
 	id 'org.jetbrains.kotlin.jvm'
 	id 'org.jetbrains.kotlin.plugin.spring'
 	id 'org.jetbrains.kotlin.plugin.jpa'
+	id 'com.avast.gradle.docker-compose'
 }
 
 group = 'me.jangjunha.ftgo'
 version = '0.0.1-SNAPSHOT'
+
+sourceSets {
+	integrationTest {
+		java {
+			compileClasspath += main.output
+			runtimeClasspath += main.output
+			srcDir 'src/integration-test/kotlin'
+		}
+	}
+}
+
+configurations {
+	integrationTestImplementation.extendsFrom implementation
+	integtationTestApi.extendsFrom api
+	integrationTestRuntimeOnly.extendsFrom runtimeOnly
+}
 
 dependencies {
 	implementation "io.eventuate.tram.sagas:eventuate-tram-sagas-spring-orchestration-simple-dsl"
@@ -41,6 +58,11 @@ dependencies {
 	testImplementation "io.eventuate.tram.core:eventuate-tram-test-util"
 	testImplementation "io.eventuate.tram.sagas:eventuate-tram-sagas-spring-testing-support"
 
+	integrationTestImplementation 'io.eventuate.tram.core:eventuate-tram-spring-in-memory'
+	integrationTestImplementation ("org.springframework.boot:spring-boot-starter-test:$springBootVersion") {
+		exclude module: "mockito-core"
+	}
+
 	developmentOnly "org.springframework.boot:spring-boot-devtools:$springBootVersion"
 
 	runtimeOnly 'org.postgresql:postgresql'
@@ -48,6 +70,20 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+tasks.register("integrationTests", Test) {
+	testClassesDirs = sourceSets.integrationTest.output.classesDirs
+	classpath = sourceSets.integrationTest.runtimeClasspath
+
+	useJUnitPlatform()
+	shouldRunAfter test
+
+	doFirst {
+		def dbInfo = dockerCompose.integrationTests.servicesInfos['order-service-db']
+		environment "SPRING_DATASOURCE_URL", "jdbc:postgresql://${dbInfo.host}:${dbInfo.ports[5432]}/ftgo-order-service"
+		environment "SPRING_DATASOURCE_USERNAME", "postgres"
+	}
 }
 
 allOpen {
@@ -58,4 +94,13 @@ allOpen {
 noArg {
 	annotation("jakarta.persistence.Entity")
 	annotation("jakarta.persistence.Embeddable")
+}
+
+dockerCompose {
+	integrationTests {
+		projectName = "ftgo-order-service-integration-test"
+		startedServices = ['order-service-db']
+		downAdditionalArgs = ['-v']
+		isRequiredBy(tasks.integrationTests)
+	}
 }

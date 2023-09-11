@@ -56,6 +56,14 @@ public class KitchenService {
     }
 
     @Transactional
+    public void cancelTicket(UUID id) {
+        Ticket ticket = ticketRepository.findById(id)
+                .orElseThrow(() -> new TicketNotFoundException(id));
+        List<TicketDomainEvent> events = ticket.cancel();
+        ticketDomainEventPublisher.publish(ticket, events);
+    }
+
+    @Transactional
     public void cancelCreateTicket(UUID id) {
         Ticket ticket = ticketRepository.findById(id)
                 .orElseThrow(() -> new TicketNotFoundException(id));

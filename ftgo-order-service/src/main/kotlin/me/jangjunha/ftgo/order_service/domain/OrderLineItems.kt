@@ -6,6 +6,8 @@ import jakarta.persistence.Embeddable
 import jakarta.persistence.FetchType
 import me.jangjunha.ftgo.common.Money
 import me.jangjunha.ftgo.order_service.api.OrderRevision
+import org.apache.commons.lang.builder.EqualsBuilder
+import org.apache.commons.lang.builder.HashCodeBuilder
 
 @Embeddable
 data class OrderLineItems (
@@ -29,5 +31,13 @@ data class OrderLineItems (
             .fold(Money.ZERO, Money::add)
         val newOrderTotal = orderTotal.add(delta)
         return LineItemQuantityChange(orderTotal, newOrderTotal, delta)
+    }
+
+    override fun equals(other: Any?): Boolean {
+        return EqualsBuilder.reflectionEquals(this, other)
+    }
+
+    override fun hashCode(): Int {
+        return HashCodeBuilder.reflectionHashCode(this)
     }
 }

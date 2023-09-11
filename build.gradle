@@ -5,6 +5,7 @@ plugins {
     id 'org.jetbrains.kotlin.jvm' version "$kotlinVersion" apply false
     id 'org.jetbrains.kotlin.plugin.spring' version "$kotlinVersion" apply false
     id 'org.jetbrains.kotlin.plugin.jpa' version "$kotlinVersion" apply false
+    id 'com.avast.gradle.docker-compose' version '0.17.4' apply false
 }
 
 subprojects {

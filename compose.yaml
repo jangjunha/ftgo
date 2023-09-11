@@ -100,6 +100,8 @@ services:
       target: base
     volumes:
       - restaurant-service-db-data:/var/lib/postgresql/data
+    ports:
+      - 8201:5432
     environment:
       - POSTGRES_HOST_AUTH_METHOD=trust
       - POSTGRES_DB=ftgo-restaurant-service
@@ -112,6 +114,8 @@ services:
       target: base
     volumes:
       - consumer-service-db-data:/var/lib/postgresql/data
+    ports:
+      - 8202:5432
     environment:
       - POSTGRES_HOST_AUTH_METHOD=trust
       - POSTGRES_DB=ftgo-consumer-service
@@ -124,6 +128,8 @@ services:
       target: saga
     volumes:
       - kitchen-service-db-data:/var/lib/postgresql/data
+    ports:
+      - 8205:5432
     environment:
       - POSTGRES_HOST_AUTH_METHOD=trust
       - POSTGRES_DB=ftgo-kitchen-service
@@ -136,6 +142,8 @@ services:
       target: saga
     volumes:
       - order-service-db-data:/var/lib/postgresql/data
+    ports:
+      - 8203:5432
     environment:
       - POSTGRES_HOST_AUTH_METHOD=trust
       - POSTGRES_DB=ftgo-order-service
@@ -154,8 +162,8 @@ services:
       - EVENTSTORE_ENABLE_EXTERNAL_TCP=true
       - EVENTSTORE_ENABLE_ATOM_PUB_OVER_HTTP=true
     ports:
-      - "1113:1113"
-      - "2113:2113"
+      - "8204:1113"
+      - "8304:2113"
     volumes:
       - type: volume
         source: accounting-service-db-data
@@ -179,7 +187,7 @@ services:
     command: "-jar DynamoDBLocal.jar -sharedDb -dbPath /home/dynamodblocal/data"
     user: root
     ports:
-      - "8086:8000"
+      - "8206:8000"
     volumes:
       - order-history-service-db-data:/home/dynamodblocal/data
     environment:
