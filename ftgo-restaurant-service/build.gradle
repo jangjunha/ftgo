@@ -21,7 +21,10 @@ dependencies {
 
 	developmentOnly "org.springframework.boot:spring-boot-devtools:$springBootVersion"
 	runtimeOnly 'org.postgresql:postgresql'
+
 	testImplementation "org.springframework.boot:spring-boot-starter-test:$springBootVersion"
+	testImplementation 'au.com.dius.pact.provider:junit5spring:4.6.2'
+	testRuntimeOnly 'com.h2database:h2'
 }
 
 tasks.named('test') {
