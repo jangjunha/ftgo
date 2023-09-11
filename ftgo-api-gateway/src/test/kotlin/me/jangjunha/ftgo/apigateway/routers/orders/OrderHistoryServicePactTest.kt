@@ -55,7 +55,7 @@ class OrderHistoryServicePactTest {
                             .stringType("menuItemId", "americano")
                             .stringType("name", "Americano")
                             .`object`("price")
-                                .stringType("amount", "2500")
+                                .numberType("amount", 2500)
                                 .closeObject()!!
                             .closeObject()!!
                             .closeArray()!!
@@ -86,7 +86,7 @@ class OrderHistoryServicePactTest {
                                 "quantity": 2,
                                 "menuItemId": "americano",
                                 "name": "Americano",
-                                "price": {"amount": "2500"}
+                                "price": {"amount": 2500}
                             }
                         ]
                     }

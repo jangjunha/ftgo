@@ -1,7 +1,9 @@
 package me.jangjunha.ftgo.apigateway.proxies
 
 import au.com.dius.pact.consumer.MockServer
+import au.com.dius.pact.consumer.dsl.PM
 import au.com.dius.pact.consumer.dsl.PactDslJsonBody
+import au.com.dius.pact.consumer.dsl.PactDslRootValue
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider
 import au.com.dius.pact.consumer.junit.MockServerConfig
 import au.com.dius.pact.consumer.junit5.PactConsumerTestExt
@@ -42,13 +44,13 @@ class RestaurantServicePactTest {
                     .uuid("id", "97e3c4c2-f336-4435-9314-ad1a633495df")
                     .stringType("name", "A Cafe")
                     .eachLike("menuItems")
-                    .stringType("id", "americano")
-                    .stringType("name", "Americano")
-                    .`object`("price")
-                    .stringType("amount", "2500")
-                    .closeObject()!!
-                    .closeObject()!!
-                    .closeArray()!!
+                        .stringType("id", "americano")
+                        .stringType("name", "Americano")
+                        .`object`("price")
+                            .or("amount", 2500, PM.stringType(), PM.decimalType())
+                            .closeObject()!!
+                        .closeObject()!!
+                        .closeArray()!!
             )
         .toPact(V4Pact::class.java)
 

@@ -46,7 +46,7 @@ class OrderServicePactTest {
                         Pair("menuItemId", "matching(equalTo, 'latte')"),
                         Pair("name", "matching(equalTo, 'Cafe Latte')"),
                         Pair("price", mapOf(
-                            Pair("amount", "matching(equalTo, '3500')")
+                            Pair("amount", "matching(number, 3500)")
                         )),
                     ),
                 )),
@@ -58,7 +58,7 @@ class OrderServicePactTest {
                     Pair("deliveryAddress", "matching(equalTo, '서울시 강남구 테헤란로 1')")
                 )),
                 Pair("orderMinimum", mapOf(
-                    Pair("amount", "matching(equalTo, '2147483647')")
+                    Pair("amount", "matching(number, 2147483647)")
                 )),
             )),
         ))
