@@ -1,6 +1,9 @@
 plugins {
+	id 'maven-publish'
 	id 'java'
+	id 'groovy'
 	id 'org.springframework.boot'
+	id 'org.springframework.cloud.contract'
 	id 'io.spring.dependency-management'
 	id 'com.avast.gradle.docker-compose'
 }
@@ -59,12 +62,29 @@ dependencies {
 	integrationTestImplementation 'io.eventuate.tram.core:eventuate-tram-spring-in-memory'
 	integrationTestImplementation "org.springframework.boot:spring-boot-starter-test:$springBootVersion"
 
+//	contractTestImplementation "org.springframework.boot:spring-boot-starter-test:$springBootVersion"
+	contractTestImplementation 'org.springframework.cloud:spring-cloud-starter-contract-verifier'
+//	contractTestImplementation('org.junit.jupiter:junit-jupiter-engine')
+	contractTestImplementation 'io.grpc:grpc-testing:1.58.0'
+	contractTestImplementation 'com.asarkar.grpc:grpc-test:1.2.2'
+	contractTestImplementation "org.mockito:mockito-inline"
+	contractTestImplementation 'com.squareup.okhttp3:logging-interceptor'
+//	contractTestImplementation 'jakarta.servlet:jakarta.servlet-api'
+	contractTestRuntimeOnly 'com.h2database:h2'
+
 	developmentOnly "org.springframework.boot:spring-boot-devtools:$springBootVersion"
 	runtimeOnly 'org.postgresql:postgresql'
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+tasks.named('contractTest') {
+	useJUnitPlatform()
+	testLogging {
+		exceptionFormat = 'full'
+	}
 }
 
 tasks.register("integrationTests", Test) {
@@ -81,6 +101,11 @@ tasks.register("integrationTests", Test) {
 	}
 }
 
+contracts {
+	packageWithBaseClasses = "me.jangjunha.ftgo.kitchen_service.contract"
+	testMode = "CUSTOM"
+}
+
 dockerCompose {
 	integrationTests {
 		projectName = "ftgo-kitchen-service-integration-test"
@@ -88,4 +113,16 @@ dockerCompose {
 		downAdditionalArgs = ['-v']
 		isRequiredBy(tasks.integrationTests)
 	}
+}
+
+publishing {
+	publications {
+		mavenJava(MavenPublication) {
+			artifact verifierStubsJar
+		}
+	}
+}
+
+repositories {
+	mavenLocal()
 }

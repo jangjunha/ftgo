@@ -1,6 +1,8 @@
 plugins {
+	id 'maven-publish'
 	id 'org.springframework.boot'
 	id 'io.spring.dependency-management'
+	id 'org.springframework.cloud.contract'
 	id 'org.jetbrains.kotlin.jvm'
 	id 'org.jetbrains.kotlin.plugin.spring'
 	id 'org.jetbrains.kotlin.plugin.jpa'
@@ -63,6 +65,8 @@ dependencies {
 		exclude module: "mockito-core"
 	}
 
+	testImplementation 'org.springframework.cloud:spring-cloud-starter-contract-verifier'
+
 	developmentOnly "org.springframework.boot:spring-boot-devtools:$springBootVersion"
 
 	runtimeOnly 'org.postgresql:postgresql'
@@ -70,6 +74,13 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+tasks.named('contractTest') {
+	useJUnitPlatform()
+	testLogging {
+		exceptionFormat = 'full'
+	}
 }
 
 tasks.register("integrationTests", Test) {
@@ -84,6 +95,10 @@ tasks.register("integrationTests", Test) {
 		environment "SPRING_DATASOURCE_URL", "jdbc:postgresql://${dbInfo.host}:${dbInfo.ports[5432]}/ftgo-order-service"
 		environment "SPRING_DATASOURCE_USERNAME", "postgres"
 	}
+}
+
+contracts {
+	packageWithBaseClasses = "me.jangjunha.ftgo.order_service.contract"
 }
 
 allOpen {
@@ -103,4 +118,16 @@ dockerCompose {
 		downAdditionalArgs = ['-v']
 		isRequiredBy(tasks.integrationTests)
 	}
+}
+
+publishing {
+	publications {
+		mavenJava(MavenPublication) {
+			artifact verifierStubsJar
+		}
+	}
+}
+
+repositories {
+	mavenLocal()
 }

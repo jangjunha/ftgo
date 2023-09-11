@@ -1,0 +1,32 @@
+request:
+  method: POST
+  url: /orders/
+#  body:
+#    restaurantId: 2a048668-4b29-456c-a798-6b2c4f6ba973
+#    consumerId: bbd1ae72-3323-4213-9f00-04df6fc4900f
+#    deliveryAddress: 서울시 강남구 테헤란로 1
+#    items:
+#      - menuItemId: latte
+#        quantity: 2
+  matchers:
+    body:
+      - path: $.restaurantId
+        type: by_regex
+        predefined: uuid
+      - path: $.consumerId
+        type: by_regex
+        predefined: uuid
+#  headers:
+#    Accept: application/json
+#    Content-Type: application/json
+response:
+  status: 200
+  body:
+    orderId: 6f0961a9-43a0-46a3-8e57-e8b51cd118e1
+#  matchers:
+#    body:
+#      - path: $.orderId
+#        type: by_regex
+#        predefined: uuid
+  headers:
+    Content-Type: application/json
