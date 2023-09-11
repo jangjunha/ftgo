@@ -26,15 +26,9 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(
-        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-        properties = {
-                "spring.datasource.url=jdbc:h2:mem:db",
-                "spring.datasource.driver-class-name=org.h2.Driver",
-        }
-)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Provider("ftgo-restaurant-service")
-@PactBroker(url = "https://pact.ftgo.jangjunha.me/")
+@PactBroker
 public class RestaurantPactProviderTest {
 
     @LocalServerPort
