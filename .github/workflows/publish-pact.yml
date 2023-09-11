@@ -8,19 +8,35 @@ jobs:
   ftgo-api-gateway:
     runs-on: ubuntu-latest
     environment: pact
+    defaults:
+      run:
+        working-directory: ftgo/
     steps:
+      - name: Checkout ftgo-proto repository
+        uses: actions/checkout@v4
+        with:
+          repository: jangjunha/ftgo-proto
+          path: ftgo-proto/
       - uses: actions/checkout@v4
+        with:
+          path: ftgo/
+
       - uses: actions/setup-java@v3
         with:
           distribution: liberica
           java-version: 17
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
+      - uses: jangjunha/pact-broker-actions/install-plugin@main
+        with:
+          source: protobuf
+
       - name: Execute Gradle test
         run: ./gradlew -p ftgo-api-gateway test --tests '*PactTest'
+
       - uses: jangjunha/pact-broker-actions/publish@main
         with:
-          target: ftgo-api-gateway/build/pacts/
+          target: ftgo/ftgo-api-gateway/build/pacts/
           version: ${{ github.sha }}
           broker_url: ${{ vars.PACT_BROKER_URL }}
           broker_username: ${{ vars.PACT_BROKER_USERNAME }}
