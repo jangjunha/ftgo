@@ -1,0 +1,44 @@
+name: Verify Pact
+
+on:
+  repository_dispatch:
+    types:
+      - contract_requiring_verification_published
+
+env:
+  PACT_BROKER_PUBLISH_VERIFICATION_RESULTS: true
+  PACT_BROKER_BASE_URL: ${{ vars.PACT_BROKER_URL }}
+  PACT_BROKER_USERNAME: ${{ vars.PACT_BROKER_USERNAME }}
+  PACT_BROKER_PASSWORD: ${{ secrets.PACT_BROKER_PASSWORD }}
+  PACT_URL: ${{ github.event.client_payload.pact_url }}
+  GIT_COMMIT: ${{ github.event.client_payload.sha }}
+  GIT_BRANCH: ${{ github.event.client_payload.branch }}
+  DESCRIPTION: ${{ github.event.client_payload.message }}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    environment: pact
+    defaults:
+      run:
+        working-directory: ftgo/
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: .github
+      - uses: ./.github/actions/setup
+        with:
+          ref: ${{ env.GIT_COMMIT }}
+
+      - uses: actions/setup-java@v3
+        with:
+          distribution: liberica
+          java-version: 17
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+      - uses: jangjunha/pact-broker-actions/install-plugin@main
+        with:
+          source: protobuf
+
+      - name: Execute Gradle test
+        run: ./gradlew test

@@ -1,5 +1,8 @@
 name: Setup Build Environment
 description: checkout and setup gradle, java and build plugins
+inputs:
+  ref:
+    description: Commit SHA to checkout
 runs:
   using: composite
   steps:
@@ -11,6 +14,7 @@ runs:
     - uses: actions/checkout@v4
       with:
         path: ftgo/
+        ref: ${{ inputs.ref }}
 
     - uses: actions/setup-java@v3
       with:
