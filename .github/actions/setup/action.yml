@@ -1,0 +1,23 @@
+name: Setup Build Environment
+description: checkout and setup gradle, java and build plugins
+runs:
+  using: composite
+  steps:
+    - name: Checkout ftgo-proto repository
+      uses: actions/checkout@v4
+      with:
+        repository: jangjunha/ftgo-proto
+        path: ftgo-proto/
+    - uses: actions/checkout@v4
+      with:
+        path: ftgo/
+
+    - uses: actions/setup-java@v3
+      with:
+        distribution: liberica
+        java-version: 17
+    - name: Setup Gradle
+      uses: gradle/gradle-build-action@v2
+    - uses: jangjunha/pact-broker-actions/install-plugin@main
+      with:
+        source: protobuf

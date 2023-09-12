@@ -12,24 +12,10 @@ jobs:
       run:
         working-directory: ftgo/
     steps:
-      - name: Checkout ftgo-proto repository
-        uses: actions/checkout@v4
-        with:
-          repository: jangjunha/ftgo-proto
-          path: ftgo-proto/
       - uses: actions/checkout@v4
         with:
-          path: ftgo/
-
-      - uses: actions/setup-java@v3
-        with:
-          distribution: liberica
-          java-version: 17
-      - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
-      - uses: jangjunha/pact-broker-actions/install-plugin@main
-        with:
-          source: protobuf
+          sparse-checkout: .github
+      - uses: ./.github/actions/setup
 
       - name: Execute Gradle test
         run: ./gradlew -p ftgo-api-gateway test --tests '*PactTest'
