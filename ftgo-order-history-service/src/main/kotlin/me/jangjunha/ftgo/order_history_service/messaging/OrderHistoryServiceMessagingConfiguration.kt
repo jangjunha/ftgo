@@ -3,7 +3,6 @@ package me.jangjunha.ftgo.order_history_service.messaging
 import io.eventuate.tram.events.subscriber.DomainEventDispatcher
 import io.eventuate.tram.events.subscriber.DomainEventDispatcherFactory
 import io.eventuate.tram.spring.consumer.common.TramNoopDuplicateMessageDetectorConfiguration
-import io.eventuate.tram.spring.consumer.kafka.EventuateTramKafkaMessageConsumerConfiguration
 import io.eventuate.tram.spring.events.common.TramEventsCommonAutoConfiguration
 import io.eventuate.tram.spring.events.subscriber.TramEventSubscriberConfiguration
 import io.eventuate.tram.spring.messaging.common.TramMessagingCommonAutoConfiguration
@@ -18,7 +17,6 @@ import org.springframework.context.annotation.Import
 @Import(value = [
     TramNoopDuplicateMessageDetectorConfiguration::class,
     TramEventSubscriberConfiguration::class,
-    EventuateTramKafkaMessageConsumerConfiguration::class,
     TramMessagingCommonAutoConfiguration::class,
     TramEventsCommonAutoConfiguration::class,
 ])

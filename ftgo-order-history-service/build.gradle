@@ -29,6 +29,10 @@ dependencies {
     implementation project(':ftgo-order-service-api')
 
     testImplementation "org.springframework.boot:spring-boot-starter-test:$springBootVersion"
+    testImplementation "io.eventuate.tram.core:eventuate-tram-spring-in-memory"
+    testImplementation "com.ninja-squad:springmockk:4.0.0"
+    testImplementation 'au.com.dius.pact.consumer:junit5:4.6.2'
+    testImplementation 'org.jetbrains.kotlin:kotlin-test-junit5'
 
     developmentOnly "org.springframework.boot:spring-boot-devtools:$springBootVersion"
 }
