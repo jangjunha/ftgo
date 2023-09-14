@@ -55,6 +55,9 @@ dependencies {
 	testImplementation "org.springframework.boot:spring-boot-starter-test:$springBootVersion"
 	testImplementation "org.mockito:mockito-inline"
 	testImplementation "io.eventuate.tram.sagas:eventuate-tram-sagas-spring-testing-support"
+	testImplementation "io.eventuate.tram.core:eventuate-tram-spring-in-memory"
+	testImplementation 'au.com.dius.pact.provider:junit5spring:4.6.2'
+	testRuntimeOnly 'com.h2database:h2'
 
 	integrationTestImplementation 'io.eventuate.tram.core:eventuate-tram-spring-in-memory'
 	integrationTestImplementation "org.springframework.boot:spring-boot-starter-test:$springBootVersion"
