@@ -7,6 +7,11 @@ import au.com.dius.pact.provider.junitsupport.Provider
 import au.com.dius.pact.provider.junitsupport.State
 import au.com.dius.pact.provider.junitsupport.loader.PactBroker
 import au.com.dius.pact.provider.junitsupport.loader.PactFilter
+import au.com.dius.pact.provider.spring.junit5.PactVerificationSpringProvider
+import io.eventuate.tram.consumer.common.NoopDuplicateMessageDetector
+import io.eventuate.tram.spring.events.common.TramEventsCommonAutoConfiguration
+import io.eventuate.tram.spring.inmemory.TramInMemoryCommonConfiguration
+import io.eventuate.tram.spring.messaging.common.TramMessagingCommonAutoConfiguration
 import io.mockk.every
 import io.mockk.mockk
 import me.jangjunha.ftgo.common.Money
@@ -20,13 +25,20 @@ import me.jangjunha.ftgo.order_service.service.OrderService
 import me.jangjunha.ftgo.pact.provider.junitsupport.filter.ByInteractionType
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.extension.ExtendWith
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Import
+import org.springframework.test.context.junit.jupiter.SpringExtension
 import java.time.OffsetDateTime
 import java.util.*
 
 
+@ExtendWith(SpringExtension::class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @Provider("ftgo-order-service")
 @PactFilter(value = ["GRPC"], filter = ByInteractionType::class)
-@PactBroker(url = "https://pact.ftgo.jangjunha.me/")
+@PactBroker
 class OrderGrpcPactProviderTest {
 
     private val port = 50011
@@ -53,7 +65,7 @@ class OrderGrpcPactProviderTest {
     }
 
     @TestTemplate
-    @ExtendWith(PactVerificationInvocationContextProvider::class)
+    @ExtendWith(PactVerificationSpringProvider::class)
     fun pactVerificationTestTeamplate(context: PactVerificationContext) {
         context.verifyInteraction()
     }
@@ -72,4 +84,16 @@ class OrderGrpcPactProviderTest {
     fun tearDown() {
         grpcServer.stop()
     }
+
+    @Configuration
+    @EnableAutoConfiguration
+    @Import(
+        value = [
+            NoopDuplicateMessageDetector::class,
+            TramMessagingCommonAutoConfiguration::class,
+            TramEventsCommonAutoConfiguration::class,
+            TramInMemoryCommonConfiguration::class,
+        ]
+    )
+    class TestConfiguration
 }

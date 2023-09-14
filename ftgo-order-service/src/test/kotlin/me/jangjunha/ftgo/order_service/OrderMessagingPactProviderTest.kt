@@ -1,16 +1,19 @@
 package me.jangjunha.ftgo.order_service
 
-import au.com.dius.pact.core.model.Interaction
 import au.com.dius.pact.core.model.Pact
 import au.com.dius.pact.provider.MessageAndMetadata
 import au.com.dius.pact.provider.PactVerifyProvider
 import au.com.dius.pact.provider.junit5.MessageTestTarget
 import au.com.dius.pact.provider.junit5.PactVerificationContext
-import au.com.dius.pact.provider.junit5.PactVerificationInvocationContextProvider
 import au.com.dius.pact.provider.junitsupport.Provider
 import au.com.dius.pact.provider.junitsupport.loader.PactBroker
 import au.com.dius.pact.provider.junitsupport.loader.PactFilter
+import au.com.dius.pact.provider.spring.junit5.PactVerificationSpringProvider
 import io.eventuate.common.json.mapper.JSonMapper
+import io.eventuate.tram.consumer.common.NoopDuplicateMessageDetector
+import io.eventuate.tram.spring.events.common.TramEventsCommonAutoConfiguration
+import io.eventuate.tram.spring.inmemory.TramInMemoryCommonConfiguration
+import io.eventuate.tram.spring.messaging.common.TramMessagingCommonAutoConfiguration
 import me.jangjunha.ftgo.common.Money
 import me.jangjunha.ftgo.order_service.api.OrderDetails
 import me.jangjunha.ftgo.order_service.api.events.OrderAuthorized
@@ -20,17 +23,24 @@ import me.jangjunha.ftgo.pact.provider.junitsupport.filter.ByInteractionType
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.TestTemplate
 import org.junit.jupiter.api.extension.ExtendWith
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Import
+import org.springframework.test.context.junit.jupiter.SpringExtension
 import java.util.*
 
 
+@ExtendWith(SpringExtension::class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @Provider("ftgo-order-service")
 @PactFilter(value = ["Message"], filter = ByInteractionType::class)
-@PactBroker(url = "https://pact.ftgo.jangjunha.me/")
+@PactBroker
 class OrderMessagingPactProviderTest {
 
     @TestTemplate
-    @ExtendWith(PactVerificationInvocationContextProvider::class)
-    fun testTemplate(pact: Pact, interaction: Interaction, context: PactVerificationContext) {
+    @ExtendWith(PactVerificationSpringProvider::class)
+    fun testTemplate(pact: Pact, context: PactVerificationContext) {
         context.verifyInteraction()
     }
 
@@ -91,4 +101,16 @@ class OrderMessagingPactProviderTest {
             ),
         )
     }
+
+    @Configuration
+    @EnableAutoConfiguration
+    @Import(
+        value = [
+            NoopDuplicateMessageDetector::class,
+            TramMessagingCommonAutoConfiguration::class,
+            TramEventsCommonAutoConfiguration::class,
+            TramInMemoryCommonConfiguration::class,
+        ]
+    )
+    class TestConfiguration
 }
