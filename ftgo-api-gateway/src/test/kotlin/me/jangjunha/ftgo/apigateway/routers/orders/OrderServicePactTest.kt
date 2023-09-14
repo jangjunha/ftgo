@@ -27,7 +27,7 @@ class OrderServicePactTest {
     @Pact(consumer = "ftgo-api-gateway")
     fun createOrder(builder: PactBuilder): V4Pact = builder
         .given("a restaurant and a consumer")
-        .expectsToReceiveHttpInteraction("") { httpBuilder ->
+        .expectsToReceiveHttpInteraction("creating order") { httpBuilder ->
             httpBuilder
                 .withRequest { request ->
                     request
