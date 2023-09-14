@@ -56,7 +56,14 @@ dependencies {
 	testImplementation "org.mockito:mockito-inline"
 	testImplementation "io.eventuate.tram.sagas:eventuate-tram-sagas-spring-testing-support"
 	testImplementation "io.eventuate.tram.core:eventuate-tram-spring-in-memory"
+	testImplementation "io.eventuate.tram.sagas:eventuate-tram-sagas-spring-in-memory"
 	testImplementation 'au.com.dius.pact.provider:junit5spring:4.6.2'
+	testImplementation 'au.com.dius.pact.consumer:junit5:4.6.2'
+	testImplementation(project(':ftgo-pact')) {
+		capabilities {
+			requireCapability("me.jangjunha.ftgo:ftgo-pact-provider")
+		}
+	}
 	testRuntimeOnly 'com.h2database:h2'
 
 	integrationTestImplementation 'io.eventuate.tram.core:eventuate-tram-spring-in-memory'

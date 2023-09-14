@@ -15,6 +15,7 @@ class ByInteractionType<I : Interaction> : InteractionFilter<I> {
                     "Http" -> interaction is SynchronousRequestResponse
                     "V4Http" -> interaction is V4Interaction.SynchronousHttp
                     "GRPC" -> interaction is V4Interaction.SynchronousMessages && interaction.transport == "grpc"
+                    "RawSynchronousMessage" -> interaction is V4Interaction.SynchronousMessages && interaction.transport == null
                     "Message" -> interaction is Message
                     else -> false
                 }
