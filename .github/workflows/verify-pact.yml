@@ -5,16 +5,6 @@ on:
     types:
       - contract_requiring_verification_published
 
-env:
-  PACT_BROKER_PUBLISH_VERIFICATION_RESULTS: true
-  PACT_BROKER_BASE_URL: ${{ vars.PACT_BROKER_URL }}
-  PACT_BROKER_USERNAME: ${{ vars.PACT_BROKER_USERNAME }}
-  PACT_BROKER_PASSWORD: ${{ secrets.PACT_BROKER_PASSWORD }}
-  PACT_URL: ${{ github.event.client_payload.pact_url }}
-  GIT_COMMIT: ${{ github.event.client_payload.sha }}
-  GIT_BRANCH: ${{ github.event.client_payload.branch }}
-  DESCRIPTION: ${{ github.event.client_payload.message }}
-
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -32,6 +22,15 @@ jobs:
 
       - name: Execute Gradle test
         run: ./gradlew test
+        env:
+          PACT_BROKER_PUBLISH_VERIFICATION_RESULTS: true
+          PACT_BROKER_BASE_URL: ${{ vars.PACT_BROKER_URL }}
+          PACTBROKER_AUTH_USERNAME: ${{ vars.PACT_BROKER_USERNAME }}
+          PACTBROKER_AUTH_PASSWORD: ${{ secrets.PACT_BROKER_PASSWORD }}
+          PACT_URL: ${{ github.event.client_payload.pact_url }}
+          GIT_COMMIT: ${{ github.event.client_payload.sha }}
+          GIT_BRANCH: ${{ github.event.client_payload.branch }}
+          DESCRIPTION: ${{ github.event.client_payload.message }}
 
       - uses: actions/upload-artifact@v3
         with:
