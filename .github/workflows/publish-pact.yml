@@ -28,6 +28,39 @@ jobs:
           broker_username: ${{ vars.PACT_BROKER_USERNAME }}
           broker_password: ${{ secrets.PACT_BROKER_PASSWORD }}
 
+  ftgo-order-service:
+    runs-on: ubuntu-latest
+    environment: pact
+    defaults:
+      run:
+        working-directory: ftgo/
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: .github
+      - uses: ./.github/actions/setup
+
+      - name: Execute Gradle test
+        run: ./gradlew -p ftgo-order-service test --tests '*PactTest'
+
+      - uses: jangjunha/pact-broker-actions/publish@main
+        with:
+          target: ftgo/ftgo-order-service/build/pacts/
+          version: ${{ github.sha }}
+          broker_url: ${{ vars.PACT_BROKER_URL }}
+          broker_username: ${{ vars.PACT_BROKER_USERNAME }}
+          broker_password: ${{ secrets.PACT_BROKER_PASSWORD }}
+
+      - name: Store reports
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: reports
+          path: |
+            **/build/reports/
+            **/build/test-results/
+
+
   ftgo-order-history-service:
     runs-on: ubuntu-latest
     environment: pact
