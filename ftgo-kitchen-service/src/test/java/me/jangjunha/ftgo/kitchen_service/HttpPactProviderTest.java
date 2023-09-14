@@ -5,6 +5,7 @@ import au.com.dius.pact.provider.junit5.PluginTestTarget;
 import au.com.dius.pact.provider.junitsupport.Provider;
 import au.com.dius.pact.provider.junitsupport.State;
 import au.com.dius.pact.provider.junitsupport.loader.PactBroker;
+import au.com.dius.pact.provider.junitsupport.loader.PactFilter;
 import au.com.dius.pact.provider.spring.junit5.PactVerificationSpringProvider;
 import io.eventuate.tram.consumer.common.NoopDuplicateMessageDetector;
 import io.eventuate.tram.spring.inmemory.TramInMemoryCommonConfiguration;
@@ -14,6 +15,7 @@ import me.jangjunha.ftgo.kitchen_service.domain.Ticket;
 import me.jangjunha.ftgo.kitchen_service.domain.TicketState;
 import me.jangjunha.ftgo.kitchen_service.grpc.GrpcServer;
 import me.jangjunha.ftgo.kitchen_service.service.KitchenService;
+import me.jangjunha.ftgo.pact.provider.junitsupport.filter.ByInteractionType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestTemplate;
@@ -37,8 +39,9 @@ import static org.mockito.Mockito.when;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @Provider("ftgo-kitchen-service")
+@PactFilter(value = {"Http", "V4Http"}, filter = ByInteractionType.class)
 @PactBroker
-public class KitchenPactProviderTest {
+public class HttpPactProviderTest {
 
     static final int PORT = 50011;
 
