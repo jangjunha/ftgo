@@ -27,6 +27,7 @@ class OrderServicePactTest {
     @Pact(consumer = "ftgo-api-gateway")
     fun findOrderById(builder: PactBuilder): V4Pact = builder
         .usingPlugin("protobuf")
+        .given("an order")
         .expectsToReceive("order details", "core/interaction/synchronous-message")
         .with(mapOf(
             Pair("pact:proto", filePath("../../ftgo-proto/protos/orders.proto")),
