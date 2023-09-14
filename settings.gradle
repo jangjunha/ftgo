@@ -19,3 +19,5 @@ include 'ftgo-order-service'
 include 'eventuate-tram-producer-kafka'
 include 'ftgo-order-history-service'
 include 'ftgo-api-gateway'
+include 'ftgo-pact'
+

@@ -57,6 +57,14 @@ dependencies {
 	testImplementation 'org.jetbrains.kotlin:kotlin-test'
 	testImplementation "io.eventuate.tram.core:eventuate-tram-test-util"
 	testImplementation "io.eventuate.tram.sagas:eventuate-tram-sagas-spring-testing-support"
+	testImplementation 'au.com.dius.pact.provider:junit5spring:4.6.2'
+	testImplementation(project(':ftgo-pact')) {
+		capabilities {
+			requireCapability("me.jangjunha.ftgo:ftgo-pact-provider")
+		}
+	}
+	testImplementation 'io.eventuate.tram.core:eventuate-tram-spring-in-memory'
+	testRuntimeOnly 'com.h2database:h2'
 
 	integrationTestImplementation 'io.eventuate.tram.core:eventuate-tram-spring-in-memory'
 	integrationTestImplementation ("org.springframework.boot:spring-boot-starter-test:$springBootVersion") {

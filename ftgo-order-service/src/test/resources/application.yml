@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:db
+    driver-class-name: org.h2.Driver
+grpc:
+  server:
+    port: 0
+pactbroker:
+  url: https://pact.ftgo.jangjunha.me/
