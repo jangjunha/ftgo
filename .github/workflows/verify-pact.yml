@@ -30,15 +30,5 @@ jobs:
         with:
           ref: ${{ env.GIT_COMMIT }}
 
-      - uses: actions/setup-java@v3
-        with:
-          distribution: liberica
-          java-version: 17
-      - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
-      - uses: jangjunha/pact-broker-actions/install-plugin@main
-        with:
-          source: protobuf
-
       - name: Execute Gradle test
-        run: ./gradlew test --tests '*PactProviderTest'
+        run: ./gradlew test
