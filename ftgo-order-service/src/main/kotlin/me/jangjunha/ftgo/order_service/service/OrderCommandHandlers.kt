@@ -9,9 +9,7 @@ import me.jangjunha.ftgo.order_service.api.OrderServiceChannels
 import me.jangjunha.ftgo.order_service.sagaparticipants.ApproveOrderCommand
 import me.jangjunha.ftgo.order_service.sagaparticipants.RejectOrderCommand
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.stereotype.Component
 
-@Component
 class OrderCommandHandlers @Autowired constructor(
     private val orderService: OrderService,
 ) {

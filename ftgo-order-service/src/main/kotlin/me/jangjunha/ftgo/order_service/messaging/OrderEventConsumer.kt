@@ -8,10 +8,8 @@ import me.jangjunha.ftgo.order_service.service.OrderService
 import me.jangjunha.ftgo.restaurant_service.api.events.RestaurantCreated
 import me.jangjunha.ftgo.restaurant_service.api.events.RestaurantMenuRevised
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.stereotype.Component
 import java.util.UUID
 
-@Component
 class OrderEventConsumer @Autowired constructor(private val orderService: OrderService) {
     fun domainEventHandlers(): DomainEventHandlers {
         return DomainEventHandlersBuilder
