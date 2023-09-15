@@ -9,9 +9,7 @@ import io.eventuate.tram.sagas.participant.SagaCommandHandlersBuilder
 import me.jangjunha.ftgo.consumer_service.api.ConsumerServiceChannels
 import me.jangjunha.ftgo.consumer_service.api.command.ValidateOrderByConsumer
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.stereotype.Component
 
-@Component
 class ConsumerServiceCommandHandlers @Autowired constructor(
     val consumerService: ConsumerService
 ) {
