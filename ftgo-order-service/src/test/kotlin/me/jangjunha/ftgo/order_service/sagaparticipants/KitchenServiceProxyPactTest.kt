@@ -25,6 +25,8 @@ import me.jangjunha.ftgo.eventuate.tram.testutil.MessageReceiver
 import me.jangjunha.ftgo.eventuate.tram.testutil.SagaMessagingTestHelper
 import me.jangjunha.ftgo.kitchen_service.api.CreateTicketReply
 import me.jangjunha.ftgo.kitchen_service.api.TicketDetails
+import me.jangjunha.ftgo.kitchen_service.api.commands.CancelCreateTicket
+import me.jangjunha.ftgo.kitchen_service.api.commands.ConfirmCreateTicket
 import me.jangjunha.ftgo.kitchen_service.api.commands.CreateTicket
 import me.jangjunha.ftgo.order_service.sagas.createorder.CreateOrderSaga
 import org.junit.jupiter.api.Test
@@ -124,6 +126,90 @@ class KitchenServiceProxyPactTest {
             sagaType
         )
         assert(reply == expectedReply)
+    }
+
+    @Pact(consumer = "ftgo-order-service")
+    fun confirmCreateTicketCommand(builder: SynchronousMessagePactBuilder): V4Pact = builder
+        .given("the ticket")
+        .expectsToReceive("confirmed reply")
+        .withRequest { request ->
+            request
+                .withMetadata { metadata ->
+                    metadata
+                        .add("command_type", "me.jangjunha.ftgo.kitchen_service.api.commands.ConfirmCreateTicket")
+                        .add("command_saga_type", "me.jangjunha.ftgo.order_service.sagas.createorder.CreateOrderSaga")
+                        .add("command_saga_id", Matchers.uuid())
+                        .add(
+                            "command_reply_to",
+                            "me.jangjunha.ftgo.order_service.sagas.createorder.CreateOrderSaga-Reply"
+                        )
+                        .add("ID", "")
+                }
+                .withContent(PactDslJsonBody().uuid("ticketId", "6f2d06a3-5dd2-4096-8644-6084d64eae35"))
+        }
+        .withResponse { response ->
+            response
+                .withMetadata { metadata ->
+                    metadata
+                        .add("reply_outcome-type", "SUCCESS")
+                }
+        }
+        .toPact()
+
+    @Test
+    @PactTestFor(pactMethod = "confirmCreateTicketCommand")
+    fun testConfirmCreateTicketCommand(message: V4Interaction.SynchronousMessages) {
+        val command = ConfirmCreateTicket(UUID.fromString("6f2d06a3-5dd2-4096-8644-6084d64eae35"))
+        val sagaType = CreateOrderSaga::class.java.name
+        every { messageReceiver.receive(eq("$sagaType-reply")) }.returns(buildMessage(message.response[0]))
+
+        sagaMessagingTestHelper.sendCommand(
+            KitchenServiceProxy.confirm,
+            command,
+            sagaType
+        )
+    }
+
+    @Pact(consumer = "ftgo-order-service")
+    fun cancelCreateTicketCommand(builder: SynchronousMessagePactBuilder): V4Pact = builder
+        .given("the ticket")
+        .expectsToReceive("cancelled reply")
+        .withRequest { request ->
+            request
+                .withMetadata { metadata ->
+                    metadata
+                        .add("command_type", "me.jangjunha.ftgo.kitchen_service.api.commands.CancelCreateTicket")
+                        .add("command_saga_type", "me.jangjunha.ftgo.order_service.sagas.createorder.CreateOrderSaga")
+                        .add("command_saga_id", Matchers.uuid())
+                        .add(
+                            "command_reply_to",
+                            "me.jangjunha.ftgo.order_service.sagas.createorder.CreateOrderSaga-Reply"
+                        )
+                        .add("ID", "")
+                }
+                .withContent(PactDslJsonBody().uuid("ticketId", "6f2d06a3-5dd2-4096-8644-6084d64eae35"))
+        }
+        .withResponse { response ->
+            response
+                .withMetadata { metadata ->
+                    metadata
+                        .add("reply_outcome-type", "SUCCESS")
+                }
+        }
+        .toPact()
+
+    @Test
+    @PactTestFor(pactMethod = "cancelCreateTicketCommand")
+    fun testCancelCreateTicketCommand(message: V4Interaction.SynchronousMessages) {
+        val command = CancelCreateTicket(UUID.fromString("6f2d06a3-5dd2-4096-8644-6084d64eae35"))
+        val sagaType = CreateOrderSaga::class.java.name
+        every { messageReceiver.receive(eq("$sagaType-reply")) }.returns(buildMessage(message.response[0]))
+
+        sagaMessagingTestHelper.sendCommand(
+            KitchenServiceProxy.cancel,
+            command,
+            sagaType
+        )
     }
 
     private fun buildMessage(contents: MessageContents): Message = MessageImpl(

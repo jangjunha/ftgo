@@ -14,12 +14,11 @@ class SagaMessagingTestHelper(
     private val idGenerator: IdGenerator,
 ) {
 
-    fun <C : Command, R : Any> sendAndReceiveCommand(
+    fun <C : Command> sendCommand(
         commandEndpoint: CommandEndpoint<C>,
         command: C,
-        replyClass: Class<R>,
         sagaType: String
-    ): R {
+    ) {
         val sagaId = idGenerator.genId().asString()
 
         val replyTo = "$sagaType-reply"
@@ -37,7 +36,17 @@ class SagaMessagingTestHelper(
             ),
             replyTo
         )
+    }
 
+    fun <C : Command, R : Any> sendAndReceiveCommand(
+        commandEndpoint: CommandEndpoint<C>,
+        command: C,
+        replyClass: Class<R>,
+        sagaType: String
+    ): R {
+        sendCommand(commandEndpoint, command, sagaType)
+
+        val replyTo = "$sagaType-reply"
         val response = messageReceiver.receive(replyTo)
         return JSonMapper.fromJson(response.payload, replyClass)
     }
