@@ -8,10 +8,8 @@ import me.jangjunha.ftgo.accounting_service.api.DepositCommand
 import me.jangjunha.ftgo.accounting_service.api.WithdrawCommand
 import me.jangjunha.ftgo.accounting_service.domain.AccountLimitExceededException
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.stereotype.Component
 import java.util.UUID
 
-@Component
 class AccountingServiceCommandHandler
 @Autowired constructor(
     private val accountingService: AccountingService,
@@ -49,13 +47,13 @@ class AccountingServiceCommandHandler
 
     companion object {
         fun parseMessageIdAsUUID(messageId: String): UUID {
-            val parts = messageId.split('-').map { it.toLong(16) }
-            if (parts.size != 2) {
-                throw IllegalStateException("Unexpected messageId format %s".format(messageId))
-            }
-            return UUID(
-                parts[0],
-                parts[1],
+            return UUID.fromString(
+                messageId
+                    .replace("-", "")
+                    .replaceFirst(
+                        Regex("([0-9a-fA-F]{8})([0-9a-fA-F]{4})([0-9a-fA-F]{4})([0-9a-fA-F]{4})([0-9a-fA-F]+)"),
+                        "$1-$2-$3-$4-$5"
+                    )
             )
         }
     }

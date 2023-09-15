@@ -4,9 +4,7 @@ import io.eventuate.tram.events.subscriber.DomainEventEnvelope
 import io.eventuate.tram.events.subscriber.DomainEventHandlers
 import io.eventuate.tram.events.subscriber.DomainEventHandlersBuilder
 import me.jangjunha.ftgo.consumer_service.api.event.ConsumerCreated
-import org.springframework.stereotype.Component
 
-@Component
 class AccountingServiceEventConsumer(
     private val accountingService: AccountingService,
 ) {
