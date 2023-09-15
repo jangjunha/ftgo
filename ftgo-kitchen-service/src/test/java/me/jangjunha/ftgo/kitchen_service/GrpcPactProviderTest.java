@@ -39,9 +39,9 @@ import static org.mockito.Mockito.when;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @Provider("ftgo-kitchen-service")
-@PactFilter(value = {"Http", "V4Http"}, filter = ByInteractionType.class)
+@PactFilter(value = {"GRPC"}, filter = ByInteractionType.class)
 @PactBroker
-public class HttpPactProviderTest {
+public class GrpcPactProviderTest {
 
     static final int PORT = 50011;
 
