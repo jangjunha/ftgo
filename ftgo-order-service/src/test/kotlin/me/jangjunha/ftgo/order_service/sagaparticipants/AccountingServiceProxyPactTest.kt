@@ -68,7 +68,7 @@ class AccountingServiceProxyPactTest {
                             "command_reply_to",
                             "me.jangjunha.ftgo.order_service.sagas.createorder.CreateOrderSaga-Reply"
                         )
-                        .add("ID", "")
+                        .add("ID", "0fb0ebd7-5f75-4bf9-86ff-061704640ad5")
                 }
                 .withContent(
                     PactDslJsonBody()
@@ -111,7 +111,7 @@ class AccountingServiceProxyPactTest {
                             "command_reply_to",
                             "me.jangjunha.ftgo.order_service.sagas.createorder.CreateOrderSaga-Reply"
                         )
-                        .add("ID", "")
+                        .add("ID", "78ad46cf-3eb9-408a-9b10-3efb5c4dae61")
                 }
                 .withContent(
                     PactDslJsonBody()
