@@ -89,8 +89,38 @@ public class CommandPactProviderTest {
         return new MessageAndMetadata(replyMessage.getPayload().getBytes(), replyMessage.getHeaders());
     }
 
+    @PactVerifyProvider("confirmed reply")
+    public MessageAndMetadata verifyConfirmCreateTicket(V4Interaction.SynchronousMessages messages) {
+        ArgumentCaptor<CommandReplyToken> tokenArgumentCaptor = ArgumentCaptor.forClass(CommandReplyToken.class);
+        ArgumentCaptor<List<Message>> messagesCaptor = ArgumentCaptor.forClass(List.class);
+
+        Message commandMessage = buildMessage(messages.getRequest());
+        commandDispatcher.messageHandler(commandMessage);
+
+        verify(replyProducer).sendReplies(tokenArgumentCaptor.capture(), messagesCaptor.capture());
+        Message replyMessage = messagesCaptor.getValue().get(0);
+        return new MessageAndMetadata(replyMessage.getPayload().getBytes(), replyMessage.getHeaders());
+    }
+
+    @PactVerifyProvider("cancelled reply")
+    public MessageAndMetadata verifyCancelCreateTicket(V4Interaction.SynchronousMessages messages) {
+        ArgumentCaptor<CommandReplyToken> tokenArgumentCaptor = ArgumentCaptor.forClass(CommandReplyToken.class);
+        ArgumentCaptor<List<Message>> messagesCaptor = ArgumentCaptor.forClass(List.class);
+
+        Message commandMessage = buildMessage(messages.getRequest());
+        commandDispatcher.messageHandler(commandMessage);
+
+        verify(replyProducer).sendReplies(tokenArgumentCaptor.capture(), messagesCaptor.capture());
+        Message replyMessage = messagesCaptor.getValue().get(0);
+        return new MessageAndMetadata(replyMessage.getPayload().getBytes(), replyMessage.getHeaders());
+    }
+
     @State("'A Cafe' restaurant")
     void toRestaurantExists() {
+    }
+
+    @State("`CREATE_PENDING` ticket")
+    void toCreatePendingTicketExists() {
     }
 
     private Message buildMessage(MessageContents contents) {
