@@ -13,7 +13,6 @@ sourceSets {
 		java {
 			compileClasspath += main.output
 			runtimeClasspath += main.output
-			srcDir 'src/integration-test/java'
 		}
 	}
 }
