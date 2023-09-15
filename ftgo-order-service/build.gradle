@@ -64,7 +64,9 @@ dependencies {
 			requireCapability("me.jangjunha.ftgo:ftgo-pact-provider")
 		}
 	}
+	testImplementation(project(':eventuate-tram-test-util'))
 	testImplementation 'io.eventuate.tram.core:eventuate-tram-spring-in-memory'
+	testImplementation 'io.eventuate.tram.sagas:eventuate-tram-sagas-spring-in-memory'
 	testRuntimeOnly 'com.h2database:h2'
 
 	integrationTestImplementation 'io.eventuate.tram.core:eventuate-tram-spring-in-memory'

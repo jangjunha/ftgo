@@ -1,5 +1,8 @@
 package me.jangjunha.ftgo.kitchen_service.api;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
 import java.util.UUID;
 
 public class CreateTicketReply {
@@ -28,5 +31,15 @@ public class CreateTicketReply {
 
     public void setSequence(long sequence) {
         this.sequence = sequence;
+    }
+
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return EqualsBuilder.reflectionEquals(this, obj);
     }
 }
