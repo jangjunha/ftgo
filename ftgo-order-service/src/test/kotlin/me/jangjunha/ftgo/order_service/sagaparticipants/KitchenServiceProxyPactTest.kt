@@ -130,7 +130,7 @@ class KitchenServiceProxyPactTest {
 
     @Pact(consumer = "ftgo-order-service")
     fun confirmCreateTicketCommand(builder: SynchronousMessagePactBuilder): V4Pact = builder
-        .given("the ticket")
+        .given("`CREATE_PENDING` ticket")
         .expectsToReceive("confirmed reply")
         .withRequest { request ->
             request
@@ -172,7 +172,7 @@ class KitchenServiceProxyPactTest {
 
     @Pact(consumer = "ftgo-order-service")
     fun cancelCreateTicketCommand(builder: SynchronousMessagePactBuilder): V4Pact = builder
-        .given("the ticket")
+        .given("`CREATE_PENDING` ticket")
         .expectsToReceive("cancelled reply")
         .withRequest { request ->
             request
