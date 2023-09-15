@@ -1,4 +1,6 @@
-# ftgo-accounting-service
+# 회계 서비스
+
+[![Can I Deploy main to production](https://pact.ftgo.jangjunha.me/pacticipants/ftgo-accounting-service/branches/main/latest-version/can-i-deploy/to-environment/production/badge)](https://pact.ftgo.jangjunha.me/hal-browser/browser.html#https://pact.ftgo.jangjunha.me/pacticipants/ftgo-accounting-service/branches/main/latest-version/can-i-deploy/to-environment/production)
 
 이벤트 소싱 기법을 활용한 서비스. 책의 예제와 달리 EventStoreDB를 사용합니다.
 
