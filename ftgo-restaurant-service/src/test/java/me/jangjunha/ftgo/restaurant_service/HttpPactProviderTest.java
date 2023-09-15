@@ -5,8 +5,10 @@ import au.com.dius.pact.provider.junit5.PactVerificationContext;
 import au.com.dius.pact.provider.junitsupport.Provider;
 import au.com.dius.pact.provider.junitsupport.State;
 import au.com.dius.pact.provider.junitsupport.loader.PactBroker;
+import au.com.dius.pact.provider.junitsupport.loader.PactFilter;
 import au.com.dius.pact.provider.spring.junit5.PactVerificationSpringProvider;
 import me.jangjunha.ftgo.common.Money;
+import me.jangjunha.ftgo.pact.provider.junitsupport.filter.ByInteractionType;
 import me.jangjunha.ftgo.restaurant_service.domain.MenuItem;
 import me.jangjunha.ftgo.restaurant_service.domain.Restaurant;
 import me.jangjunha.ftgo.restaurant_service.service.RestaurantService;
@@ -28,8 +30,9 @@ import static org.mockito.Mockito.when;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Provider("ftgo-restaurant-service")
+@PactFilter(value = {"Http", "V4Http"}, filter = ByInteractionType.class)
 @PactBroker
-public class RestaurantPactProviderTest {
+public class HttpPactProviderTest {
 
     @LocalServerPort
     int port;

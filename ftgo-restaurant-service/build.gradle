@@ -24,6 +24,7 @@ dependencies {
 
 	testImplementation "org.springframework.boot:spring-boot-starter-test:$springBootVersion"
 	testImplementation 'au.com.dius.pact.provider:junit5spring:4.6.2'
+	testImplementation project(':ftgo-pact')
 	testRuntimeOnly 'com.h2database:h2'
 }
 
