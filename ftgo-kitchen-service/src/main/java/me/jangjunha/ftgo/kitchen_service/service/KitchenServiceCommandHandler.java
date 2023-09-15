@@ -13,7 +13,6 @@ import me.jangjunha.ftgo.kitchen_service.api.commands.CreateTicket;
 import me.jangjunha.ftgo.kitchen_service.domain.RestaurantDetailsVerificationException;
 import me.jangjunha.ftgo.kitchen_service.domain.Ticket;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.util.UUID;
 
@@ -21,7 +20,6 @@ import static io.eventuate.tram.commands.consumer.CommandHandlerReplyBuilder.wit
 import static io.eventuate.tram.commands.consumer.CommandHandlerReplyBuilder.withSuccess;
 import static io.eventuate.tram.sagas.participant.SagaReplyMessageBuilder.withLock;
 
-@Component
 public class KitchenServiceCommandHandler {
     private final KitchenService kitchenService;
 

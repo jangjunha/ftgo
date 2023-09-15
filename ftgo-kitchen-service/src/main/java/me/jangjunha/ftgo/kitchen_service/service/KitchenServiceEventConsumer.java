@@ -7,13 +7,11 @@ import me.jangjunha.ftgo.kitchen_service.domain.MenuItem;
 import me.jangjunha.ftgo.restaurant_service.api.events.RestaurantCreated;
 import me.jangjunha.ftgo.restaurant_service.api.events.RestaurantMenuRevised;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-@Component
 public class KitchenServiceEventConsumer {
     private final KitchenService kitchenService;
 

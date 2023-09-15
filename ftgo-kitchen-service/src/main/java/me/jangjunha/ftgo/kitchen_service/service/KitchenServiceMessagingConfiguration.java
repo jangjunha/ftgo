@@ -6,7 +6,6 @@ import io.eventuate.tram.events.subscriber.DomainEventDispatcherFactory;
 import io.eventuate.tram.sagas.participant.SagaCommandDispatcherFactory;
 import io.eventuate.tram.sagas.spring.participant.SagaParticipantConfiguration;
 import io.eventuate.tram.spring.commands.common.TramCommandsCommonAutoConfiguration;
-import io.eventuate.tram.spring.consumer.common.TramNoopDuplicateMessageDetectorConfiguration;
 import io.eventuate.tram.spring.events.common.TramEventsCommonAutoConfiguration;
 import io.eventuate.tram.spring.events.publisher.TramEventsPublisherConfiguration;
 import io.eventuate.tram.spring.events.subscriber.TramEventSubscriberConfiguration;
@@ -29,7 +28,7 @@ import org.springframework.context.annotation.Import;
         // configure default CommandNameMapping
         TramCommandsCommonAutoConfiguration.class,
 })
-public class KitchenServiceConfiguration {
+public class KitchenServiceMessagingConfiguration {
     @Bean
     public DomainEventDispatcher domainEventDispatcher(
             KitchenServiceEventConsumer kitchenServiceEventConsumer,
@@ -41,12 +40,26 @@ public class KitchenServiceConfiguration {
     @Bean
     @Autowired
     public CommandDispatcher commandDispatcher(
-        KitchenServiceCommandHandler kitchenServiceCommandHandler,
-        SagaCommandDispatcherFactory sagaCommandDispatcherFactory
-    ){
+            KitchenServiceCommandHandler kitchenServiceCommandHandler,
+            SagaCommandDispatcherFactory sagaCommandDispatcherFactory
+    ) {
         return sagaCommandDispatcherFactory.make(
-            "kitchenServiceCommandDispatcher",
-            kitchenServiceCommandHandler.commandHandlers()
+                "kitchenServiceCommandDispatcher",
+                kitchenServiceCommandHandler.commandHandlers()
         );
+    }
+
+    @Bean
+    public KitchenServiceEventConsumer kitchenServiceEventConsumer(
+            KitchenService kitchenService
+    ) {
+        return new KitchenServiceEventConsumer(kitchenService);
+    }
+
+    @Bean
+    public KitchenServiceCommandHandler kitchenServiceCommandHandler(
+            KitchenService kitchenService
+    ) {
+        return new KitchenServiceCommandHandler(kitchenService);
     }
 }

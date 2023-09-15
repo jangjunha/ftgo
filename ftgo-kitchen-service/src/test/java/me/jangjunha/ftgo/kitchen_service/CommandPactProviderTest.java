@@ -21,7 +21,7 @@ import me.jangjunha.ftgo.kitchen_service.api.TicketDetails;
 import me.jangjunha.ftgo.kitchen_service.domain.Ticket;
 import me.jangjunha.ftgo.kitchen_service.service.KitchenService;
 import me.jangjunha.ftgo.kitchen_service.service.KitchenServiceCommandHandler;
-import me.jangjunha.ftgo.kitchen_service.service.KitchenServiceConfiguration;
+import me.jangjunha.ftgo.kitchen_service.service.KitchenServiceMessagingConfiguration;
 import me.jangjunha.ftgo.kitchen_service.service.KitchenServiceEventConsumer;
 import me.jangjunha.ftgo.pact.provider.junitsupport.filter.ByInteractionType;
 import org.junit.jupiter.api.BeforeEach;
@@ -148,7 +148,7 @@ public class CommandPactProviderTest {
     @EnableAutoConfiguration
     @Import({
             TramSagaInMemoryConfiguration.class,
-            KitchenServiceConfiguration.class,
+            KitchenServiceMessagingConfiguration.class,
     })
     static class TestConfiguration {
         @Bean
