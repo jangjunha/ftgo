@@ -17,15 +17,26 @@ sourceSets {
 			runtimeClasspath += main.output
 		}
 	}
+
+	componentTest {
+		compileClasspath += main.output
+		runtimeClasspath += main.output
+	}
 }
 
 configurations {
 	integrationTestImplementation.extendsFrom implementation
 	integtationTestApi.extendsFrom api
 	integrationTestRuntimeOnly.extendsFrom runtimeOnly
+
+	componentTestImplementation.extendsFrom implementation
+	componentTestApi.extendsFrom api
+	componentTestRuntimeOnly.extendsFrom runtimeOnly
 }
 
 dependencies {
+	implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.5.0'
+
 	implementation "io.eventuate.tram.sagas:eventuate-tram-sagas-spring-orchestration-simple-dsl"
 	implementation "io.eventuate.tram.sagas:eventuate-tram-sagas-spring-orchestration"
 	implementation "io.eventuate.tram.sagas:eventuate-tram-sagas-spring-participant"
@@ -73,6 +84,19 @@ dependencies {
 		exclude module: "mockito-core"
 	}
 
+	componentTestImplementation platform('org.junit:junit-bom:5.9.2')
+	componentTestImplementation 'org.junit.jupiter:junit-jupiter'
+	componentTestImplementation 'org.junit.platform:junit-platform-suite'
+	componentTestRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	componentTestImplementation "org.springframework.boot:spring-boot-starter-test:$springBootVersion"
+	componentTestImplementation 'io.cucumber:cucumber-java:7.14.0'
+	componentTestImplementation 'io.cucumber:cucumber-spring:7.14.0'
+	componentTestImplementation 'io.cucumber:cucumber-junit-platform-engine:7.14.0'
+	componentTestImplementation 'io.eventuate.tram.sagas:eventuate-tram-sagas-testing-support'
+	componentTestImplementation 'io.eventuate.tram.sagas:eventuate-tram-sagas-spring-testing-support'
+	componentTestImplementation 'io.eventuate.util:eventuate-util-test'
+	componentTestImplementation 'org.jetbrains.kotlin:kotlin-test'
+
 	developmentOnly "org.springframework.boot:spring-boot-devtools:$springBootVersion"
 
 	runtimeOnly 'org.postgresql:postgresql'
@@ -102,6 +126,29 @@ tasks.register("integrationTests", Test) {
 	}
 }
 
+tasks.register('componentTest', Test) {
+	testClassesDirs = sourceSets.componentTest.output.classesDirs
+	classpath = sourceSets.componentTest.runtimeClasspath
+	shouldRunAfter test
+
+	useJUnitPlatform()
+
+	doFirst {
+		def dbInfo = dockerCompose.componentTest.servicesInfos['order-service-db']
+		def kafkaInfo = dockerCompose.componentTest.servicesInfos['kafka']
+		def zookeeperInfo = dockerCompose.componentTest.servicesInfos['zookeeper']
+		environment "SPRING_DATASOURCE_URL", "jdbc:postgresql://${dbInfo.host}:${dbInfo.ports[5432]}/ftgo-order-service"
+		environment "SPRING_DATASOURCE_USERNAME", "postgres"
+		environment "SPRING_DATASOURCE_DRIVER_CLASS_NAME", "org.postgresql.Driver"
+		environment "EVENTUATELOCAL_KAFKA_BOOTSTRAP_SERVERS", "${kafkaInfo.host}:${kafkaInfo.ports[9092]}"
+		environment "EVENTUATELOCAL_ZOOKEEPER_CONNECTION_STRING", "${zookeeperInfo.host}:${zookeeperInfo.ports[2181]}"
+	}
+
+	testLogging {
+		events "passed"
+	}
+}
+
 allOpen {
 	annotation("jakarta.persistence.Entity")
 	annotation("jakarta.persistence.Embeddable")
@@ -118,5 +165,12 @@ dockerCompose {
 		startedServices = ['order-service-db']
 		downAdditionalArgs = ['-v']
 		isRequiredBy(tasks.integrationTests)
+	}
+
+	componentTest {
+		projectName = "ftgo-order-service-component-test"
+		startedServices = ['order-service-db', 'order-service-cdc', 'kafka', 'zookeeper', 'kafka-ui']
+		downAdditionalArgs = ['-v']
+		isRequiredBy(tasks.componentTest)
 	}
 }

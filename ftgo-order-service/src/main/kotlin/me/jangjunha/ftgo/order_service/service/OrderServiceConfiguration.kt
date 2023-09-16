@@ -7,9 +7,11 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Import
 
 @Configuration
-@Import(value = [
-    EventuateTramKafkaMessageConsumerConfiguration::class,
-    TramMessageProducerJdbcConfiguration::class,
-    TramNoopDuplicateMessageDetectorConfiguration::class,
-])
+@Import(
+    value = [
+        EventuateTramKafkaMessageConsumerConfiguration::class,
+        TramMessageProducerJdbcConfiguration::class,
+        TramNoopDuplicateMessageDetectorConfiguration::class,
+    ]
+)
 class OrderServiceConfiguration

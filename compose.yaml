@@ -36,60 +36,83 @@ services:
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
       KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:22181
 
-  cdc-service:
+
+  ### CDC ###
+  restaurant-service-cdc:
     image: eventuateio/eventuate-cdc-service:0.15.0.RELEASE
-    ports:
-      - 8099:8080
     depends_on:
       - kafka
       - restaurant-service-db
-      - kitchen-service-db
+    environment:
+      SPRING_PROFILE_ACTIVE: PostgresWal
+      EVENTUATELOCAL_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      EVENTUATELOCAL_ZOOKEEPER_CONNECTION_STRING: zookeeper:2181
+      EVENTUATE_CDC_PIPELINE_0_TYPE: eventuate-tram
+      EVENTUATE_CDC_PIPELINE_0_READER: 0
+      EVENTUATE_CDC_READER_0_TYPE: postgres-wal
+      EVENTUATE_CDC_READER_0_DATASOURCEDRIVERCLASSNAME: org.postgresql.Driver
+      EVENTUATE_CDC_READER_0_DATASOURCEURL: jdbc:postgresql://restaurant-service-db/ftgo-restaurant-service
+      EVENTUATE_CDC_READER_0_DATASOURCEUSERNAME: postgres
+      EVENTUATE_CDC_READER_0_DATASOURCEPASSWORD: ''
+      EVENTUATE_CDC_READER_0_LEADERSHIPLOCKPATH: /eventuate/cdc/leader/reader-restaurant-db
+      EVENTUATE_CDC_READER_0_OUTBOXID: 8101
+
+  consumer-service-cdc:
+    image: eventuateio/eventuate-cdc-service:0.15.0.RELEASE
+    depends_on:
+      - kafka
+      - consumer-service-db
+    environment:
+      SPRING_PROFILE_ACTIVE: PostgresWal
+      EVENTUATELOCAL_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      EVENTUATELOCAL_ZOOKEEPER_CONNECTION_STRING: zookeeper:2181
+      EVENTUATE_CDC_PIPELINE_0_TYPE: eventuate-tram
+      EVENTUATE_CDC_PIPELINE_0_READER: 0
+      EVENTUATE_CDC_READER_0_TYPE: postgres-wal
+      EVENTUATE_CDC_READER_0_DATASOURCEDRIVERCLASSNAME: org.postgresql.Driver
+      EVENTUATE_CDC_READER_0_DATASOURCEURL: jdbc:postgresql://consumer-service-db/ftgo-consumer-service
+      EVENTUATE_CDC_READER_0_DATASOURCEUSERNAME: postgres
+      EVENTUATE_CDC_READER_0_DATASOURCEPASSWORD: ''
+      EVENTUATE_CDC_READER_0_LEADERSHIPLOCKPATH: /eventuate/cdc/leader/reader-consumer-db
+      EVENTUATE_CDC_READER_0_OUTBOXID: 8102
+
+  order-service-cdc:
+    image: eventuateio/eventuate-cdc-service:0.15.0.RELEASE
+    depends_on:
+      - kafka
       - order-service-db
     environment:
       SPRING_PROFILE_ACTIVE: PostgresWal
-
       EVENTUATELOCAL_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
       EVENTUATELOCAL_ZOOKEEPER_CONNECTION_STRING: zookeeper:2181
+      EVENTUATE_CDC_PIPELINE_0_TYPE: eventuate-tram
+      EVENTUATE_CDC_PIPELINE_0_READER: 0
+      EVENTUATE_CDC_READER_0_TYPE: postgres-wal
+      EVENTUATE_CDC_READER_0_DATASOURCEDRIVERCLASSNAME: org.postgresql.Driver
+      EVENTUATE_CDC_READER_0_DATASOURCEURL: jdbc:postgresql://order-service-db/ftgo-order-service
+      EVENTUATE_CDC_READER_0_DATASOURCEUSERNAME: postgres
+      EVENTUATE_CDC_READER_0_DATASOURCEPASSWORD: ''
+      EVENTUATE_CDC_READER_0_LEADERSHIPLOCKPATH: /eventuate/cdc/leader/reader-order-db
+      EVENTUATE_CDC_READER_0_OUTBOXID: 8103
 
-      EVENTUATE_CDC_PIPELINE_RESTAURANT_TYPE: eventuate-tram
-      EVENTUATE_CDC_PIPELINE_RESTAURANT_READER: restaurantservice
-      EVENTUATE_CDC_READER_RESTAURANTSERVICE_TYPE: postgres-wal
-      EVENTUATE_CDC_READER_RESTAURANTSERVICE_DATASOURCEDRIVERCLASSNAME: org.postgresql.Driver
-      EVENTUATE_CDC_READER_RESTAURANTSERVICE_DATASOURCEURL: jdbc:postgresql://restaurant-service-db/ftgo-restaurant-service
-      EVENTUATE_CDC_READER_RESTAURANTSERVICE_DATASOURCEUSERNAME: postgres
-      EVENTUATE_CDC_READER_RESTAURANTSERVICE_DATASOURCEPASSWORD: ''
-      EVENTUATE_CDC_READER_RESTAURANTSERVICE_LEADERSHIPLOCKPATH: /eventuate/cdc/leader/reader-restaurant-db
-      EVENTUATE_CDC_READER_RESTAURANTSERVICE_OUTBOXID: 8101
-
-      EVENTUATE_CDC_PIPELINE_CONSUMER_TYPE: eventuate-tram
-      EVENTUATE_CDC_PIPELINE_CONSUMER_READER: consumerservice
-      EVENTUATE_CDC_READER_CONSUMERSERVICE_TYPE: postgres-wal
-      EVENTUATE_CDC_READER_CONSUMERSERVICE_DATASOURCEDRIVERCLASSNAME: org.postgresql.Driver
-      EVENTUATE_CDC_READER_CONSUMERSERVICE_DATASOURCEURL: jdbc:postgresql://consumer-service-db/ftgo-consumer-service
-      EVENTUATE_CDC_READER_CONSUMERSERVICE_DATASOURCEUSERNAME: postgres
-      EVENTUATE_CDC_READER_CONSUMERSERVICE_DATASOURCEPASSWORD: ''
-      EVENTUATE_CDC_READER_CONSUMERSERVICE_LEADERSHIPLOCKPATH: /eventuate/cdc/leader/reader-consumer-db
-      EVENTUATE_CDC_READER_CONSUMERSERVICE_OUTBOXID: 8102
-
-      EVENTUATE_CDC_PIPELINE_ORDER_TYPE: eventuate-tram
-      EVENTUATE_CDC_PIPELINE_ORDER_READER: orderservice
-      EVENTUATE_CDC_READER_ORDERSERVICE_TYPE: postgres-wal
-      EVENTUATE_CDC_READER_ORDERSERVICE_DATASOURCEDRIVERCLASSNAME: org.postgresql.Driver
-      EVENTUATE_CDC_READER_ORDERSERVICE_DATASOURCEURL: jdbc:postgresql://order-service-db/ftgo-order-service
-      EVENTUATE_CDC_READER_ORDERSERVICE_DATASOURCEUSERNAME: postgres
-      EVENTUATE_CDC_READER_ORDERSERVICE_DATASOURCEPASSWORD: ''
-      EVENTUATE_CDC_READER_ORDERSERVICE_LEADERSHIPLOCKPATH: /eventuate/cdc/leader/reader-order-db
-      EVENTUATE_CDC_READER_ORDERSERVICE_OUTBOXID: 8103
-
-      EVENTUATE_CDC_PIPELINE_KITCHEN_TYPE: eventuate-tram
-      EVENTUATE_CDC_PIPELINE_KITCHEN_READER: kitchenservice
-      EVENTUATE_CDC_READER_KITCHENSERVICE_TYPE: postgres-wal
-      EVENTUATE_CDC_READER_KITCHENSERVICE_DATASOURCEDRIVERCLASSNAME: org.postgresql.Driver
-      EVENTUATE_CDC_READER_KITCHENSERVICE_DATASOURCEURL: jdbc:postgresql://kitchen-service-db/ftgo-kitchen-service
-      EVENTUATE_CDC_READER_KITCHENSERVICE_DATASOURCEUSERNAME: postgres
-      EVENTUATE_CDC_READER_KITCHENSERVICE_DATASOURCEPASSWORD: ''
-      EVENTUATE_CDC_READER_KITCHENSERVICE_LEADERSHIPLOCKPATH: /eventuate/cdc/leader/reader-kitchen-db
-      EVENTUATE_CDC_READER_KITCHENSERVICE_OUTBOXID: 8105
+  kitchen-service-cdc:
+    image: eventuateio/eventuate-cdc-service:0.15.0.RELEASE
+    depends_on:
+      - kafka
+      - kitchen-service-db
+    environment:
+      SPRING_PROFILE_ACTIVE: PostgresWal
+      EVENTUATELOCAL_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      EVENTUATELOCAL_ZOOKEEPER_CONNECTION_STRING: zookeeper:2181
+      EVENTUATE_CDC_PIPELINE_0_TYPE: eventuate-tram
+      EVENTUATE_CDC_PIPELINE_0_READER: 0
+      EVENTUATE_CDC_READER_0_TYPE: postgres-wal
+      EVENTUATE_CDC_READER_0_DATASOURCEDRIVERCLASSNAME: org.postgresql.Driver
+      EVENTUATE_CDC_READER_0_DATASOURCEURL: jdbc:postgresql://kitchen-service-db/ftgo-kitchen-service
+      EVENTUATE_CDC_READER_0_DATASOURCEUSERNAME: postgres
+      EVENTUATE_CDC_READER_0_DATASOURCEPASSWORD: ''
+      EVENTUATE_CDC_READER_0_LEADERSHIPLOCKPATH: /eventuate/cdc/leader/reader-kitchen-db
+      EVENTUATE_CDC_READER_0_OUTBOXID: 8105
 
 
   ### Databases ###
