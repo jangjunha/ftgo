@@ -13,6 +13,7 @@ ARG TARGET_PROJECT=ftgo-restaurant-service
 ENV TARGET_PROJECT=${TARGET_PROJECT}
 RUN --mount=type=cache,target=/root/.gradle ./gradlew \
       clean build \
+      -x test \
       -p ${TARGET_PROJECT}
 RUN mkdir -p ${TARGET_PROJECT}/build/dependency && (cd ${TARGET_PROJECT}/build/dependency; jar -xf ../libs/*-SNAPSHOT.jar)
 
@@ -30,6 +31,7 @@ ARG TARGET_PROJECT=ftgo-consumer-service
 ENV TARGET_PROJECT=${TARGET_PROJECT}
 RUN --mount=type=cache,target=/root/.gradle ./gradlew \
       clean build \
+      -x test \
       -p ${TARGET_PROJECT}
 RUN mkdir -p ${TARGET_PROJECT}/build/dependency && (cd ${TARGET_PROJECT}/build/dependency; jar -xf ../libs/*-SNAPSHOT.jar)
 
@@ -47,6 +49,7 @@ ARG TARGET_PROJECT=ftgo-kitchen-service
 ENV TARGET_PROJECT=${TARGET_PROJECT}
 RUN --mount=type=cache,target=/root/.gradle ./gradlew \
       clean build \
+      -x test \
       -p ${TARGET_PROJECT}
 RUN mkdir -p ${TARGET_PROJECT}/build/dependency && (cd ${TARGET_PROJECT}/build/dependency; jar -xf ../libs/*-SNAPSHOT.jar)
 
@@ -64,6 +67,7 @@ ARG TARGET_PROJECT=ftgo-order-service
 ENV TARGET_PROJECT=${TARGET_PROJECT}
 RUN --mount=type=cache,target=/root/.gradle ./gradlew \
       clean build \
+      -x test \
       -p ${TARGET_PROJECT}
 RUN mkdir -p ${TARGET_PROJECT}/build/dependency && (cd ${TARGET_PROJECT}/build/dependency; jar -xf ../libs/*-SNAPSHOT.jar)
 
@@ -81,6 +85,7 @@ ARG TARGET_PROJECT=ftgo-accounting-service
 ENV TARGET_PROJECT=${TARGET_PROJECT}
 RUN --mount=type=cache,target=/root/.gradle ./gradlew \
       clean build \
+      -x test \
       -p ${TARGET_PROJECT}
 RUN mkdir -p ${TARGET_PROJECT}/build/dependency && (cd ${TARGET_PROJECT}/build/dependency; jar -xf ../libs/*-SNAPSHOT.jar)
 
@@ -98,6 +103,7 @@ ARG TARGET_PROJECT=ftgo-order-history-service
 ENV TARGET_PROJECT=${TARGET_PROJECT}
 RUN --mount=type=cache,target=/root/.gradle ./gradlew \
       clean build \
+      -x test \
       -p ${TARGET_PROJECT}
 RUN mkdir -p ${TARGET_PROJECT}/build/dependency && (cd ${TARGET_PROJECT}/build/dependency; jar -xf ../libs/*-SNAPSHOT.jar)
 
@@ -114,6 +120,7 @@ FROM build-base AS build-api-gateway
 ARG TARGET_PROJECT=ftgo-api-gateway
 ENV TARGET_PROJECT=${TARGET_PROJECT}
 RUN --mount=type=cache,target=/root/.gradle ./gradlew \
+      -x test \
       clean build \
       -p ${TARGET_PROJECT}
 RUN mkdir -p ${TARGET_PROJECT}/build/dependency && (cd ${TARGET_PROJECT}/build/dependency; jar -xf ../libs/*-SNAPSHOT.jar)
