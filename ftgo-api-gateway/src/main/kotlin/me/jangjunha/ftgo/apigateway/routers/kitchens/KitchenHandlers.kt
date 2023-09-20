@@ -1,11 +1,14 @@
 package me.jangjunha.ftgo.apigateway.routers.kitchens
 
 import kotlinx.coroutines.*
+import kotlinx.coroutines.reactor.awaitSingle
 import me.jangjunha.ftgo.apigateway.entities.restaurants.RestaurantInfo
 import me.jangjunha.ftgo.apigateway.proxies.KitchenService
 import me.jangjunha.ftgo.apigateway.proxies.RestaurantService
+import me.jangjunha.ftgo.apigateway.security.grpc.ForwardCallCredentials
 import me.jangjunha.ftgo.common.protobuf.TimestampUtils.*
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.security.core.context.ReactiveSecurityContextHolder
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.server.*
 import java.util.UUID
@@ -18,8 +21,10 @@ class KitchenHandlers
 ) {
 
     suspend fun getTicket(request: ServerRequest): ServerResponse = coroutineScope {
+        val securityContext = ReactiveSecurityContextHolder.getContext().awaitSingle()
+
         val id = UUID.fromString(request.pathVariable("ticketId"))
-        val deferredTicket = async { kitchenService.findTicketById(id) }
+        val deferredTicket = async { kitchenService.findTicketById(id, ForwardCallCredentials(securityContext)) }
         val ticket = deferredTicket.await()
 
         val restaurantId = UUID.fromString(ticket.restaurantId)
@@ -41,9 +46,11 @@ class KitchenHandlers
     }
 
     suspend fun acceptTicket(request: ServerRequest): ServerResponse = coroutineScope {
+        val securityContext = ReactiveSecurityContextHolder.getContext().awaitSingle()
+
         val id = UUID.fromString(request.pathVariable("ticketId"))
         val payload = request.awaitBody(AcceptTicketRequest::class)
-        kitchenService.acceptTicket(id, payload.readyBy)
+        kitchenService.acceptTicket(id, payload.readyBy, ForwardCallCredentials(securityContext))
         ServerResponse.accepted().buildAndAwait()
     }
 }
