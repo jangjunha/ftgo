@@ -1,6 +1,14 @@
+auth0:
+  audience: https://api.ftgo.jangjunha.me
+
 spring:
   application:
     name: ftgo-api-gateway
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://ftgo-jangjunha.jp.auth0.com/
 
 server:
   port: 8199

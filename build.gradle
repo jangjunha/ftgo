@@ -1,3 +1,5 @@
+import org.springframework.boot.gradle.plugin.SpringBootPlugin
+
 plugins {
     id 'com.google.protobuf' version "$protobufPluginVersion" apply false
     id 'io.spring.dependency-management' version '1.1.0' apply false
@@ -21,6 +23,7 @@ subprojects {
     }
 
     dependencies {
+        implementation platform(SpringBootPlugin.BOM_COORDINATES)
         implementation platform("io.eventuate.platform:eventuate-platform-dependencies:$eventuatePlatformVersion")
     }
 

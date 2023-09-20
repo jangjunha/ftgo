@@ -1,5 +1,6 @@
 plugins {
     id 'java-library'
+    id 'org.jetbrains.kotlin.jvm'
 }
 
 group = 'me.jangjunha.ftgo'
@@ -9,13 +10,25 @@ java {
     registerFeature('proto') {
         usingSourceSet(sourceSets.main)
     }
+    registerFeature('web') {
+        usingSourceSet(sourceSets.main)
+    }
+    registerFeature('webflux') {
+        usingSourceSet(sourceSets.main)
+    }
 }
 
 dependencies {
     api 'commons-lang:commons-lang:2.6'
+    implementation "io.grpc:grpc-api:$grpcVersion"
 
     protoApi 'me.jangjunha.ftgo:proto:0.1.0'
     protoApi "com.google.protobuf:protobuf-java:$protobufVersion"
+
+    webImplementation 'org.springframework:spring-web'
+    webImplementation 'org.apache.tomcat.embed:tomcat-embed-core'
+
+    webfluxImplementation 'org.springframework:spring-webflux'
 
     testImplementation platform('org.junit:junit-bom:5.9.1')
     testImplementation 'org.junit.jupiter:junit-jupiter'

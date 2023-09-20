@@ -49,6 +49,7 @@ class OrderControllerTest
         mockMvc.perform(
             post("/orders/")
                 .accept(MediaType.APPLICATION_JSON)
+                .header("x-ftgo-authenticated-consumer-id", "8b7577db-68b6-4ef2-9212-5e406836c642")
                 .content(
                     """
                     {

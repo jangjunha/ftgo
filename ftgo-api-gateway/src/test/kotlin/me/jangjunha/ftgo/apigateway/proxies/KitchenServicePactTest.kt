@@ -13,6 +13,7 @@ import au.com.dius.pact.core.model.V4Interaction
 import au.com.dius.pact.core.model.annotations.Pact
 import kotlinx.coroutines.runBlocking
 import me.jangjunha.ftgo.apigateway.Destinations
+import me.jangjunha.ftgo.apigateway.security.grpc.ExplicitCallCredentials
 import me.jangjunha.ftgo.kitchen_service.api.Ticket
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
@@ -39,6 +40,12 @@ class KitchenServicePactTest {
                 Pair("pact:proto", BuilderUtils.filePath("../../ftgo-proto/protos/kitchens.proto")),
                 Pair("pact:content-type", "application/grpc"),
                 Pair("pact:proto-service", "KitchenService/GetTicket"),
+                Pair(
+                    "requestMetadata",
+                    mapOf(
+                        "x-ftgo-authenticated-restaurant-id" to "97e3c4c2-f336-4435-9314-ad1a633495df",
+                    ),
+                ),
                 Pair(
                     "request",
                     mapOf(
@@ -77,6 +84,12 @@ class KitchenServicePactTest {
                 Pair("pact:proto", BuilderUtils.filePath("../../ftgo-proto/protos/kitchens.proto")),
                 Pair("pact:content-type", "application/grpc"),
                 Pair("pact:proto-service", "KitchenService/GetTicket"),
+                Pair(
+                    "requestMetadata",
+                    mapOf(
+                        "x-ftgo-authenticated-restaurant-id" to "97e3c4c2-f336-4435-9314-ad1a633495df",
+                    ),
+                ),
                 Pair(
                     "request",
                     mapOf(
@@ -129,6 +142,12 @@ class KitchenServicePactTest {
                 Pair("pact:content-type", "application/grpc"),
                 Pair("pact:proto-service", "KitchenService/AcceptTicket"),
                 Pair(
+                    "requestMetadata",
+                    mapOf(
+                        "x-ftgo-authenticated-restaurant-id" to "97e3c4c2-f336-4435-9314-ad1a633495df",
+                    ),
+                ),
+                Pair(
                     "request",
                     mapOf(
                         Pair("ticketId", "6f2d06a3-5dd2-4096-8644-6084d64eae35"),
@@ -158,7 +177,14 @@ class KitchenServicePactTest {
                 )
             )
             val expected = Ticket.parseFrom(interaction.response[0].contents.value)
-            val ticket = service.findTicketById(UUID.fromString("6f2d06a3-5dd2-4096-8644-6084d64eae35"))
+            val ticket =
+                service.findTicketById(
+                    UUID.fromString("6f2d06a3-5dd2-4096-8644-6084d64eae35"),
+                    ExplicitCallCredentials(
+                        "x-ftgo-authenticated-restaurant-id",
+                        "97e3c4c2-f336-4435-9314-ad1a633495df"
+                    )
+                )
             assert(expected == ticket)
         }
 
@@ -175,7 +201,14 @@ class KitchenServicePactTest {
                 )
             )
             val expected = Ticket.parseFrom(interaction.response[0].contents.value)
-            val ticket = service.findTicketById(UUID.fromString("6f2d06a3-5dd2-4096-8644-6084d64eae35"))
+            val ticket =
+                service.findTicketById(
+                    UUID.fromString("6f2d06a3-5dd2-4096-8644-6084d64eae35"),
+                    ExplicitCallCredentials(
+                        "x-ftgo-authenticated-restaurant-id",
+                        "97e3c4c2-f336-4435-9314-ad1a633495df"
+                    )
+                )
             assert(expected == ticket)
         }
 
@@ -195,6 +228,10 @@ class KitchenServicePactTest {
                 service.acceptTicket(
                     UUID.fromString("6f2d06a3-5dd2-4096-8644-6084d64eae35"),
                     OffsetDateTime.parse("1970-01-01T00:30Z"),
+                    ExplicitCallCredentials(
+                        "x-ftgo-authenticated-restaurant-id",
+                        "97e3c4c2-f336-4435-9314-ad1a633495df"
+                    )
                 )
             }
         }

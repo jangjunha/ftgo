@@ -41,6 +41,11 @@ dependencies {
 	implementation "io.grpc:grpc-kotlin-stub:$grpcKotlinVersion"
 	implementation "com.google.protobuf:protobuf-kotlin:$protobufVersion"
 
+	implementation(project(':ftgo-common')) {
+		capabilities {
+			requireCapability('me.jangjunha.ftgo:ftgo-common-web')
+		}
+	}
 	implementation project(':ftgo-common-jpa')
 	implementation project(':ftgo-accounting-service-api')
 	implementation project(':ftgo-consumer-service-api')
@@ -56,6 +61,7 @@ dependencies {
 	testImplementation 'org.jetbrains.kotlin:kotlin-test'
 	testImplementation "io.eventuate.tram.core:eventuate-tram-test-util"
 	testImplementation "io.eventuate.tram.sagas:eventuate-tram-sagas-spring-testing-support"
+	testImplementation 'com.asarkar.grpc:grpc-test:1.2.2'
 	testImplementation 'au.com.dius.pact.consumer:junit5:4.6.2'
 	testImplementation 'au.com.dius.pact.provider:junit5spring:4.6.2'
 	testImplementation(project(':ftgo-pact')) {

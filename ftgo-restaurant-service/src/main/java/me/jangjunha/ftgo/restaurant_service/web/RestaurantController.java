@@ -1,5 +1,9 @@
 package me.jangjunha.ftgo.restaurant_service.web;
 
+import me.jangjunha.ftgo.common.auth.AuthenticatedClient;
+import me.jangjunha.ftgo.common.auth.AuthenticatedID;
+import me.jangjunha.ftgo.common.auth.AuthenticatedRestaurantID;
+import me.jangjunha.ftgo.common.web.AuthContext;
 import me.jangjunha.ftgo.restaurant_service.api.MenuItem;
 import me.jangjunha.ftgo.restaurant_service.api.web.CreateRestaurantResponse;
 import me.jangjunha.ftgo.restaurant_service.api.web.GetRestaurantResponse;
@@ -10,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.UUID;
 
@@ -24,7 +29,10 @@ public class RestaurantController {
     }
 
     @RequestMapping(method = RequestMethod.POST, path = "/")
-    public CreateRestaurantResponse create(@RequestBody CreateRestaurantRequest request) {
+    public CreateRestaurantResponse create(@RequestBody CreateRestaurantRequest request, @AuthContext AuthenticatedID authenticatedID) {
+        if (!(authenticatedID instanceof AuthenticatedClient)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
         Restaurant restaurant = restaurantService.create(request);
         return new CreateRestaurantResponse(restaurant.getId());
     }

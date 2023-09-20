@@ -33,6 +33,7 @@ class OrderHistoryServicePactTest {
             .path("/orders/")
             .matchQuery("consumerId", "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\$", "627a9a8a-41af-4daf-a968-00ffc80b53ad")
             .method("GET")
+            .headers("x-ftgo-authenticated-consumer-id", "627a9a8a-41af-4daf-a968-00ffc80b53ad")
         .willRespondWith()
             .status(200)
             .headers(
@@ -67,7 +68,7 @@ class OrderHistoryServicePactTest {
     @Test
     @PactTestFor(pactMethod = "getOrdersByConsumer")
     fun getOrdersByConsumer(mockServer: MockServer) {
-        val response = Request.get("${mockServer.getUrl()}/orders/?consumerId=627a9a8a-41af-4daf-a968-00ffc80b53ad").execute().returnResponse() as ClassicHttpResponse
+        val response = Request.get("${mockServer.getUrl()}/orders/?consumerId=627a9a8a-41af-4daf-a968-00ffc80b53ad").addHeader("x-ftgo-authenticated-consumer-id", "627a9a8a-41af-4daf-a968-00ffc80b53ad").execute().returnResponse() as ClassicHttpResponse
         val order = JSONParser.parseJSON(IOUtils.toString(response.entity.content, "utf-8")) as JSONObject
 
         assert(response.code == 200)

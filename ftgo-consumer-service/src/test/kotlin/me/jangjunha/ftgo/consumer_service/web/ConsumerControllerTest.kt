@@ -32,6 +32,7 @@ class ConsumerControllerTest
         mockMvc.perform(
             post("/consumers/")
                 .accept(MediaType.APPLICATION_JSON)
+                .header("x-ftgo-authenticated-client-id", "foo")
                 .content("""{"name": "yerin"}""")
                 .contentType(MediaType.APPLICATION_JSON)
         )
@@ -53,6 +54,7 @@ class ConsumerControllerTest
         mockMvc.perform(
             get("/consumers/d8db6819-6ab1-4099-9db8-98c3e03cf848/")
                 .accept(MediaType.APPLICATION_JSON)
+                .header("x-ftgo-authenticated-consumer-id", "d8db6819-6ab1-4099-9db8-98c3e03cf848")
         )
             .andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))

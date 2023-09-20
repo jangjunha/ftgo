@@ -2,8 +2,10 @@ package me.jangjunha.ftgo.kitchen_service.grpc;
 
 import com.google.protobuf.Empty;
 import io.grpc.Status;
+import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;
 import me.jangjunha.ftgo.common.UnsupportedStateTransitionException;
+import me.jangjunha.ftgo.common.auth.*;
 import me.jangjunha.ftgo.common.protobuf.TimestampUtils;
 import me.jangjunha.ftgo.kitchen_service.api.AcceptTicketPayload;
 import me.jangjunha.ftgo.kitchen_service.api.GetTicketPayload;
@@ -31,6 +33,12 @@ public class KitchenServiceImpl extends KitchenServiceGrpc.KitchenServiceImplBas
     @Override
     public void getTicket(GetTicketPayload request, StreamObserver<Ticket> responseObserver) {
         UUID ticketId = UUID.fromString(request.getTicketId());
+        AuthenticatedID authenticatedId = AuthInterceptor.getAUTHENTICATED_ID().get();
+        if (!hasPermission(ticketId, authenticatedId)) {
+            responseObserver.onError(new StatusRuntimeException(Status.PERMISSION_DENIED));
+            return;
+        }
+
         me.jangjunha.ftgo.kitchen_service.domain.Ticket ticket;
         try {
             ticket = kitchenService.getTicket(ticketId);
@@ -70,6 +78,12 @@ public class KitchenServiceImpl extends KitchenServiceGrpc.KitchenServiceImplBas
     @Override
     public void acceptTicket(AcceptTicketPayload request, StreamObserver<Empty> responseObserver) {
         UUID ticketId = UUID.fromString(request.getTicketId());
+        AuthenticatedID authenticatedId = AuthInterceptor.getAUTHENTICATED_ID().get();
+        if (!hasPermission(ticketId, authenticatedId)) {
+            responseObserver.onError(new StatusRuntimeException(Status.PERMISSION_DENIED));
+            return;
+        }
+
         OffsetDateTime readyBy = TimestampUtils.fromTimestamp(request.getReadyBy());
 
         try {
@@ -87,5 +101,24 @@ public class KitchenServiceImpl extends KitchenServiceGrpc.KitchenServiceImplBas
 
         responseObserver.onNext(Empty.newBuilder().build());
         responseObserver.onCompleted();
+    }
+
+    private boolean hasPermission(UUID ticketId, AuthenticatedID id) {
+        if (id == null) {
+            return false;
+        } else if (id instanceof AuthenticatedClient) {
+            return true;
+        } else if (id instanceof AuthenticatedRestaurantID) {
+            me.jangjunha.ftgo.kitchen_service.domain.Ticket ticket;
+            try {
+                ticket = kitchenService.getTicket(ticketId);
+            } catch (TicketNotFoundException e) {
+                return false;
+            }
+            return ((AuthenticatedRestaurantID) id).getRestaurantId() == ticket.getRestaurantId();
+        } else if (id instanceof AuthenticatedConsumerID) {
+            return false;
+        }
+        return false;
     }
 }

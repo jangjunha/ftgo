@@ -2,6 +2,8 @@ package me.jangjunha.ftgo.kitchen_service.grpc;
 
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
+import io.grpc.ServerInterceptors;
+import me.jangjunha.ftgo.common.auth.AuthInterceptor;
 import me.jangjunha.ftgo.kitchen_service.service.KitchenService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +20,10 @@ public class GrpcServer implements SmartLifecycle {
     public GrpcServer(int grpcServerPort, KitchenService kitchenService) {
         this.port = grpcServerPort;
         this.server = ServerBuilder.forPort(port)
-                .addService(new KitchenServiceImpl(kitchenService))
+                .addService(ServerInterceptors.intercept(
+                        new KitchenServiceImpl(kitchenService),
+                        new AuthInterceptor()
+                ))
                 .build();
     }
 
