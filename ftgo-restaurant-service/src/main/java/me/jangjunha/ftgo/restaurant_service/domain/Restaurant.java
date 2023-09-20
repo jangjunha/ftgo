@@ -23,6 +23,12 @@ public class Restaurant {
     public Restaurant() {
     }
 
+    public Restaurant(UUID id, String name, List<MenuItem> menuItems) {
+        this.id = id;
+        this.name = name;
+        this.menuItems = menuItems;
+    }
+
     public Restaurant(String name, List<MenuItem> menuItems) {
         this.name = name;
         this.menuItems = menuItems;

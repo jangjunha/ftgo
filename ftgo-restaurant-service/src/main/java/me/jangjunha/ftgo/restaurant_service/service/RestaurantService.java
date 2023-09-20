@@ -2,8 +2,8 @@ package me.jangjunha.ftgo.restaurant_service.service;
 
 import jakarta.transaction.Transactional;
 import me.jangjunha.ftgo.restaurant_service.api.MenuItem;
-import me.jangjunha.ftgo.restaurant_service.domain.CreateRestaurantRequest;
 import me.jangjunha.ftgo.restaurant_service.domain.Restaurant;
+import me.jangjunha.ftgo.restaurant_service.domain.RestaurantAlreadyExistsException;
 import me.jangjunha.ftgo.restaurant_service.domain.RestaurantRepository;
 import me.jangjunha.ftgo.restaurant_service.api.events.RestaurantCreated;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,8 +25,10 @@ public class RestaurantService {
         this.restaurantDomainEventPublisher = restaurantDomainEventPublisher;
     }
 
-    public Restaurant create(CreateRestaurantRequest request) {
-        Restaurant restaurant = new Restaurant(request.name, request.menuItems);
+    public Restaurant create(Restaurant restaurant) {
+        if (restaurant.getId() != null && restaurantRepository.existsById(restaurant.getId())) {
+            throw new RestaurantAlreadyExistsException();
+        }
         restaurantRepository.save(restaurant);
         restaurantDomainEventPublisher.publish(restaurant, Collections.singletonList(
                 new RestaurantCreated(restaurant.getName(), restaurant.getMenuItems().stream().map(m -> new MenuItem(m.getId(), m.getName(), m.getPrice())).toList())

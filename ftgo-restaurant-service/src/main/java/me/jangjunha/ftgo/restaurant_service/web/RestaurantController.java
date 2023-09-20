@@ -9,6 +9,7 @@ import me.jangjunha.ftgo.restaurant_service.api.web.CreateRestaurantResponse;
 import me.jangjunha.ftgo.restaurant_service.api.web.GetRestaurantResponse;
 import me.jangjunha.ftgo.restaurant_service.domain.CreateRestaurantRequest;
 import me.jangjunha.ftgo.restaurant_service.domain.Restaurant;
+import me.jangjunha.ftgo.restaurant_service.domain.RestaurantAlreadyExistsException;
 import me.jangjunha.ftgo.restaurant_service.service.RestaurantService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -33,7 +34,23 @@ public class RestaurantController {
         if (!(authenticatedID instanceof AuthenticatedClient)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
-        Restaurant restaurant = restaurantService.create(request);
+        Restaurant restaurant = restaurantService.create(new Restaurant(request.name, request.menuItems));
+        return new CreateRestaurantResponse(restaurant.getId());
+    }
+
+    @RequestMapping(method = RequestMethod.POST, path = "/{restaurantId}/")
+    public CreateRestaurantResponse createWithId(@PathVariable UUID restaurantId, @RequestBody CreateRestaurantRequest request, @AuthContext AuthenticatedID authenticatedID) {
+        if (authenticatedID instanceof AuthenticatedClient) {
+        } else if (authenticatedID instanceof AuthenticatedRestaurantID && ((AuthenticatedRestaurantID) authenticatedID).getRestaurantId() == restaurantId) {
+        } else {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
+        Restaurant restaurant;
+        try {
+            restaurant = restaurantService.create(new Restaurant(restaurantId, request.name, request.menuItems));
+        } catch (RestaurantAlreadyExistsException e) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "restaurant with id %s already exists".formatted(restaurantId));
+        }
         return new CreateRestaurantResponse(restaurant.getId());
     }
 

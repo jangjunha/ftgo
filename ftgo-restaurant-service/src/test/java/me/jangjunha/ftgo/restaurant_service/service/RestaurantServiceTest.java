@@ -2,7 +2,6 @@ package me.jangjunha.ftgo.restaurant_service.service;
 
 import me.jangjunha.ftgo.common.Money;
 import me.jangjunha.ftgo.restaurant_service.api.events.RestaurantCreated;
-import me.jangjunha.ftgo.restaurant_service.domain.CreateRestaurantRequest;
 import me.jangjunha.ftgo.restaurant_service.domain.MenuItem;
 import me.jangjunha.ftgo.restaurant_service.domain.Restaurant;
 import me.jangjunha.ftgo.restaurant_service.domain.RestaurantRepository;
@@ -47,17 +46,17 @@ class RestaurantServiceTest {
     void setUp() {
         restaurantRepository = mock(RestaurantRepository.class);
         when(
-            restaurantRepository.findAll()
+                restaurantRepository.findAll()
         ).thenReturn(Arrays.asList(A_CAFE, INE_RESTAURANT));
         when(
-            restaurantRepository.findById(A_CAFE_ID)
+                restaurantRepository.findById(A_CAFE_ID)
         ).thenReturn(
-            Optional.of(A_CAFE)
+                Optional.of(A_CAFE)
         );
         when(
-            restaurantRepository.findById(INE_RESTAURANT_ID)
+                restaurantRepository.findById(INE_RESTAURANT_ID)
         ).thenReturn(
-            Optional.of(INE_RESTAURANT)
+                Optional.of(INE_RESTAURANT)
         );
 
         restaurantDomainEventPublisher = mock(RestaurantDomainEventPublisher.class);
@@ -67,20 +66,20 @@ class RestaurantServiceTest {
 
     @Test
     void create() {
-        CreateRestaurantRequest request = new CreateRestaurantRequest();
-        request.name = "Subway";
-        request.menuItems = Arrays.asList(
-            makeMenuItem("meatball-15cm", "Meatball (15cm)", new Money("6700")),
-            makeMenuItem("blt-15cm", "BLT (15cm)", new Money("7300"))
-        );
-        Restaurant restaurant = restaurantService.create(request);
+        Restaurant restaurant = restaurantService.create(new Restaurant(
+                "Subway",
+                Arrays.asList(
+                        makeMenuItem("meatball-15cm", "Meatball (15cm)", new Money("6700")),
+                        makeMenuItem("blt-15cm", "BLT (15cm)", new Money("7300"))
+                )
+        ));
 
         verify(restaurantRepository).save(same(restaurant));
         verify(restaurantDomainEventPublisher).publish(restaurant, List.of(
-            new RestaurantCreated("Subway", Arrays.asList(
-                    new me.jangjunha.ftgo.restaurant_service.api.MenuItem("meatball-15cm", "Meatball (15cm)", new Money("6700")),
-                    new me.jangjunha.ftgo.restaurant_service.api.MenuItem("blt-15cm", "BLT (15cm)", new Money("7300"))
-            )))
+                new RestaurantCreated("Subway", Arrays.asList(
+                        new me.jangjunha.ftgo.restaurant_service.api.MenuItem("meatball-15cm", "Meatball (15cm)", new Money("6700")),
+                        new me.jangjunha.ftgo.restaurant_service.api.MenuItem("blt-15cm", "BLT (15cm)", new Money("7300"))
+                )))
         );
     }
 
