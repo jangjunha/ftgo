@@ -115,7 +115,7 @@ public class KitchenServiceImpl extends KitchenServiceGrpc.KitchenServiceImplBas
             } catch (TicketNotFoundException e) {
                 return false;
             }
-            return ((AuthenticatedRestaurantID) id).getRestaurantId() == ticket.getRestaurantId();
+            return ((AuthenticatedRestaurantID) id).getRestaurantId().equals(ticket.getRestaurantId());
         } else if (id instanceof AuthenticatedConsumerID) {
             return false;
         }
