@@ -1,5 +1,11 @@
 package me.jangjunha.ftgo.order_service.grpc
 
+import com.asarkar.grpc.test.GrpcCleanupExtension
+import com.asarkar.grpc.test.Resources
+import io.grpc.Metadata
+import io.grpc.ServerInterceptors
+import io.grpc.inprocess.InProcessChannelBuilder
+import io.grpc.inprocess.InProcessServerBuilder
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
@@ -7,6 +13,7 @@ import io.mockk.verify
 import kotlinx.coroutines.runBlocking
 import me.jangjunha.ftgo.common.Money
 import me.jangjunha.ftgo.common.api.money
+import me.jangjunha.ftgo.common.auth.AuthInterceptor
 import me.jangjunha.ftgo.common.protobuf.TimestampUtils
 import me.jangjunha.ftgo.order_service.OrderFixtures.CONSUMER_ID
 import me.jangjunha.ftgo.order_service.OrderFixtures.DELIVERY_INFO
@@ -23,12 +30,16 @@ import me.jangjunha.ftgo.order_service.service.OrderService
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
 import java.time.OffsetDateTime
 import java.util.*
 
+@ExtendWith(GrpcCleanupExtension::class)
 class OrderServiceImplTest {
+
     private lateinit var orderService: OrderService
-    private lateinit var orderServiceImpl: OrderServiceImpl
+
+    private lateinit var stub: OrderServiceGrpcKt.OrderServiceCoroutineStub
 
     companion object {
         val ORDER_1 = Order(
@@ -43,9 +54,22 @@ class OrderServiceImplTest {
     }
 
     @BeforeEach
-    fun setUp() {
-        orderService = mockk()
-        orderServiceImpl = OrderServiceImpl(orderService)
+    fun setUp(resources: Resources) {
+        orderService = mockk(relaxed = true)
+
+        val serverName = InProcessServerBuilder.generateName()
+        InProcessServerBuilder.forName(serverName)
+            .addService(ServerInterceptors.intercept(OrderServiceImpl(orderService), AuthInterceptor()))
+            .build()
+            .apply {
+                resources.register(this)
+            }
+            .start()
+
+        val channel = InProcessChannelBuilder.forName(serverName).directExecutor().build().apply {
+            resources.register(this)
+        }
+        stub = OrderServiceGrpcKt.OrderServiceCoroutineStub(channel)
 
         mockkStatic(OffsetDateTime::class)
         every { OffsetDateTime.now() } returns OffsetDateTime.parse("2023-05-16T09:18+09:00")
@@ -58,7 +82,12 @@ class OrderServiceImplTest {
         val payload = getOrderPayload {
             id = ORDER_ID.toString()
         }
-        val order = orderServiceImpl.getOrder(payload)
+        val order = stub.getOrder(payload, Metadata().apply {
+            put(
+                Metadata.Key.of("x-ftgo-authenticated-consumer-id", Metadata.ASCII_STRING_MARSHALLER),
+                "0763e858-6a8b-499b-9745-7fc230c54716"
+            )
+        })
 
         assertEquals(order {
             id = "43517ead-0606-4d49-98f9-6b6b873b944e"
@@ -99,14 +128,16 @@ class OrderServiceImplTest {
         val payload = createOrderPayload {
             restaurantId = RESTAURANT_ID.toString()
             consumerId = CONSUMER_ID.toString()
-            items.addAll(listOf(
-                menuItemIdAndQuantity {
-                    menuItemId = "americano"
-                    quantity = 1
-                },
-            ))
+            items.addAll(
+                listOf(
+                    menuItemIdAndQuantity {
+                        menuItemId = "americano"
+                        quantity = 1
+                    },
+                )
+            )
         }
-        orderServiceImpl.createOrder(payload)
+        stub.createOrder(payload)
 
         verify {
             orderService.createOrder(

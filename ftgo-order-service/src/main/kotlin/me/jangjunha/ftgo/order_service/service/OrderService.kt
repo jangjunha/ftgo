@@ -39,9 +39,9 @@ class OrderService @Autowired constructor(
     ): List<OrderLineItem> {
         return items.map {
             val menuItem = (
-                restaurant.menuItems.find { mi -> mi.id == it.menuItemId }
-                    ?: throw InvalidMenuItemIdException(it.menuItemId)
-            )
+                    restaurant.menuItems.find { mi -> mi.id == it.menuItemId }
+                        ?: throw InvalidMenuItemIdException(it.menuItemId)
+                    )
             OrderLineItem(it.quantity, it.menuItemId, menuItem.name, menuItem.price)
         }
     }
@@ -58,9 +58,9 @@ class OrderService @Autowired constructor(
         deliveryInformation: DeliveryInformation,
     ): Order {
         val restaurant = (
-            restaurantRepository.findByIdOrNull(restaurantId)
-                ?: throw RestaurantNotFoundException(restaurantId)
-        )
+                restaurantRepository.findByIdOrNull(restaurantId)
+                    ?: throw RestaurantNotFoundException(restaurantId)
+                )
         val orderLineItems = makeOrderLineItems(lineItems, restaurant)
 
         val oe = Order.createOrder(
@@ -75,12 +75,14 @@ class OrderService @Autowired constructor(
         val sagaState = CreateOrderSagaState(
             order.id,
             OrderDetails(
-                orderLineItems.map { OrderDetails.LineItem(
-                    it.quantity,
-                    it.menuItemId,
-                    it.name,
-                    it.price,
-                ) },
+                orderLineItems.map {
+                    OrderDetails.LineItem(
+                        it.quantity,
+                        it.menuItemId,
+                        it.name,
+                        it.price,
+                    )
+                },
                 order.orderLineItems.orderTotal,
                 restaurantId,
                 consumerId,

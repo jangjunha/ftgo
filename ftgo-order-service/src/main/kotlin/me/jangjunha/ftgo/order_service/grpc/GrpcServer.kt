@@ -2,6 +2,8 @@ package me.jangjunha.ftgo.order_service.grpc
 
 import io.grpc.Server
 import io.grpc.ServerBuilder
+import io.grpc.ServerInterceptors
+import me.jangjunha.ftgo.common.auth.AuthInterceptor
 import me.jangjunha.ftgo.order_service.service.OrderService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -12,7 +14,12 @@ class GrpcServer(
     private val port: Int,
     private val orderService: OrderService,
     private val server: Server = ServerBuilder.forPort(port)
-        .addService(OrderServiceImpl(orderService))
+        .addService(
+            ServerInterceptors.intercept(
+                OrderServiceImpl(orderService),
+                AuthInterceptor()
+            )
+        )
         .build(),
 ) :
     SmartLifecycle {
