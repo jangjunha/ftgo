@@ -1,0 +1,179 @@
+name: Build docker image and Deploy to Artifact Registry
+
+on: push
+
+jobs:
+  accounting-service:
+    permissions:
+      contents: "read"
+      id-token: "write"
+    runs-on: ubuntu-latest
+    environment: gcp
+    env:
+      IMAGE: asia-northeast3-docker.pkg.dev/ftgo-jangjunha/docker-public/ftgo-accounting-service
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: .github
+      - uses: ./.github/actions/setup-docker-deploy
+        with:
+          wif-provider: ${{ secrets.GCP_WIF_PROVIDER }}
+          wif-sa: ${{ secrets.GCP_WIF_SERVICE_ACCOUNT }}
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          push: true
+          target: accounting-service
+          tags: |
+            ${{ env.IMAGE }}:${{ github.sha }}
+            ${{ env.IMAGE }}:latest
+
+  api-gateway:
+    permissions:
+      contents: "read"
+      id-token: "write"
+    runs-on: ubuntu-latest
+    environment: gcp
+    env:
+      IMAGE: asia-northeast3-docker.pkg.dev/ftgo-jangjunha/docker-public/ftgo-api-gateway
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: .github
+      - uses: ./.github/actions/setup-docker-deploy
+        with:
+          wif-provider: ${{ secrets.GCP_WIF_PROVIDER }}
+          wif-sa: ${{ secrets.GCP_WIF_SERVICE_ACCOUNT }}
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          push: true
+          target: api-gateway
+          tags: |
+            ${{ env.IMAGE }}:${{ github.sha }}
+            ${{ env.IMAGE }}:latest
+
+  consumer-service:
+    permissions:
+      contents: "read"
+      id-token: "write"
+    runs-on: ubuntu-latest
+    environment: gcp
+    env:
+      IMAGE: asia-northeast3-docker.pkg.dev/ftgo-jangjunha/docker-public/ftgo-consumer-service
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: .github
+      - uses: ./.github/actions/setup-docker-deploy
+        with:
+          wif-provider: ${{ secrets.GCP_WIF_PROVIDER }}
+          wif-sa: ${{ secrets.GCP_WIF_SERVICE_ACCOUNT }}
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          push: true
+          target: consumer-service
+          tags: |
+            ${{ env.IMAGE }}:${{ github.sha }}
+            ${{ env.IMAGE }}:latest
+
+  kitchen-service:
+    permissions:
+      contents: "read"
+      id-token: "write"
+    runs-on: ubuntu-latest
+    environment: gcp
+    env:
+      IMAGE: asia-northeast3-docker.pkg.dev/ftgo-jangjunha/docker-public/ftgo-kitchen-service
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: .github
+      - uses: ./.github/actions/setup-docker-deploy
+        with:
+          wif-provider: ${{ secrets.GCP_WIF_PROVIDER }}
+          wif-sa: ${{ secrets.GCP_WIF_SERVICE_ACCOUNT }}
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          push: true
+          target: kitchen-service
+          tags: |
+            ${{ env.IMAGE }}:${{ github.sha }}
+            ${{ env.IMAGE }}:latest
+
+  order-history-service:
+    permissions:
+      contents: "read"
+      id-token: "write"
+    runs-on: ubuntu-latest
+    environment: gcp
+    env:
+      IMAGE: asia-northeast3-docker.pkg.dev/ftgo-jangjunha/docker-public/ftgo-order-history-service
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: .github
+      - uses: ./.github/actions/setup-docker-deploy
+        with:
+          wif-provider: ${{ secrets.GCP_WIF_PROVIDER }}
+          wif-sa: ${{ secrets.GCP_WIF_SERVICE_ACCOUNT }}
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          push: true
+          target: order-history-service
+          tags: |
+            ${{ env.IMAGE }}:${{ github.sha }}
+            ${{ env.IMAGE }}:latest
+
+  order-service:
+    permissions:
+      contents: "read"
+      id-token: "write"
+    runs-on: ubuntu-latest
+    environment: gcp
+    env:
+      IMAGE: asia-northeast3-docker.pkg.dev/ftgo-jangjunha/docker-public/ftgo-order-service
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: .github
+      - uses: ./.github/actions/setup-docker-deploy
+        with:
+          wif-provider: ${{ secrets.GCP_WIF_PROVIDER }}
+          wif-sa: ${{ secrets.GCP_WIF_SERVICE_ACCOUNT }}
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          push: true
+          target: order-service
+          tags: |
+            ${{ env.IMAGE }}:${{ github.sha }}
+            ${{ env.IMAGE }}:latest
+
+  restaurant-service:
+    permissions:
+      contents: "read"
+      id-token: "write"
+    runs-on: ubuntu-latest
+    environment: gcp
+    env:
+      IMAGE: asia-northeast3-docker.pkg.dev/ftgo-jangjunha/docker-public/ftgo-restaurant-service
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: .github
+      - uses: ./.github/actions/setup-docker-deploy
+        with:
+          wif-provider: ${{ secrets.GCP_WIF_PROVIDER }}
+          wif-sa: ${{ secrets.GCP_WIF_SERVICE_ACCOUNT }}
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          push: true
+          target: restaurant-service
+          tags: |
+            ${{ env.IMAGE }}:${{ github.sha }}
+            ${{ env.IMAGE }}:latest
