@@ -3,6 +3,46 @@ name: Build docker image and Deploy to Artifact Registry
 on: push
 
 jobs:
+  postgres:
+    permissions:
+      contents: "read"
+      id-token: "write"
+    runs-on: ubuntu-latest
+    environment: gcp
+    env:
+      IMAGE_BASE: asia-northeast3-docker.pkg.dev/ftgo-jangjunha/docker-public/postgres-base
+      IMAGE_SAGA: asia-northeast3-docker.pkg.dev/ftgo-jangjunha/docker-public/postgres-saga
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: .github
+      - uses: ./.github/actions/setup-docker-deploy
+        with:
+          wif-provider: ${{ secrets.GCP_WIF_PROVIDER }}
+          wif-sa: ${{ secrets.GCP_WIF_SERVICE_ACCOUNT }}
+      - name: Build and push base image
+        uses: docker/build-push-action@v5
+        with:
+          push: true
+          context: "{{defaultContext}}:database"
+          target: base
+          tags: |
+            ${{ env.IMAGE_BASE }}:${{ github.sha }}
+            ${{ env.IMAGE_BASE }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - name: Build and push saga image
+        uses: docker/build-push-action@v5
+        with:
+          push: true
+          context: "{{defaultContext}}:database"
+          target: saga
+          tags: |
+            ${{ env.IMAGE_SAGA }}:${{ github.sha }}
+            ${{ env.IMAGE_SAGA }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
   accounting-service:
     permissions:
       contents: "read"
