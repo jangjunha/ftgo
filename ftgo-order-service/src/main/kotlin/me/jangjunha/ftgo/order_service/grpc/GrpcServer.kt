@@ -3,6 +3,8 @@ package me.jangjunha.ftgo.order_service.grpc
 import io.grpc.Server
 import io.grpc.ServerBuilder
 import io.grpc.ServerInterceptors
+import io.grpc.health.v1.HealthCheckResponse
+import io.grpc.protobuf.services.HealthStatusManager
 import me.jangjunha.ftgo.common.auth.AuthInterceptor
 import me.jangjunha.ftgo.order_service.service.OrderService
 import org.slf4j.Logger
@@ -12,7 +14,12 @@ import java.io.IOException
 
 class GrpcServer(
     private val port: Int,
-    private val orderService: OrderService,
+    orderService: OrderService,
+) :
+    SmartLifecycle {
+    private val logger: Logger = LoggerFactory.getLogger(GrpcServer::class.java)
+
+    private val health: HealthStatusManager = HealthStatusManager()
     private val server: Server = ServerBuilder.forPort(port)
         .addService(
             ServerInterceptors.intercept(
@@ -20,10 +27,8 @@ class GrpcServer(
                 AuthInterceptor()
             )
         )
-        .build(),
-) :
-    SmartLifecycle {
-    private val logger: Logger = LoggerFactory.getLogger(GrpcServer::class.java)
+        .addService(health.healthService)
+        .build()
 
     override fun start() {
         try {
@@ -32,6 +37,7 @@ class GrpcServer(
             logger.error("gRPC server raises error", e)
             throw RuntimeException(e)
         }
+        health.setStatus("", HealthCheckResponse.ServingStatus.SERVING)
         logger.info("gRPC server started, listening on %d".format(port))
     }
 

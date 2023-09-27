@@ -3,6 +3,8 @@ package me.jangjunha.ftgo.kitchen_service.grpc;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import io.grpc.ServerInterceptors;
+import io.grpc.health.v1.HealthCheckResponse;
+import io.grpc.protobuf.services.HealthStatusManager;
 import me.jangjunha.ftgo.common.auth.AuthInterceptor;
 import me.jangjunha.ftgo.kitchen_service.service.KitchenService;
 import org.slf4j.Logger;
@@ -16,6 +18,7 @@ public class GrpcServer implements SmartLifecycle {
     private final Logger logger = LoggerFactory.getLogger(GrpcServer.class);
     private final Server server;
     private final int port;
+    private final HealthStatusManager health = new HealthStatusManager();
 
     public GrpcServer(int grpcServerPort, KitchenService kitchenService) {
         this.port = grpcServerPort;
@@ -24,6 +27,7 @@ public class GrpcServer implements SmartLifecycle {
                         new KitchenServiceImpl(kitchenService),
                         new AuthInterceptor()
                 ))
+                .addService(health.getHealthService())
                 .build();
     }
 
@@ -35,6 +39,7 @@ public class GrpcServer implements SmartLifecycle {
             logger.error("gRPC server raises error", e);
             throw new RuntimeException(e);
         }
+        health.setStatus("", HealthCheckResponse.ServingStatus.SERVING);
         logger.info("gRPC server started, listening on %d".formatted(port));
     }
 
