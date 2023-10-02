@@ -17,7 +17,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.StreamSupport;
 
 @RestController
 @RequestMapping(path = "/restaurants/")
@@ -27,6 +29,13 @@ public class RestaurantController {
     @Autowired
     public RestaurantController(RestaurantService restaurantService) {
         this.restaurantService = restaurantService;
+    }
+
+    @RequestMapping(method = RequestMethod.GET, path = "/")
+    public List<GetRestaurantResponse> list() {
+        return StreamSupport.stream(restaurantService.getAll().spliterator(), false)
+                .map(this::serialize)
+                .toList();
     }
 
     @RequestMapping(method = RequestMethod.POST, path = "/")
@@ -57,11 +66,15 @@ public class RestaurantController {
     @RequestMapping(method = RequestMethod.GET, path = "/{restaurantId}/")
     public ResponseEntity<GetRestaurantResponse> get(@PathVariable UUID restaurantId) {
         return restaurantService.get(restaurantId)
-                .map(r -> new ResponseEntity<>(new GetRestaurantResponse(
-                        r.getId(),
-                        r.getName(),
-                        r.getMenuItems().stream().map(m -> new MenuItem(m.getId(), m.getName(), m.getPrice())).toList()
-                ), HttpStatus.OK))
+                .map(r -> new ResponseEntity<>(serialize(r), HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
+    private GetRestaurantResponse serialize(Restaurant restaurant) {
+        return new GetRestaurantResponse(
+                restaurant.getId(),
+                restaurant.getName(),
+                restaurant.getMenuItems().stream().map(m -> new MenuItem(m.getId(), m.getName(), m.getPrice())).toList()
+        );
     }
 }
