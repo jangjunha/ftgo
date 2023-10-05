@@ -34,7 +34,7 @@ class OrderServiceImpl(
     override suspend fun createOrder(request: CreateOrderPayload): Order {
         val consumerId = UUID.fromString(request.consumerId)
         val authenticatedID = AuthInterceptor.AUTHENTICATED_ID.get()
-        if (!(authenticatedID is AuthenticatedConsumerID && authenticatedID.consumerId != consumerId)) {
+        if (!(authenticatedID is AuthenticatedConsumerID && authenticatedID.consumerId == consumerId)) {
             throw StatusRuntimeException(Status.PERMISSION_DENIED)
         }
 
