@@ -1,10 +1,10 @@
-package me.jangjunha.ftgo.apigateway.security.grpc
+package me.jangjunha.ftgo.common.auth
 
 import io.grpc.CallCredentials
 import io.grpc.Metadata
 import java.util.concurrent.Executor
 
-class ExplicitCallCredentials(
+open class ExplicitCallCredentials(
     private val key: String,
     private val value: String,
 ) : CallCredentials() {

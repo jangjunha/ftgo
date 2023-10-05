@@ -13,7 +13,7 @@ import au.com.dius.pact.core.model.V4Interaction
 import au.com.dius.pact.core.model.annotations.Pact
 import kotlinx.coroutines.runBlocking
 import me.jangjunha.ftgo.apigateway.Destinations
-import me.jangjunha.ftgo.apigateway.security.grpc.ExplicitCallCredentials
+import me.jangjunha.ftgo.common.auth.ExplicitCallCredentials
 import me.jangjunha.ftgo.kitchen_service.api.Ticket
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
