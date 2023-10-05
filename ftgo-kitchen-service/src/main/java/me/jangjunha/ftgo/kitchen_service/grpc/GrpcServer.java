@@ -7,6 +7,7 @@ import io.grpc.health.v1.HealthCheckResponse;
 import io.grpc.protobuf.services.HealthStatusManager;
 import me.jangjunha.ftgo.common.auth.AuthInterceptor;
 import me.jangjunha.ftgo.kitchen_service.service.KitchenService;
+import me.jangjunha.ftgo.order_service.api.OrderServiceGrpc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.SmartLifecycle;
@@ -20,11 +21,11 @@ public class GrpcServer implements SmartLifecycle {
     private final int port;
     private final HealthStatusManager health = new HealthStatusManager();
 
-    public GrpcServer(int grpcServerPort, KitchenService kitchenService) {
+    public GrpcServer(int grpcServerPort, KitchenService kitchenService, OrderServiceGrpc.OrderServiceBlockingStub orderService) {
         this.port = grpcServerPort;
         this.server = ServerBuilder.forPort(port)
                 .addService(ServerInterceptors.intercept(
-                        new KitchenServiceImpl(kitchenService),
+                        new KitchenServiceImpl(kitchenService, orderService),
                         new AuthInterceptor()
                 ))
                 .addService(health.getHealthService())

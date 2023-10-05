@@ -15,6 +15,9 @@ import me.jangjunha.ftgo.kitchen_service.domain.AlreadyAcceptedException;
 import me.jangjunha.ftgo.kitchen_service.domain.TicketLineItem;
 import me.jangjunha.ftgo.kitchen_service.domain.TicketNotFoundException;
 import me.jangjunha.ftgo.kitchen_service.service.KitchenService;
+import me.jangjunha.ftgo.order_service.api.GetOrderPayload;
+import me.jangjunha.ftgo.order_service.api.Order;
+import me.jangjunha.ftgo.order_service.api.OrderServiceGrpc;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.OffsetDateTime;
@@ -25,16 +28,19 @@ public class KitchenServiceImpl extends KitchenServiceGrpc.KitchenServiceImplBas
 
     private final KitchenService kitchenService;
 
+    private final OrderServiceGrpc.OrderServiceBlockingStub orderService;
+
     @Autowired
-    public KitchenServiceImpl(KitchenService kitchenService) {
+    public KitchenServiceImpl(KitchenService kitchenService, OrderServiceGrpc.OrderServiceBlockingStub orderService) {
         this.kitchenService = kitchenService;
+        this.orderService = orderService;
     }
 
     @Override
     public void getTicket(GetTicketPayload request, StreamObserver<Ticket> responseObserver) {
         UUID ticketId = UUID.fromString(request.getTicketId());
         AuthenticatedID authenticatedId = AuthInterceptor.getAUTHENTICATED_ID().get();
-        if (!hasPermission(ticketId, authenticatedId)) {
+        if (!hasPermission(ticketId, authenticatedId, true)) {
             responseObserver.onError(new StatusRuntimeException(Status.PERMISSION_DENIED));
             return;
         }
@@ -79,7 +85,7 @@ public class KitchenServiceImpl extends KitchenServiceGrpc.KitchenServiceImplBas
     public void acceptTicket(AcceptTicketPayload request, StreamObserver<Empty> responseObserver) {
         UUID ticketId = UUID.fromString(request.getTicketId());
         AuthenticatedID authenticatedId = AuthInterceptor.getAUTHENTICATED_ID().get();
-        if (!hasPermission(ticketId, authenticatedId)) {
+        if (!hasPermission(ticketId, authenticatedId, false)) {
             responseObserver.onError(new StatusRuntimeException(Status.PERMISSION_DENIED));
             return;
         }
@@ -103,7 +109,7 @@ public class KitchenServiceImpl extends KitchenServiceGrpc.KitchenServiceImplBas
         responseObserver.onCompleted();
     }
 
-    private boolean hasPermission(UUID ticketId, AuthenticatedID id) {
+    private boolean hasPermission(UUID ticketId, AuthenticatedID id, boolean isRead) {
         if (id == null) {
             return false;
         } else if (id instanceof AuthenticatedClient) {
@@ -117,7 +123,19 @@ public class KitchenServiceImpl extends KitchenServiceGrpc.KitchenServiceImplBas
             }
             return ((AuthenticatedRestaurantID) id).getRestaurantId().equals(ticket.getRestaurantId());
         } else if (id instanceof AuthenticatedConsumerID) {
-            return false;
+            if (isRead) {
+                Order order = orderService
+                        .withCallCredentials(new ClientCallCredentials())
+                        .getOrder(
+                                GetOrderPayload.newBuilder()
+                                        .setId(ticketId.toString())
+                                        .build()
+                        );
+                UUID consumerId = UUID.fromString(order.getConsumerId());
+                return ((AuthenticatedConsumerID) id).getConsumerId().equals(consumerId);
+            } else {
+                return false;
+            }
         }
         return false;
     }

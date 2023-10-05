@@ -15,6 +15,7 @@ import me.jangjunha.ftgo.kitchen_service.domain.Ticket;
 import me.jangjunha.ftgo.kitchen_service.domain.TicketState;
 import me.jangjunha.ftgo.kitchen_service.grpc.GrpcServer;
 import me.jangjunha.ftgo.kitchen_service.service.KitchenService;
+import me.jangjunha.ftgo.order_service.api.OrderServiceGrpc;
 import me.jangjunha.ftgo.pact.provider.junitsupport.filter.ByInteractionType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -47,7 +48,9 @@ public class GrpcPactProviderTest {
 
     private final KitchenService kitchenService = mock(KitchenService.class);
 
-    private final GrpcServer grpcServer = new GrpcServer(PORT, kitchenService);
+    private final OrderServiceGrpc.OrderServiceBlockingStub orderService = mock(OrderServiceGrpc.OrderServiceBlockingStub.class);
+
+    private final GrpcServer grpcServer = new GrpcServer(PORT, kitchenService, orderService);
 
     @State("ticket which state is `AWAITING_ACCEPTANCE`")
     void toAwaitingAcceptanceTicketExists() {
