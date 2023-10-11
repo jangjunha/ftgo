@@ -7,12 +7,9 @@ import io.grpc.stub.StreamObserver;
 import me.jangjunha.ftgo.common.UnsupportedStateTransitionException;
 import me.jangjunha.ftgo.common.auth.*;
 import me.jangjunha.ftgo.common.protobuf.TimestampUtils;
-import me.jangjunha.ftgo.kitchen_service.api.AcceptTicketPayload;
-import me.jangjunha.ftgo.kitchen_service.api.GetTicketPayload;
-import me.jangjunha.ftgo.kitchen_service.api.KitchenServiceGrpc;
-import me.jangjunha.ftgo.kitchen_service.api.Ticket;
+import me.jangjunha.ftgo.kitchen_service.api.*;
 import me.jangjunha.ftgo.kitchen_service.domain.AlreadyAcceptedException;
-import me.jangjunha.ftgo.kitchen_service.domain.TicketLineItem;
+import me.jangjunha.ftgo.kitchen_service.domain.InvalidParameterException;
 import me.jangjunha.ftgo.kitchen_service.domain.TicketNotFoundException;
 import me.jangjunha.ftgo.kitchen_service.service.KitchenService;
 import me.jangjunha.ftgo.order_service.api.GetOrderPayload;
@@ -22,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 public class KitchenServiceImpl extends KitchenServiceGrpc.KitchenServiceImplBase {
 
@@ -34,6 +30,50 @@ public class KitchenServiceImpl extends KitchenServiceGrpc.KitchenServiceImplBas
     public KitchenServiceImpl(KitchenService kitchenService, OrderServiceGrpc.OrderServiceBlockingStub orderService) {
         this.kitchenService = kitchenService;
         this.orderService = orderService;
+    }
+
+    @Override
+    public void listTickets(ListTicketPayload request, StreamObserver<ListTicketResponse> responseObserver) {
+        UUID restaurantId = UUID.fromString(request.getRestaurantId());
+
+        AuthenticatedID authenticatedID = AuthInterceptor.getAUTHENTICATED_ID().get();
+        if (authenticatedID instanceof AuthenticatedClient) {
+        } else if (authenticatedID instanceof AuthenticatedRestaurantID) {
+            if (!((AuthenticatedRestaurantID) authenticatedID).getRestaurantId().equals(restaurantId)) {
+                responseObserver.onError(new StatusRuntimeException(Status.PERMISSION_DENIED));
+                return;
+            }
+        } else if (authenticatedID instanceof AuthenticatedConsumerID) {
+            responseObserver.onError(new StatusRuntimeException(Status.PERMISSION_DENIED));
+            return;
+        } else {
+            responseObserver.onError(new StatusRuntimeException(Status.INTERNAL));
+            return;
+        }
+
+        try {
+            responseObserver.onNext(
+                    ListTicketResponse.newBuilder()
+                            .addAllEdges(
+                                    kitchenService.listTickets(restaurantId,
+                                            request.getFirst(),
+                                            request.getAfter(),
+                                            request.getLast(),
+                                            request.getBefore()
+                                    ).stream().map(edge ->
+                                            TicketEdge.newBuilder()
+                                                    .setNode(edge.getNode().toAPI())
+                                                    .setCursor(edge.getCursor())
+                                                    .build()
+                                    ).toList()
+                            )
+                            .build()
+            );
+        } catch (InvalidParameterException e) {
+            responseObserver.onError(Status.INVALID_ARGUMENT.withCause(e).withDescription(e.getMessage()).asRuntimeException());
+            return;
+        }
+        responseObserver.onCompleted();
     }
 
     @Override
@@ -53,31 +93,7 @@ public class KitchenServiceImpl extends KitchenServiceGrpc.KitchenServiceImplBas
             return;
         }
 
-        Ticket.Builder builder = Ticket.newBuilder()
-                .setId(ticket.getId().toString())
-                .setState(ticket.getState().toAPI())
-                .addAllLineItems(ticket.getLineItems().stream().map(TicketLineItem::toAPI).collect(Collectors.toList()))
-                .setRestaurantId(ticket.getRestaurantId().toString());
-        if (ticket.getSequence() != null) {
-            builder.setSequence(ticket.getSequence().intValue());
-        }
-        if (ticket.getReadyBy() != null) {
-            builder.setReadyBy(TimestampUtils.toTimestamp(ticket.getReadyBy()));
-        }
-        if (ticket.getAcceptTime() != null) {
-            builder.setAcceptTime(TimestampUtils.toTimestamp(ticket.getAcceptTime()));
-        }
-        if (ticket.getPreparingTime() != null) {
-            builder.setPreparingTime(TimestampUtils.toTimestamp(ticket.getPreparingTime()));
-        }
-        if (ticket.getPickedUpTime() != null) {
-            builder.setPickedUpTime(TimestampUtils.toTimestamp(ticket.getPickedUpTime()));
-        }
-        if (ticket.getReadyForPickupTime() != null) {
-            builder.setReadyForPickupTime(TimestampUtils.toTimestamp(ticket.getReadyForPickupTime()));
-        }
-
-        responseObserver.onNext(builder.build());
+        responseObserver.onNext(ticket.toAPI());
         responseObserver.onCompleted();
     }
 

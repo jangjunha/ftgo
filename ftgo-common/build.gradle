@@ -22,7 +22,7 @@ dependencies {
     api 'commons-lang:commons-lang:2.6'
     implementation "io.grpc:grpc-api:$grpcVersion"
 
-    protoApi 'me.jangjunha.ftgo:proto:0.1.0'
+    protoApi 'me.jangjunha.ftgo:proto:0.2.0'
     protoApi "com.google.protobuf:protobuf-java:$protobufVersion"
 
     webImplementation 'org.springframework:spring-web'

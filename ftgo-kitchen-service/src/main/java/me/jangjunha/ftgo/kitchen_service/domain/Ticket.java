@@ -3,6 +3,7 @@ package me.jangjunha.ftgo.kitchen_service.domain;
 import io.eventuate.tram.events.aggregates.ResultWithDomainEvents;
 import jakarta.persistence.*;
 import me.jangjunha.ftgo.common.UnsupportedStateTransitionException;
+import me.jangjunha.ftgo.common.protobuf.TimestampUtils;
 import me.jangjunha.ftgo.kitchen_service.api.events.TicketAcceptedEvent;
 import me.jangjunha.ftgo.kitchen_service.api.events.TicketCreatedEvent;
 import me.jangjunha.ftgo.kitchen_service.api.events.TicketDomainEvent;
@@ -193,6 +194,33 @@ public class Ticket {
 
     public void setReadyForPickupTime(OffsetDateTime readyForPickupTime) {
         this.readyForPickupTime = readyForPickupTime;
+    }
+
+    public me.jangjunha.ftgo.kitchen_service.api.Ticket toAPI() {
+        me.jangjunha.ftgo.kitchen_service.api.Ticket.Builder builder = me.jangjunha.ftgo.kitchen_service.api.Ticket.newBuilder()
+                .setId(id.toString())
+                .setState(state.toAPI())
+                .addAllLineItems(lineItems.stream().map(TicketLineItem::toAPI).collect(Collectors.toList()))
+                .setRestaurantId(restaurantId.toString());
+        if (sequence != null) {
+            builder.setSequence(sequence.intValue());
+        }
+        if (readyBy != null) {
+            builder.setReadyBy(TimestampUtils.toTimestamp(readyBy));
+        }
+        if (acceptTime != null) {
+            builder.setAcceptTime(TimestampUtils.toTimestamp(acceptTime));
+        }
+        if (preparingTime != null) {
+            builder.setPreparingTime(TimestampUtils.toTimestamp(preparingTime));
+        }
+        if (pickedUpTime != null) {
+            builder.setPickedUpTime(TimestampUtils.toTimestamp(pickedUpTime));
+        }
+        if (readyForPickupTime != null) {
+            builder.setReadyForPickupTime(TimestampUtils.toTimestamp(readyForPickupTime));
+        }
+        return builder.build();
     }
 
     @Override
