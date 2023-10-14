@@ -67,13 +67,14 @@ public class HttpPactProviderTest {
     private static final Restaurant A_CAFE = makeRestaurant(
             A_CAFE_ID,
             "A Cafe",
+            "서울시 강남구 테헤란로 2",
             List.of(
                     makeMenuItem("americano", "Americano", new Money("2500"))
             )
     );
 
-    private static Restaurant makeRestaurant(UUID id, String name, List<MenuItem> items) {
-        Restaurant r = new Restaurant(name, items);
+    private static Restaurant makeRestaurant(UUID id, String name, String address, List<MenuItem> items) {
+        Restaurant r = new Restaurant(name, address, items);
         r.setId(id);
         return r;
     }

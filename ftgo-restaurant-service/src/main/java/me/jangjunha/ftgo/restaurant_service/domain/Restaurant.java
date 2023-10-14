@@ -16,6 +16,8 @@ public class Restaurant {
 
     private String name;
 
+    private String address;
+
     @ElementCollection
     @CollectionTable(name = "restaurant_menu_items")
     private List<MenuItem> menuItems;
@@ -23,14 +25,16 @@ public class Restaurant {
     public Restaurant() {
     }
 
-    public Restaurant(UUID id, String name, List<MenuItem> menuItems) {
+    public Restaurant(UUID id, String name, String address, List<MenuItem> menuItems) {
         this.id = id;
         this.name = name;
+        this.address = address;
         this.menuItems = menuItems;
     }
 
-    public Restaurant(String name, List<MenuItem> menuItems) {
+    public Restaurant(String name, String address, List<MenuItem> menuItems) {
         this.name = name;
+        this.address = address;
         this.menuItems = menuItems;
     }
 
@@ -52,6 +56,14 @@ public class Restaurant {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public List<MenuItem> getMenuItems() {

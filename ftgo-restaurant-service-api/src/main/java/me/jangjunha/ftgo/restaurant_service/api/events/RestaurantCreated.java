@@ -5,21 +5,22 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import java.util.List;
-import java.util.Objects;
 
 public class RestaurantCreated implements RestaurantDomainEvent {
     private String name;
+    private String address;
     private List<MenuItem> menuItems;
 
     public RestaurantCreated() {
     }
 
-    public RestaurantCreated(String name, List<MenuItem> menuItems) {
+    public RestaurantCreated(String name, String address, List<MenuItem> menuItems) {
         if (menuItems == null) {
             throw new NullPointerException("Null menuItems");
         }
 
         this.name = name;
+        this.address = address;
         this.menuItems = menuItems;
     }
 
@@ -29,6 +30,14 @@ public class RestaurantCreated implements RestaurantDomainEvent {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public List<MenuItem> getMenuItems() {

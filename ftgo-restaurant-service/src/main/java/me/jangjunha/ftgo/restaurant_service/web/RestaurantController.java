@@ -43,7 +43,7 @@ public class RestaurantController {
         if (!(authenticatedID instanceof AuthenticatedClient)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
-        Restaurant restaurant = restaurantService.create(new Restaurant(request.name, request.menuItems));
+        Restaurant restaurant = restaurantService.create(new Restaurant(request.name, request.address, request.menuItems));
         return new CreateRestaurantResponse(restaurant.getId());
     }
 
@@ -56,7 +56,7 @@ public class RestaurantController {
         }
         Restaurant restaurant;
         try {
-            restaurant = restaurantService.create(new Restaurant(restaurantId, request.name, request.menuItems));
+            restaurant = restaurantService.create(new Restaurant(restaurantId, request.name, request.address, request.menuItems));
         } catch (RestaurantAlreadyExistsException e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "restaurant with id %s already exists".formatted(restaurantId));
         }
@@ -74,6 +74,7 @@ public class RestaurantController {
         return new GetRestaurantResponse(
                 restaurant.getId(),
                 restaurant.getName(),
+                restaurant.getAddress(),
                 restaurant.getMenuItems().stream().map(m -> new MenuItem(m.getId(), m.getName(), m.getPrice())).toList()
         );
     }

@@ -34,6 +34,7 @@ public class MessagingPactProviderTest {
     MessageAndMetadata restaurantCreatedEvent() {
         RestaurantCreated event = new RestaurantCreated(
                 "A Cafe",
+                "서울시 강남구 테헤란로 2",
                 List.of(
                         new MenuItem("americano", "Americano", new Money("2500"))
                 )

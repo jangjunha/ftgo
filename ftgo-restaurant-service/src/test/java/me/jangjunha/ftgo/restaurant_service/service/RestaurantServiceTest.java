@@ -23,6 +23,7 @@ class RestaurantServiceTest {
     private static final Restaurant A_CAFE = makeRestaurant(
             A_CAFE_ID,
             "A Cafe",
+            "서울시 강남구 테헤란로 2",
             Arrays.asList(
                     makeMenuItem("americano", "Americano", new Money("1500")),
                     makeMenuItem("latte", "Cafe Latte", new Money("2500"))
@@ -32,6 +33,7 @@ class RestaurantServiceTest {
     private static final Restaurant INE_RESTAURANT = makeRestaurant(
             INE_RESTAURANT_ID,
             "INE Restaurant",
+            "서울시 강남구 테헤란로 2",
             Arrays.asList(
                     makeMenuItem("omelet", "Omelet", new Money("12000")),
                     makeMenuItem("coke", "Coke", new Money("1500"))
@@ -68,6 +70,7 @@ class RestaurantServiceTest {
     void create() {
         Restaurant restaurant = restaurantService.create(new Restaurant(
                 "Subway",
+                "서울시 강남구 테헤란로 2",
                 Arrays.asList(
                         makeMenuItem("meatball-15cm", "Meatball (15cm)", new Money("6700")),
                         makeMenuItem("blt-15cm", "BLT (15cm)", new Money("7300"))
@@ -76,7 +79,7 @@ class RestaurantServiceTest {
 
         verify(restaurantRepository).save(same(restaurant));
         verify(restaurantDomainEventPublisher).publish(restaurant, List.of(
-                new RestaurantCreated("Subway", Arrays.asList(
+                new RestaurantCreated("Subway", "서울시 강남구 테헤란로 2", Arrays.asList(
                         new me.jangjunha.ftgo.restaurant_service.api.MenuItem("meatball-15cm", "Meatball (15cm)", new Money("6700")),
                         new me.jangjunha.ftgo.restaurant_service.api.MenuItem("blt-15cm", "BLT (15cm)", new Money("7300"))
                 )))
@@ -98,8 +101,8 @@ class RestaurantServiceTest {
         assertThat(restaurants).hasSameElementsAs(Arrays.asList(A_CAFE, INE_RESTAURANT));
     }
 
-    private static Restaurant makeRestaurant(UUID id, String name, List<MenuItem> items) {
-        Restaurant r = new Restaurant(name, items);
+    private static Restaurant makeRestaurant(UUID id, String name, String address, List<MenuItem> items) {
+        Restaurant r = new Restaurant(name, address, items);
         r.setId(id);
         return r;
     }

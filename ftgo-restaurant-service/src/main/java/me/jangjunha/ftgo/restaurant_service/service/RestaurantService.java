@@ -31,7 +31,7 @@ public class RestaurantService {
         }
         restaurantRepository.save(restaurant);
         restaurantDomainEventPublisher.publish(restaurant, Collections.singletonList(
-                new RestaurantCreated(restaurant.getName(), restaurant.getMenuItems().stream().map(m -> new MenuItem(m.getId(), m.getName(), m.getPrice())).toList())
+                new RestaurantCreated(restaurant.getName(), restaurant.getAddress(), restaurant.getMenuItems().stream().map(m -> new MenuItem(m.getId(), m.getName(), m.getPrice())).toList())
         ));
         return restaurant;
     }

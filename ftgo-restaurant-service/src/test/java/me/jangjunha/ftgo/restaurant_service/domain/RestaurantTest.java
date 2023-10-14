@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class RestaurantTest {
     private static final MenuItem AMERICANO = makeMenuItem("americano", "Americano", new Money("1500"));
     private static final MenuItem LATTE = makeMenuItem("latte", "Cafe Latte", new Money("2500"));
-    private static final Restaurant RESTAURANT = new Restaurant("Rem Cafe", Arrays.asList(AMERICANO, LATTE));
+    private static final Restaurant RESTAURANT = new Restaurant("Rem Cafe", "서울시 강남구 테헤란로 2", Arrays.asList(AMERICANO, LATTE));
 
     @Test
     void findMenuItem() {

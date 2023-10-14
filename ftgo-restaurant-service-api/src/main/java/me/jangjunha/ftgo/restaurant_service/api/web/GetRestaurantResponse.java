@@ -10,10 +10,12 @@ import java.util.UUID;
 public class GetRestaurantResponse {
     public UUID id;
     public String name;
+    public String address;
     public List<MenuItem> menuItems;
-    public GetRestaurantResponse(UUID id, String name, List<MenuItem> menuItems) {
+    public GetRestaurantResponse(UUID id, String name, String address, List<MenuItem> menuItems) {
         this.id = id;
         this.name = name;
+        this.address = address;
         this.menuItems = menuItems;
     }
 

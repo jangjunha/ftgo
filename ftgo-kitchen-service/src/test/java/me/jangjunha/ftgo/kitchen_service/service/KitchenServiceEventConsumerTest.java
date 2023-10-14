@@ -31,7 +31,7 @@ class KitchenServiceEventConsumerTest {
             .aggregate("me.jangjunha.ftgo.restaurant_service.domain.Restaurant", A_CAFE_ID)
             .eventHandlers(eventConsumer.domainEventHandlers())
         .when()
-            .publishes(new RestaurantCreated("Latte Cafe", List.of(
+            .publishes(new RestaurantCreated("Latte Cafe", "서울시 강남구 테헤란로 2", List.of(
                     new me.jangjunha.ftgo.restaurant_service.api.MenuItem("latte", "Cafe Latte", new Money("4000")),
                     new me.jangjunha.ftgo.restaurant_service.api.MenuItem("strawberry-latte", "Strawberry Latte", new Money("5500"))
             )))
