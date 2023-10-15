@@ -1,0 +1,66 @@
+plugins {
+    id("java")
+    id("org.jetbrains.kotlin.jvm")
+    id 'org.jetbrains.kotlin.plugin.spring'
+    id 'org.jetbrains.kotlin.plugin.jpa'
+    id "org.jetbrains.kotlin.kapt"
+    id("org.springframework.boot")
+    id("io.spring.dependency-management")
+}
+
+group = "me.jangjunha.ftgo"
+version = "0.0.1-SNAPSHOT"
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation("org.springframework.boot:spring-boot-starter-json:$springBootVersion")
+
+    implementation "io.eventuate.tram.core:eventuate-tram-events"
+    implementation "io.eventuate.tram.core:eventuate-tram-spring-consumer-kafka"
+    implementation "io.eventuate.tram.core:eventuate-tram-spring-events-subscriber"
+
+    implementation "com.querydsl:querydsl-jpa:$queryDslVersion:jakarta"
+    implementation "com.querydsl:querydsl-apt:$queryDslVersion:jakarta"
+    kapt "com.querydsl:querydsl-apt:$queryDslVersion:jakarta"
+    annotationProcessor "org.springframework.boot:spring-boot-starter-data-jpa:$springBootVersion"
+
+    implementation("io.grpc:grpc-services:$grpcVersion")
+    implementation("io.grpc:grpc-netty:$grpcVersion")
+    implementation("io.grpc:grpc-stub:$grpcVersion")
+    implementation "io.grpc:grpc-kotlin-stub:$grpcKotlinVersion"
+    implementation 'org.jetbrains.kotlin:kotlin-reflect'
+
+    implementation(project(":ftgo-common")) {
+        capabilities {
+            requireCapability("me.jangjunha.ftgo:ftgo-common-proto")
+        }
+    }
+    implementation(project(":ftgo-common-jpa"))
+    implementation(project(":ftgo-restaurant-service-api"))
+
+    testImplementation(platform("org.junit:junit-bom:5.9.1"))
+    testImplementation("org.junit.jupiter:junit-jupiter")
+    testImplementation ("org.springframework.boot:spring-boot-starter-test:$springBootVersion") {
+        exclude module: "mockito-core"
+    }
+    testImplementation "com.ninja-squad:springmockk:4.0.0"
+
+    runtimeOnly 'org.postgresql:postgresql'
+}
+
+tasks.test {
+    useJUnitPlatform()
+}
+
+allOpen {
+    annotation("jakarta.persistence.Entity")
+    annotation("jakarta.persistence.Embeddable")
+}
+
+noArg {
+    annotation("jakarta.persistence.Entity")
+    annotation("jakarta.persistence.Embeddable")
+}

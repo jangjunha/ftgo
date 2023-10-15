@@ -1,0 +1,15 @@
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    generate-ddl: true
+    show-sql: ${SHOW_SQL:false}
+    properties:
+      hibernate:
+        format_sql: ${SHOW_SQL:false}
+eventuate:
+  outbox:
+    id: 8108
+grpc:
+  server:
+    port: 8108

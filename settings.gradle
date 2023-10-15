@@ -21,4 +21,5 @@ include 'ftgo-order-history-service'
 include 'ftgo-api-gateway'
 include 'ftgo-pact'
 include 'eventuate-tram-test-util'
+include 'ftgo-delivery-service'
 

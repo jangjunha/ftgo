@@ -240,3 +240,31 @@ jobs:
             ${{ env.IMAGE }}:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+  delivery-service:
+    permissions:
+      contents: "read"
+      id-token: "write"
+    runs-on: ubuntu-latest
+    environment: gcp
+    env:
+      IMAGE: asia-northeast3-docker.pkg.dev/ftgo-jangjunha/docker-public/ftgo-delivery-service
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: .github
+      - uses: ./.github/actions/setup-docker-deploy
+        with:
+          wif-provider: ${{ secrets.GCP_WIF_PROVIDER }}
+          wif-sa: ${{ secrets.GCP_WIF_SERVICE_ACCOUNT }}
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          push: true
+          platforms: linux/amd64,linux/arm64/v8
+          target: delivery-service
+          tags: |
+            ${{ env.IMAGE }}:${{ github.sha }}
+            ${{ env.IMAGE }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

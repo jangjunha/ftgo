@@ -193,6 +193,20 @@ services:
     environment:
       JAVA_OPTS: -Xmx128m
 
+  delivery-service-db:
+    restart: always
+    build:
+      context: ./database
+      target: base
+    volumes:
+      - delivery-service-db-data:/var/lib/postgresql/data
+    ports:
+      - 8208:5432
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust
+      - POSTGRES_DB=ftgo-delivery-service
+      - USE_DB_ID=true
+
 
   ### Applications ###
   restaurant-service-app:
@@ -314,6 +328,22 @@ services:
       AWS_SECRET_ACCESS_KEY: "dummy"
       EVENTUATELOCAL_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
 
+  delivery-service-app:
+    build:
+      context: .
+      target: delivery-service
+    ports:
+      - 8108:8108
+    depends_on:
+      - delivery-service-db
+      - kafka
+      - zookeeper
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://delivery-service-db/ftgo-delivery-service
+      SPRING_DATASOURCE_USERNAME: postgres
+      EVENTUATELOCAL_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      EVENTUATELOCAL_ZOOKEEPER_CONNECTION_STRING: zookeeper:2181
+
   ### Etc ###
   api-gateway:
     build:
@@ -338,3 +368,4 @@ volumes:
   accounting-service-db-logs: {}
   accounting-service-projection-db-data: {}
   order-history-service-db-data: {}
+  delivery-service-db-data: {}
