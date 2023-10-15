@@ -13,27 +13,39 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.SmartLifecycle;
 
 import java.io.IOException;
+import java.util.Optional;
 
 public class GrpcServer implements SmartLifecycle {
 
     private final Logger logger = LoggerFactory.getLogger(GrpcServer.class);
-    private final Server server;
+    private Optional<Server> server = Optional.empty();
     private final int port;
     private final HealthStatusManager health = new HealthStatusManager();
 
+    private final KitchenService kitchenService;
+    private final OrderServiceGrpc.OrderServiceBlockingStub orderService;
+
+
     public GrpcServer(int grpcServerPort, KitchenService kitchenService, OrderServiceGrpc.OrderServiceBlockingStub orderService) {
         this.port = grpcServerPort;
-        this.server = ServerBuilder.forPort(port)
+        this.kitchenService = kitchenService;
+        this.orderService = orderService;
+    }
+
+    @Override
+    public void start() {
+        if (isRunning()) {
+            return;
+        }
+        Server server = ServerBuilder.forPort(port)
                 .addService(ServerInterceptors.intercept(
                         new KitchenServiceImpl(kitchenService, orderService),
                         new AuthInterceptor()
                 ))
                 .addService(health.getHealthService())
                 .build();
-    }
+        this.server = Optional.of(server);
 
-    @Override
-    public void start() {
         try {
             server.start();
         } catch (IOException e) {
@@ -41,20 +53,36 @@ public class GrpcServer implements SmartLifecycle {
             throw new RuntimeException(e);
         }
         health.setStatus("", HealthCheckResponse.ServingStatus.SERVING);
+        startAwaitThread();
         logger.info("gRPC server started, listening on %d".formatted(port));
     }
 
     @Override
     public void stop() {
-        if (server != null) {
+        server.ifPresent(server -> {
             logger.info("*** shutting down gRPC server since JVM is shutting down");
             server.shutdown();
             logger.info("*** gRPC server shut down");
-        }
+        });
     }
 
     @Override
     public boolean isRunning() {
-        return server.isTerminated();
+        return server.map(server -> !server.isTerminated()).orElse(false);
+    }
+
+    private void startAwaitThread() {
+        server.ifPresent(server -> {
+            Thread awaitThread = new Thread(() -> {
+                try {
+                    server.awaitTermination();
+                } catch (InterruptedException e) {
+                    logger.error("*** gRPC server awaiter interrupted");
+                }
+            });
+            awaitThread.setName("grpc-server-awaiter");
+            awaitThread.setDaemon(false);
+            awaitThread.start();
+        });
     }
 }

@@ -14,40 +14,70 @@ import java.io.IOException
 
 class GrpcServer(
     private val port: Int,
-    orderService: OrderService,
-) :
-    SmartLifecycle {
+    private val orderService: OrderService,
+) : SmartLifecycle {
     private val logger: Logger = LoggerFactory.getLogger(GrpcServer::class.java)
 
     private val health: HealthStatusManager = HealthStatusManager()
-    private val server: Server = ServerBuilder.forPort(port)
-        .addService(
-            ServerInterceptors.intercept(
-                OrderServiceImpl(orderService),
-                AuthInterceptor()
-            )
-        )
-        .addService(health.healthService)
-        .build()
+    private var server: Server? = null
 
     override fun start() {
-        try {
-            server.start()
-        } catch (e: IOException) {
-            logger.error("gRPC server raises error", e)
-            throw RuntimeException(e)
+        if (isRunning) {
+            return
         }
+
+        server = ServerBuilder.forPort(port)
+            .addService(
+                ServerInterceptors.intercept(
+                    OrderServiceImpl(orderService),
+                    AuthInterceptor()
+                )
+            )
+            .addService(health.healthService)
+            .build()
+            .also { server ->
+                try {
+                    server.start()
+                } catch (e: IOException) {
+                    logger.error("gRPC server raises error", e)
+                    throw RuntimeException(e)
+                }
+            }
+
         health.setStatus("", HealthCheckResponse.ServingStatus.SERVING)
+        startAwaitThread()
         logger.info("gRPC server started, listening on %d".format(port))
     }
 
     override fun stop() {
-        logger.info("*** shutting down gRPC server since JVM is shutting down")
-        server.shutdown()
-        logger.info("*** gRPC server shut down")
+        server?.let { server ->
+            logger.info("*** shutting down gRPC server since JVM is shutting down")
+            server.shutdown()
+            try {
+                server.awaitTermination()
+            } catch (e: InterruptedException) {
+                logger.error("*** gRPC server interrupted during termination", e)
+            } finally {
+                this.server = null
+            }
+            logger.info("*** gRPC server shut down")
+        }
     }
 
     override fun isRunning(): Boolean {
-        return server.isTerminated
+        return server?.run { isShutdown } ?: false
+    }
+
+    private fun startAwaitThread() {
+        val awaitThread = Thread {
+            try {
+                server?.awaitTermination()
+            } catch (e: InterruptedException) {
+                logger.error("*** gRPC server awaiter interrupted")
+            }
+        }
+        awaitThread.name = "grpc-server-awaiter"
+        awaitThread.isDaemon = false
+        awaitThread.start()
     }
 }
