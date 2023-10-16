@@ -12,6 +12,8 @@ public class TicketAcceptedEvent implements TicketDomainEvent {
         this.readyBy = readyBy;
     }
 
+    protected TicketAcceptedEvent() {}
+
     public OffsetDateTime getReadyBy() {
         return readyBy;
     }
