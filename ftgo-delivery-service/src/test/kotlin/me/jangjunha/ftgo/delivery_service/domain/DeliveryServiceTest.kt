@@ -9,6 +9,9 @@ import me.jangjunha.ftgo.delivery_service.DeliveryFixtures.RESTAURANT_ID
 import me.jangjunha.ftgo.delivery_service.api.DeliveryState
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
 import org.springframework.data.repository.findByIdOrNull
 import java.time.OffsetDateTime
 import java.util.*
@@ -52,6 +55,65 @@ class DeliveryServiceTest {
                     "서울시 강남구 테헤란로 2",
                 )
             )
+        }
+    }
+
+    @Test
+    fun getCourier() {
+        val COURIER = Courier(
+            id = COURIER_ID,
+            available = true,
+        )
+        every { courierRepository.findByIdOrNull(COURIER_ID) } returns COURIER
+
+        val courier = deliveryService.getCourier(COURIER_ID)
+        assert(courier == COURIER)
+    }
+
+    @Test
+    fun getNotExistingCourier() {
+        every { courierRepository.findByIdOrNull(any()) } returns null
+
+        assertThrows<CourierNotFoundException> {
+            deliveryService.getCourier(COURIER_ID)
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = [true, false])
+    fun updateCourierAvailability(isAvailable: Boolean) {
+        val COURIER = Courier(
+            id = COURIER_ID,
+            available = false,
+        )
+        every { courierRepository.findByIdOrNull(COURIER_ID) } returns COURIER
+        every { courierRepository.save(any()) } returns mockk()
+
+        deliveryService.updateCourierAvailability(COURIER_ID, isAvailable)
+
+        verify { courierRepository.save(COURIER.copy(available = isAvailable)) }
+    }
+
+    @Test
+    fun getDelivery() {
+        val DELIVERY = Delivery(
+            id = DELIVERY_ID,
+            restaurantId = RESTAURANT_ID,
+            pickupAddress = "P",
+            deliveryAddress = "D",
+        )
+        every { deliveryRepository.findByIdOrNull(DELIVERY_ID) } returns DELIVERY
+
+        val delivery = deliveryService.getDelivery(DELIVERY_ID)
+        assert(delivery == DELIVERY)
+    }
+
+    @Test
+    fun getNotExistingDelivery() {
+        every { deliveryRepository.findByIdOrNull(any()) } returns null
+
+        assertThrows<DeliveryNotFoundException> {
+            deliveryService.getDelivery(DELIVERY_ID)
         }
     }
 

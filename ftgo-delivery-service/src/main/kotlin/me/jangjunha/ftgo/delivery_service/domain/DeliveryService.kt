@@ -20,6 +20,21 @@ class DeliveryService
         restaurantRepository.save(Restaurant(id, name, address))
     }
 
+    fun getCourier(id: UUID): Courier = courierRepository.findByIdOrNull(id) ?: throw CourierNotFoundException(id)
+
+    fun updateCourierAvailability(id: UUID, isAvailable: Boolean) {
+        val courier = courierRepository.findByIdOrNull(id) ?: throw CourierNotFoundException(id)
+        courierRepository.save(
+            if (isAvailable) {
+                courier.notedAvailable()
+            } else {
+                courier.notedUnavailable()
+            }
+        )
+    }
+
+    fun getDelivery(id: UUID): Delivery = deliveryRepository.findByIdOrNull(id) ?: throw DeliveryNotFoundException(id)
+
     fun createDelivery(orderId: UUID, restaurantId: UUID, address: String) {
         val restaurant =
             restaurantRepository.findByIdOrNull(restaurantId) ?: throw RestaurantNotFoundException(restaurantId)

@@ -31,6 +31,7 @@ dependencies {
     implementation("io.grpc:grpc-netty:$grpcVersion")
     implementation("io.grpc:grpc-stub:$grpcVersion")
     implementation "io.grpc:grpc-kotlin-stub:$grpcKotlinVersion"
+    implementation "com.google.protobuf:protobuf-kotlin:$protobufVersion"
     implementation 'org.jetbrains.kotlin:kotlin-reflect'
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 
