@@ -2,6 +2,7 @@ package me.jangjunha.ftgo.order_history_service.web
 
 import me.jangjunha.ftgo.common.auth.AuthenticatedClient
 import me.jangjunha.ftgo.common.auth.AuthenticatedConsumerID
+import me.jangjunha.ftgo.common.auth.AuthenticatedCourierID
 import me.jangjunha.ftgo.common.auth.AuthenticatedID
 import me.jangjunha.ftgo.common.auth.AuthenticatedRestaurantID
 import me.jangjunha.ftgo.common.web.AuthContext
@@ -34,7 +35,7 @@ class OrderHistoryController
         val authorized = when (authenticatedID) {
             is AuthenticatedClient -> true
             is AuthenticatedConsumerID -> authenticatedID.consumerId == consumerId
-            is AuthenticatedRestaurantID, null -> false
+            is AuthenticatedRestaurantID, is AuthenticatedCourierID, null -> false
         }
         if (!authorized) {
             throw ResponseStatusException(HttpStatus.FORBIDDEN)
@@ -57,7 +58,7 @@ class OrderHistoryController
             is AuthenticatedClient -> true
             is AuthenticatedConsumerID -> authenticatedID.consumerId == order.consumerId
             is AuthenticatedRestaurantID -> authenticatedID.restaurantId == order.restaurantId
-            null -> false
+            is AuthenticatedCourierID, null -> false
         }
         if (!authorized) {
             throw ResponseStatusException(HttpStatus.FORBIDDEN)

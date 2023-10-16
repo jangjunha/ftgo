@@ -16,6 +16,8 @@ class AuthInterceptor : ServerInterceptor {
             Metadata.Key.of("x-ftgo-authenticated-consumer-id", Metadata.ASCII_STRING_MARSHALLER)
         private val HEADER_RESTAURANT_ID: Metadata.Key<String> =
             Metadata.Key.of("x-ftgo-authenticated-restaurant-id", Metadata.ASCII_STRING_MARSHALLER)
+        private val HEADER_COURIER_ID: Metadata.Key<String> =
+            Metadata.Key.of("x-ftgo-authenticated-courier-id", Metadata.ASCII_STRING_MARSHALLER)
     }
 
     override fun <ReqT : Any, RespT : Any> interceptCall(
@@ -26,12 +28,15 @@ class AuthInterceptor : ServerInterceptor {
         val clientId = headers.get(HEADER_CLIENT_ID)
         val consumerId = headers.get(HEADER_CONSUMER_ID)
         val restaurantId = headers.get(HEADER_RESTAURANT_ID)
+        val courierId = headers.get(HEADER_COURIER_ID)
         val context = if (clientId != null) {
             Context.current().withValue(AUTHENTICATED_ID, AuthenticatedClient(clientId))
         } else if (consumerId != null) {
             Context.current().withValue(AUTHENTICATED_ID, AuthenticatedConsumerID(UUID.fromString(consumerId)))
         } else if (restaurantId != null) {
             Context.current().withValue(AUTHENTICATED_ID, AuthenticatedRestaurantID(UUID.fromString(restaurantId)))
+        } else if (courierId != null) {
+            Context.current().withValue(AUTHENTICATED_ID, AuthenticatedCourierID(UUID.fromString(courierId)))
         } else {
             Context.current()
         }

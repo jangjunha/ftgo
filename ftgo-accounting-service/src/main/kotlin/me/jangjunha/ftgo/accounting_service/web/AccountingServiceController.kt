@@ -6,6 +6,7 @@ import me.jangjunha.ftgo.accounting_service.domain.gettingaccounts.AccountInfo
 import me.jangjunha.ftgo.accounting_service.domain.gettingbyid.AccountDetails
 import me.jangjunha.ftgo.common.auth.AuthenticatedClient
 import me.jangjunha.ftgo.common.auth.AuthenticatedConsumerID
+import me.jangjunha.ftgo.common.auth.AuthenticatedCourierID
 import me.jangjunha.ftgo.common.auth.AuthenticatedID
 import me.jangjunha.ftgo.common.auth.AuthenticatedRestaurantID
 import me.jangjunha.ftgo.common.web.AuthContext
@@ -85,6 +86,6 @@ class AccountingServiceController
             null -> false
             is AuthenticatedClient -> true
             is AuthenticatedConsumerID -> accountId == authenticatedID.consumerId
-            is AuthenticatedRestaurantID -> false
+            is AuthenticatedRestaurantID, is AuthenticatedCourierID -> false
         }
 }

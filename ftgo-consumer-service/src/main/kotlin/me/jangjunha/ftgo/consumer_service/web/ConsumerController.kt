@@ -2,6 +2,7 @@ package me.jangjunha.ftgo.consumer_service.web
 
 import me.jangjunha.ftgo.common.auth.AuthenticatedClient
 import me.jangjunha.ftgo.common.auth.AuthenticatedConsumerID
+import me.jangjunha.ftgo.common.auth.AuthenticatedCourierID
 import me.jangjunha.ftgo.common.auth.AuthenticatedID
 import me.jangjunha.ftgo.common.auth.AuthenticatedRestaurantID
 import me.jangjunha.ftgo.common.web.AuthContext
@@ -54,6 +55,6 @@ class ConsumerController @Autowired constructor(
             null -> false
             is AuthenticatedClient -> true
             is AuthenticatedConsumerID -> consumerId == authenticatedID.consumerId
-            is AuthenticatedRestaurantID -> false
+            is AuthenticatedRestaurantID, is AuthenticatedCourierID -> false
         }
 }

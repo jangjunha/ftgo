@@ -64,6 +64,7 @@ class OrderServiceImpl(
             is AuthenticatedClient -> true
             is AuthenticatedRestaurantID -> id.restaurantId == order.restaurantId
             is AuthenticatedConsumerID -> id.consumerId == order.consumerId
+            is AuthenticatedCourierID -> false
         }
     }
 }
