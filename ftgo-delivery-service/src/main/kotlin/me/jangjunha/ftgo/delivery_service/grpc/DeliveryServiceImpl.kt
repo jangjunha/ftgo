@@ -2,6 +2,7 @@ package me.jangjunha.ftgo.delivery_service.grpc
 
 import com.google.protobuf.Empty
 import io.grpc.Status
+import me.jangjunha.ftgo.common.auth.*
 import me.jangjunha.ftgo.delivery_service.api.*
 import me.jangjunha.ftgo.delivery_service.api.DeliveryServiceGrpcKt.DeliveryServiceCoroutineImplBase
 import me.jangjunha.ftgo.delivery_service.domain.CourierNotFoundException
@@ -21,6 +22,17 @@ class DeliveryServiceImpl(
         }
         val courier = delivery.assignedCourierId?.let {
             deliveryService.getCourier(it)
+        }
+
+        val authenticatedID = AuthInterceptor.AUTHENTICATED_ID.get()
+        val authenticated = when (authenticatedID) {
+            is AuthenticatedClient -> true
+            is AuthenticatedCourierID -> courier?.id == authenticatedID.courierId
+            is AuthenticatedConsumerID -> false
+            is AuthenticatedRestaurantID, null -> false
+        }
+        if (!authenticated) {
+            throw Status.PERMISSION_DENIED.asRuntimeException()
         }
 
         return deliveryStatus {
@@ -43,6 +55,17 @@ class DeliveryServiceImpl(
 
     override suspend fun updateCourierAvailability(request: UpdateCourierAvailabilityPayload): Empty {
         val id = UUID.fromString(request.courierId)
+
+        val authenticatedID = AuthInterceptor.AUTHENTICATED_ID.get()
+        val authenticated = when (authenticatedID) {
+            is AuthenticatedClient -> true
+            is AuthenticatedCourierID -> id == authenticatedID.courierId
+            is AuthenticatedConsumerID, is AuthenticatedRestaurantID, null -> false
+        }
+        if (!authenticated) {
+            throw Status.PERMISSION_DENIED.asRuntimeException()
+        }
+
         try {
             deliveryService.updateCourierAvailability(id, request.available)
         } catch (e: CourierNotFoundException) {
