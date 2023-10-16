@@ -32,6 +32,7 @@ dependencies {
     implementation("io.grpc:grpc-stub:$grpcVersion")
     implementation "io.grpc:grpc-kotlin-stub:$grpcKotlinVersion"
     implementation 'org.jetbrains.kotlin:kotlin-reflect'
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 
     implementation(project(":ftgo-common")) {
         capabilities {
@@ -41,6 +42,7 @@ dependencies {
     implementation(project(":ftgo-common-jpa"))
     implementation(project(":ftgo-restaurant-service-api"))
     implementation(project(":ftgo-order-service-api"))
+    implementation(project(":ftgo-kitchen-service-api"))
 
     testImplementation(platform("org.junit:junit-bom:5.9.1"))
     testImplementation("org.junit.jupiter:junit-jupiter")
