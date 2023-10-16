@@ -32,6 +32,7 @@ class OrderEventConsumerTest {
             .publishes(
                 RestaurantCreated(
                     "Latte Cafe",
+                    "Seoul",
                     listOf(
                         RestaurantMenuItem("latte", "Cafe Latte", Money("4000")),
                         RestaurantMenuItem("strawberry-latte", "Strawberry Latte", Money("5500")),
