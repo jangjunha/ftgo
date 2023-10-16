@@ -56,6 +56,25 @@ class DeliveryServiceTest {
     }
 
     @Test
+    fun createDelivery() {
+        every { deliveryRepository.save(any()) } returns mockk()
+        every { restaurantRepository.findByIdOrNull(RESTAURANT_ID) } returns Restaurant(
+            id = RESTAURANT_ID,
+            name = "Cafe",
+            address = "Incheon",
+        )
+
+        deliveryService.createDelivery(DELIVERY_ID, RESTAURANT_ID, "Seoul")
+
+        verify { deliveryRepository.save(Delivery(
+            id = DELIVERY_ID,
+            restaurantId = RESTAURANT_ID,
+            pickupAddress = "Incheon",
+            deliveryAddress = "Seoul",
+        )) }
+    }
+
+    @Test
     fun scheduleDelivery() {
         val DELIVERY = Delivery(
             id = DELIVERY_ID,
