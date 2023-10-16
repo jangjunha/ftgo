@@ -19,9 +19,9 @@ data class Courier(
     val available: Boolean = false,
 ) {
 
-    fun addedAction(action: Action) = copy(plan = plan.added(action))
+    fun actionAdded(action: Action) = copy(plan = plan.added(action))
 
-    fun cancelledDelivery(deliveryId: UUID) = copy(plan = plan.removedDelivery(deliveryId))
+    fun deliveryCancelled(deliveryId: UUID) = copy(plan = plan.removedDelivery(deliveryId))
 
     fun actionsForDelivery(deliveryId: UUID) = plan.actionsForDelivery(deliveryId)
 
