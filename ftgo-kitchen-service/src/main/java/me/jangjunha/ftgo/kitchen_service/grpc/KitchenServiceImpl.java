@@ -125,6 +125,46 @@ public class KitchenServiceImpl extends KitchenServiceGrpc.KitchenServiceImplBas
         responseObserver.onCompleted();
     }
 
+    @Override
+    public void preparingTicket(PreparingTicketPayload request, StreamObserver<Ticket> responseObserver) {
+        UUID ticketId = UUID.fromString(request.getTicketId());
+        AuthenticatedID authenticatedId = AuthInterceptor.getAUTHENTICATED_ID().get();
+        if (!hasPermission(ticketId, authenticatedId, true)) {
+            responseObserver.onError(new StatusRuntimeException(Status.PERMISSION_DENIED));
+            return;
+        }
+
+        try {
+            Ticket ticket = kitchenService.preparingTicket(ticketId).toAPI();
+            responseObserver.onNext(ticket);
+            responseObserver.onCompleted();
+        } catch (TicketNotFoundException e) {
+            responseObserver.onError(Status.NOT_FOUND.withCause(e).withDescription("ticket %s not found".formatted(ticketId)).asRuntimeException());
+        } catch (UnsupportedStateTransitionException e) {
+            responseObserver.onError(Status.FAILED_PRECONDITION.asRuntimeException());
+        }
+    }
+
+    @Override
+    public void readyForPickupTicket(ReadyForPickupTicketPayload request, StreamObserver<Ticket> responseObserver) {
+        UUID ticketId = UUID.fromString(request.getTicketId());
+        AuthenticatedID authenticatedId = AuthInterceptor.getAUTHENTICATED_ID().get();
+        if (!hasPermission(ticketId, authenticatedId, true)) {
+            responseObserver.onError(new StatusRuntimeException(Status.PERMISSION_DENIED));
+            return;
+        }
+
+        try {
+            Ticket ticket = kitchenService.readyForPickupTicket(ticketId).toAPI();
+            responseObserver.onNext(ticket);
+            responseObserver.onCompleted();
+        } catch (TicketNotFoundException e) {
+            responseObserver.onError(Status.NOT_FOUND.withCause(e).withDescription("ticket %s not found".formatted(ticketId)).asRuntimeException());
+        } catch (UnsupportedStateTransitionException e) {
+            responseObserver.onError(Status.FAILED_PRECONDITION.asRuntimeException());
+        }
+    }
+
     private boolean hasPermission(UUID ticketId, AuthenticatedID id, boolean isRead) {
         if (id == null) {
             return false;

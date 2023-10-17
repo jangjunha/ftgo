@@ -4,9 +4,7 @@ import io.eventuate.tram.events.aggregates.ResultWithDomainEvents;
 import jakarta.persistence.*;
 import me.jangjunha.ftgo.common.UnsupportedStateTransitionException;
 import me.jangjunha.ftgo.common.protobuf.TimestampUtils;
-import me.jangjunha.ftgo.kitchen_service.api.events.TicketAcceptedEvent;
-import me.jangjunha.ftgo.kitchen_service.api.events.TicketCreatedEvent;
-import me.jangjunha.ftgo.kitchen_service.api.events.TicketDomainEvent;
+import me.jangjunha.ftgo.kitchen_service.api.events.*;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
@@ -92,6 +90,7 @@ public class Ticket {
     public List<TicketDomainEvent> accept(OffsetDateTime readyBy) {
         switch (state) {
             case AWAITING_ACCEPTANCE -> {
+                this.previousState = this.state;
                 this.state = TicketState.ACCEPTED;
                 this.acceptTime = OffsetDateTime.now();
                 if (!acceptTime.isBefore(readyBy))
@@ -110,6 +109,42 @@ public class Ticket {
             case ACCEPTED:
                 this.previousState = state;
                 this.state = TicketState.CANCEL_PENDING;
+                return emptyList();
+            default:
+                throw new UnsupportedStateTransitionException(state);
+        }
+    }
+
+    public List<TicketDomainEvent> preparing() {
+        switch (state) {
+            case ACCEPTED:
+                this.previousState = state;
+                this.state = TicketState.PREPARING;
+                this.preparingTime = OffsetDateTime.now();
+                return singletonList(new TicketPreparingStartedEvent());
+            default:
+                throw new UnsupportedStateTransitionException(state);
+        }
+    }
+
+    public List<TicketDomainEvent> readyForPickup() {
+        switch (state) {
+            case PREPARING:
+                this.previousState = state;
+                this.state = TicketState.READY_FOR_PICKUP;
+                this.readyForPickupTime = OffsetDateTime.now();
+                return singletonList(new TicketPreparingCompletedEvent());
+            default:
+                throw new UnsupportedStateTransitionException(state);
+        }
+    }
+
+    public List<TicketDomainEvent> pickedUp(OffsetDateTime pickedUpTime) {
+        switch (state) {
+            case READY_FOR_PICKUP:
+                this.previousState = state;
+                this.state = TicketState.PICKED_UP;
+                this.pickedUpTime = pickedUpTime;
                 return emptyList();
             default:
                 throw new UnsupportedStateTransitionException(state);

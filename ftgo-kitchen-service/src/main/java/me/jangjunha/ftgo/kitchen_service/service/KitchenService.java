@@ -116,11 +116,30 @@ public class KitchenService {
         ticketDomainEventPublisher.publish(ticket, events);
     }
 
+    public Ticket preparingTicket(UUID id) {
+        Ticket ticket = ticketRepository.findById(id)
+                .orElseThrow(() -> new TicketNotFoundException(id));
+        List<TicketDomainEvent> events = ticket.preparing();
+        ticketRepository.save(ticket);
+        ticketDomainEventPublisher.publish(ticket, events);
+        return ticket;
+    }
+
+    public Ticket readyForPickupTicket(UUID id) {
+        Ticket ticket = ticketRepository.findById(id)
+                .orElseThrow(() -> new TicketNotFoundException(id));
+        List<TicketDomainEvent> events = ticket.readyForPickup();
+        ticketRepository.save(ticket);
+        ticketDomainEventPublisher.publish(ticket, events);
+        return ticket;
+    }
+
     public void pickUpTicket(UUID id, OffsetDateTime pickedUpTime) {
         Ticket ticket = ticketRepository.findById(id)
                 .orElseThrow(() -> new TicketNotFoundException(id));
-        ticket.setPickedUpTime(pickedUpTime);
+        List<TicketDomainEvent> events = ticket.pickedUp(pickedUpTime);
         ticketRepository.save(ticket);
+        ticketDomainEventPublisher.publish(ticket, events);
     }
 
     public void upsertRestaurant(UUID id, List<MenuItem> menuItems) {
