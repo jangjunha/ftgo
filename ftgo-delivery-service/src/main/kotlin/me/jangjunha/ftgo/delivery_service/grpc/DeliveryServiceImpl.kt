@@ -15,6 +15,8 @@ class DeliveryServiceImpl(
 ) : DeliveryServiceCoroutineImplBase() {
     override suspend fun getDeliveryStatus(request: GetDeliveryStatusPayload): DeliveryStatus {
         val id = UUID.fromString(request.deliveryId)
+        validatePermissionForDelivery(id)
+
         val delivery = try {
             deliveryService.getDelivery(id)
         } catch (e: DeliveryNotFoundException) {
@@ -22,17 +24,6 @@ class DeliveryServiceImpl(
         }
         val courier = delivery.assignedCourierId?.let {
             deliveryService.getCourier(it)
-        }
-
-        val authenticatedID = AuthInterceptor.AUTHENTICATED_ID.get()
-        val authenticated = when (authenticatedID) {
-            is AuthenticatedClient -> true
-            is AuthenticatedCourierID -> courier?.id == authenticatedID.courierId
-            is AuthenticatedConsumerID -> false
-            is AuthenticatedRestaurantID, null -> false
-        }
-        if (!authenticated) {
-            throw Status.PERMISSION_DENIED.asRuntimeException()
         }
 
         return deliveryStatus {
@@ -55,7 +46,17 @@ class DeliveryServiceImpl(
 
     override suspend fun updateCourierAvailability(request: UpdateCourierAvailabilityPayload): Empty {
         val id = UUID.fromString(request.courierId)
+        validatePermissionForCourier(id)
 
+        try {
+            deliveryService.updateCourierAvailability(id, request.available)
+        } catch (e: CourierNotFoundException) {
+            throw Status.NOT_FOUND.withCause(e).asRuntimeException()
+        }
+        return Empty.newBuilder().build()
+    }
+
+    private fun validatePermissionForCourier(id: UUID) {
         val authenticatedID = AuthInterceptor.AUTHENTICATED_ID.get()
         val authenticated = when (authenticatedID) {
             is AuthenticatedClient -> true
@@ -65,12 +66,20 @@ class DeliveryServiceImpl(
         if (!authenticated) {
             throw Status.PERMISSION_DENIED.asRuntimeException()
         }
+    }
 
-        try {
-            deliveryService.updateCourierAvailability(id, request.available)
-        } catch (e: CourierNotFoundException) {
-            throw Status.NOT_FOUND.withCause(e).asRuntimeException()
+    private fun validatePermissionForDelivery(deliveryId: UUID) {
+        val authenticatedID = AuthInterceptor.AUTHENTICATED_ID.get()
+        val authenticated = when (authenticatedID) {
+            is AuthenticatedClient -> true
+            is AuthenticatedCourierID -> {
+                val delivery = deliveryService.getDelivery(deliveryId)
+                delivery.assignedCourierId == authenticatedID.courierId
+            }
+            is AuthenticatedConsumerID, is AuthenticatedRestaurantID, null -> false
         }
-        return Empty.newBuilder().build()
+        if (!authenticated) {
+            throw Status.PERMISSION_DENIED.asRuntimeException()
+        }
     }
 }
