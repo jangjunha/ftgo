@@ -8,9 +8,14 @@ import me.jangjunha.ftgo.delivery_service.api.DeliveryServiceGrpcKt.DeliveryServ
 import me.jangjunha.ftgo.delivery_service.domain.CourierNotFoundException
 import me.jangjunha.ftgo.delivery_service.domain.DeliveryNotFoundException
 import me.jangjunha.ftgo.delivery_service.domain.DeliveryService
+import net.devh.boot.grpc.server.service.GrpcService
+import org.springframework.beans.factory.annotation.Autowired
 import java.util.*
 
-class DeliveryServiceImpl(
+
+@GrpcService(interceptors = [AuthInterceptor::class])
+class DeliveryServiceImpl
+@Autowired constructor(
     private val deliveryService: DeliveryService,
 ) : DeliveryServiceCoroutineImplBase() {
     override suspend fun getDeliveryStatus(request: GetDeliveryStatusPayload): DeliveryStatus {

@@ -30,9 +30,7 @@ dependencies {
     kapt "com.querydsl:querydsl-apt:$queryDslVersion:jakarta"
     annotationProcessor "org.springframework.boot:spring-boot-starter-data-jpa:$springBootVersion"
 
-    implementation("io.grpc:grpc-services:$grpcVersion")
-    implementation("io.grpc:grpc-netty:$grpcVersion")
-    implementation("io.grpc:grpc-stub:$grpcVersion")
+    implementation 'net.devh:grpc-server-spring-boot-starter:2.15.0.RELEASE'
     implementation "io.grpc:grpc-kotlin-stub:$grpcKotlinVersion"
     implementation "com.google.protobuf:protobuf-kotlin:$protobufVersion"
     implementation 'org.jetbrains.kotlin:kotlin-reflect'
