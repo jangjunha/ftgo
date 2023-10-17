@@ -116,6 +116,13 @@ public class KitchenService {
         ticketDomainEventPublisher.publish(ticket, events);
     }
 
+    public void pickUpTicket(UUID id, OffsetDateTime pickedUpTime) {
+        Ticket ticket = ticketRepository.findById(id)
+                .orElseThrow(() -> new TicketNotFoundException(id));
+        ticket.setPickedUpTime(pickedUpTime);
+        ticketRepository.save(ticket);
+    }
+
     public void upsertRestaurant(UUID id, List<MenuItem> menuItems) {
         Restaurant restaurant = new Restaurant(id, menuItems);
         restaurantRepository.save(restaurant);

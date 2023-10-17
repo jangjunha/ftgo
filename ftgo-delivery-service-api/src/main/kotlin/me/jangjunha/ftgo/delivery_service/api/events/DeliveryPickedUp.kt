@@ -4,4 +4,6 @@ import java.time.OffsetDateTime
 
 data class DeliveryPickedUp(
     val pickedUpAt: OffsetDateTime,
-): DeliveryDomainEvent
+): DeliveryDomainEvent {
+    protected constructor() : this(OffsetDateTime.MIN)
+}

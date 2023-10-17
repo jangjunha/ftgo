@@ -1,12 +1,16 @@
 package me.jangjunha.ftgo.kitchen_service.service;
 
+import io.eventuate.common.json.mapper.JSonMapper;
 import me.jangjunha.ftgo.common.Money;
+import me.jangjunha.ftgo.delivery_service.api.DeliveryServiceChannels;
+import me.jangjunha.ftgo.delivery_service.api.events.DeliveryPickedUp;
 import me.jangjunha.ftgo.kitchen_service.domain.MenuItem;
 import me.jangjunha.ftgo.restaurant_service.api.events.RestaurantCreated;
 import me.jangjunha.ftgo.restaurant_service.api.events.RestaurantMenuRevised;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 
 import static io.eventuate.tram.testing.DomainEventHandlerUnitTestSupport.given;
@@ -21,6 +25,8 @@ class KitchenServiceEventConsumerTest {
 
     @BeforeEach
     void setUp() {
+        JSonMapper.objectMapper.findAndRegisterModules();
+
         kitchenService = mock(KitchenService.class);
         eventConsumer = new KitchenServiceEventConsumer(kitchenService);
     }
@@ -44,6 +50,7 @@ class KitchenServiceEventConsumerTest {
             );
     }
 
+    @Test
     void restaurantMenuRevised() {
         given()
             .aggregate("me.jangjunha.ftgo.restaurant_service.domain.Restaurant", A_CAFE_ID)
@@ -58,5 +65,18 @@ class KitchenServiceEventConsumerTest {
                             new MenuItem("mint-latte", "Mint Latte", new Money("5500"))
                     ))
             );
+    }
+
+    @Test
+    void deliveryPickedUp() {
+        given()
+                .aggregate(DeliveryServiceChannels.DELIVERY_EVENT_CHANNEL, TICKET_ID)
+                .eventHandlers(eventConsumer.domainEventHandlers())
+        .when()
+                .publishes(new DeliveryPickedUp(OffsetDateTime.parse("2023-01-01T00:00Z")))
+        .then()
+                .verify(() ->
+                        verify(kitchenService).pickUpTicket(TICKET_ID, OffsetDateTime.parse("2023-01-01T00:00Z"))
+                );
     }
 }

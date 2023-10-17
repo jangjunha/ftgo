@@ -46,6 +46,7 @@ dependencies {
 	implementation project(':ftgo-common-jpa')
 	implementation project(':ftgo-kitchen-service-api')
 	implementation project(':ftgo-restaurant-service-api')
+	implementation project(':ftgo-delivery-service-api')
 
 	implementation "com.querydsl:querydsl-jpa:$queryDslVersion:jakarta"
 	implementation "com.querydsl:querydsl-apt:$queryDslVersion:jakarta"

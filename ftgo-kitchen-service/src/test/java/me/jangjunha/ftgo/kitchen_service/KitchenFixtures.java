@@ -12,6 +12,7 @@ public class KitchenFixtures {
     public static final OffsetDateTime NOW = OffsetDateTime.parse("2023-01-01T00:00+09:00");
     public static final UUID A_CAFE_ID = UUID.fromString("040a7dc8-a8bc-45b6-8346-1673315985e1");
     public static final UUID SUBWAY_ID = UUID.fromString("e1902bf6-861b-4051-98be-20e4f496f726");
+    public static final UUID TICKET_ID = UUID.fromString("ec58d134-ec38-4843-9912-50c57aae58e2");
     public static Ticket makeTicket(UUID id, TicketState state) {
         Ticket t = new Ticket();
         t.setId(id);

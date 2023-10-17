@@ -144,6 +144,14 @@ class KitchenServiceTest {
     }
 
     @Test
+    void pickUpTicket() {
+        OffsetDateTime pickedUpTime = OffsetDateTime.parse("2023-02-01T04:00Z");
+        kitchenService.pickUpTicket(TICKET_1_ID, pickedUpTime);
+
+        assertEquals(pickedUpTime, ticket1.getPickedUpTime());
+    }
+
+    @Test
     void upsertRestaurant() {
         kitchenService.upsertRestaurant(A_CAFE_ID, List.of(
                 new MenuItem("cheese-ball-cutlet", "치즈볼카츠", new Money("13900"))
