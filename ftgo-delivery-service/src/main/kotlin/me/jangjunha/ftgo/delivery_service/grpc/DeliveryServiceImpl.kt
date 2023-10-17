@@ -56,6 +56,43 @@ class DeliveryServiceImpl(
         return Empty.newBuilder().build()
     }
 
+    override suspend fun pickupDelivery(request: PickupDeliveryPayload): Empty {
+        val id = UUID.fromString(request.deliveryId)
+        validatePermissionForDelivery(id)
+
+        deliveryService.pickUpDelivery(id)
+        return Empty.newBuilder().build()
+    }
+
+    override suspend fun dropoffDelivery(request: DropoffDeliveryPayload): Empty {
+        val id = UUID.fromString(request.deliveryId)
+        validatePermissionForDelivery(id)
+
+        deliveryService.dropoffDelivery(id)
+        return Empty.newBuilder().build()
+    }
+
+    override suspend fun createConrier(request: Empty): Courier {
+        val courier = deliveryService.createCourier()
+        return courier.serialize()
+    }
+
+    override suspend fun getCourier(request: GetCourierPayload): Courier {
+        val id = UUID.fromString(request.courierId)
+        validatePermissionForCourier(id)
+
+        val courier = deliveryService.getCourier(id)
+        return courier.serialize()
+    }
+
+    override suspend fun getCourierPlan(request: GetCourierPayload): CourierPlan {
+        val id = UUID.fromString(request.courierId)
+        validatePermissionForCourier(id)
+
+        val courier = deliveryService.getCourier(id)
+        return courier.plan.serialize()
+    }
+
     private fun validatePermissionForCourier(id: UUID) {
         val authenticatedID = AuthInterceptor.AUTHENTICATED_ID.get()
         val authenticated = when (authenticatedID) {

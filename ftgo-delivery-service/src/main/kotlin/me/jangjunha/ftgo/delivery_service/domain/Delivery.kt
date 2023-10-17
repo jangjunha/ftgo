@@ -1,7 +1,10 @@
 package me.jangjunha.ftgo.delivery_service.domain
 
+import io.eventuate.tram.events.publisher.ResultWithEvents
 import jakarta.persistence.*
 import me.jangjunha.ftgo.delivery_service.api.DeliveryState
+import me.jangjunha.ftgo.delivery_service.api.events.DeliveryDropoff
+import me.jangjunha.ftgo.delivery_service.api.events.DeliveryPickedUp
 import java.time.OffsetDateTime
 import java.util.UUID
 
@@ -38,5 +41,19 @@ data class Delivery(
     fun cancelled() = copy(
         state = DeliveryState.CANCELLED,
         assignedCourierId = null,
+    )
+
+    fun pickedUp(pickupTime: OffsetDateTime): ResultWithEvents<Delivery> = ResultWithEvents(
+        copy(pickupTime = pickupTime),
+        listOf(
+            DeliveryPickedUp(pickupTime),
+        ),
+    )
+
+    fun dropoff(dropoffTime: OffsetDateTime): ResultWithEvents<Delivery> = ResultWithEvents(
+        copy(deliveryTime = dropoffTime),
+        listOf(
+            DeliveryDropoff(dropoffTime),
+        ),
     )
 }

@@ -3,7 +3,10 @@ package me.jangjunha.ftgo.delivery_service.domain
 import jakarta.persistence.Embeddable
 import jakarta.persistence.EnumType
 import jakarta.persistence.Enumerated
+import me.jangjunha.ftgo.common.protobuf.TimestampUtils
+import me.jangjunha.ftgo.delivery_service.api.CourierAction as CourierActionAPI
 import me.jangjunha.ftgo.delivery_service.api.DeliveryActionType
+import me.jangjunha.ftgo.delivery_service.api.courierAction
 import java.time.OffsetDateTime
 import java.util.UUID
 
@@ -17,6 +20,13 @@ data class Action(
 ) {
 
     fun actionFor(deliveryId: UUID): Boolean = this.deliveryId == deliveryId
+
+    fun serialize(): CourierActionAPI = courierAction {
+        type = this@Action.type
+        deliveryId = this@Action.deliveryId.toString()
+        address = this@Action.address
+        time = TimestampUtils.toTimestamp(this@Action.time)
+    }
 
     companion object {
         fun makePickup(deliveryId: UUID, pickupAddress: String, pickupTime: OffsetDateTime) = Action(
