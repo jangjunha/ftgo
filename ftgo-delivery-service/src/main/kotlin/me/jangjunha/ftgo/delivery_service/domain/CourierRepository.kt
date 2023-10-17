@@ -23,7 +23,7 @@ class CustomCourierRepositoryImpl: QuerydslRepositorySupport(Courier::class.java
     override fun findByIdOrNullWithPlan(id: UUID): Courier? {
         val courier = QCourier.courier
         val query = from(courier)
-            .join(courier.plan.actions).fetchJoin()
+            .leftJoin(courier.plan.actions).fetchJoin()
             .where(courier.id.eq(id))
         return query.fetchFirst()
     }
