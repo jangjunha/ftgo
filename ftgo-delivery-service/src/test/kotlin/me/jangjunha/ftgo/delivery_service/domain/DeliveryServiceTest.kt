@@ -1,12 +1,17 @@
 package me.jangjunha.ftgo.delivery_service.domain
 
+import io.eventuate.tram.events.publisher.DomainEventPublisher
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkStatic
 import io.mockk.verify
 import me.jangjunha.ftgo.delivery_service.DeliveryFixtures.COURIER_ID
 import me.jangjunha.ftgo.delivery_service.DeliveryFixtures.DELIVERY_ID
 import me.jangjunha.ftgo.delivery_service.DeliveryFixtures.RESTAURANT_ID
+import me.jangjunha.ftgo.delivery_service.api.DeliveryActionType
 import me.jangjunha.ftgo.delivery_service.api.DeliveryState
+import me.jangjunha.ftgo.delivery_service.api.events.DeliveryDropoff
+import me.jangjunha.ftgo.delivery_service.api.events.DeliveryPickedUp
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -21,19 +26,24 @@ class DeliveryServiceTest {
     private lateinit var restaurantRepository: RestaurantRepository
     private lateinit var deliveryRepository: DeliveryRepository
     private lateinit var courierRepository: CourierRepository
+    private lateinit var domainEventPublisher: DomainEventPublisher
 
     private lateinit var deliveryService: DeliveryService
+
+    private val NOW = OffsetDateTime.parse("2023-10-17T09:00Z")
 
     @BeforeEach
     fun setUp() {
         restaurantRepository = mockk()
         deliveryRepository = mockk()
         courierRepository = mockk()
+        domainEventPublisher = mockk(relaxed = true)
 
         deliveryService = DeliveryService(
             restaurantRepository,
             deliveryRepository,
             courierRepository,
+            domainEventPublisher,
         )
     }
 
@@ -144,11 +154,11 @@ class DeliveryServiceTest {
             pickupAddress = "P",
             deliveryAddress = "D",
         )
+        val COURIER = Courier(id = COURIER_ID, available = true)
         every { deliveryRepository.findByIdOrNull(any()) } returns DELIVERY
         every { deliveryRepository.save(any()) } returns mockk()
-        every { courierRepository.findAllAvailable() } returns listOf(
-            Courier(id = COURIER_ID)
-        )
+        every { courierRepository.findAllAvailable() } returns listOf(COURIER)
+        every { courierRepository.save(any()) } returns mockk()
 
         deliveryService.scheduleDelivery(
             DELIVERY_ID,
@@ -162,6 +172,95 @@ class DeliveryServiceTest {
                     readyBy = OffsetDateTime.parse("2023-10-16T14:00+09:00"),
                     state = DeliveryState.SCHEDULED,
                 )
+            )
+        }
+        verify {
+            courierRepository.save(
+                COURIER.copy(plan = Plan(actions = listOf(
+                    Action(DeliveryActionType.PICKUP, DELIVERY_ID, "P", OffsetDateTime.parse("2023-10-16T14:00+09:00")),
+                    Action(DeliveryActionType.DROPOFF, DELIVERY_ID, "D", OffsetDateTime.parse("2023-10-16T14:30+09:00")),
+                )))
+            )
+        }
+    }
+
+    @Test
+    fun pickupDelivery() {
+        val DELIVERY = Delivery(
+            id = DELIVERY_ID,
+            restaurantId = RESTAURANT_ID,
+            assignedCourierId = COURIER_ID,
+            pickupAddress = "P",
+            deliveryAddress = "D",
+        )
+        every { deliveryRepository.findByIdOrNull(any()) } returns DELIVERY
+        every { deliveryRepository.save(any()) } returns mockk()
+
+        mockkStatic(OffsetDateTime::class) {
+            every { OffsetDateTime.now() } returns NOW
+            deliveryService.pickUpDelivery(DELIVERY_ID)
+        }
+
+        verify {
+            deliveryRepository.save(
+                DELIVERY.copy(pickupTime = NOW)
+            )
+        }
+        verify {
+            domainEventPublisher.publish(
+                Delivery::class.java,
+                DELIVERY_ID,
+                listOf(
+                    DeliveryPickedUp(NOW),
+                ),
+            )
+        }
+    }
+
+    @Test
+    fun dropoffDelivery() {
+        val DELIVERY = Delivery(
+            id = DELIVERY_ID,
+            restaurantId = RESTAURANT_ID,
+            assignedCourierId = COURIER_ID,
+            pickupAddress = "P",
+            deliveryAddress = "D",
+        )
+        val COURIER = Courier(
+            id = COURIER_ID,
+            available = true,
+            plan = Plan(actions = listOf(
+                Action(DeliveryActionType.PICKUP, DELIVERY_ID, "P", OffsetDateTime.MIN),
+                Action(DeliveryActionType.DROPOFF, DELIVERY_ID, "D", OffsetDateTime.MIN),
+            ))
+        )
+        every { deliveryRepository.findByIdOrNull(any()) } returns DELIVERY
+        every { deliveryRepository.save(any()) } returns mockk()
+        every { courierRepository.findByIdOrNull(any()) } returns COURIER
+        every { courierRepository.save(any()) } returns mockk()
+
+        mockkStatic(OffsetDateTime::class) {
+            every { OffsetDateTime.now() } returns NOW
+            deliveryService.dropoffDelivery(DELIVERY_ID)
+        }
+
+        verify {
+            deliveryRepository.save(
+                DELIVERY.copy(deliveryTime = NOW)
+            )
+        }
+        verify {
+            courierRepository.save(
+                COURIER.copy(plan = Plan(actions = emptyList()))
+            )
+        }
+        verify {
+            domainEventPublisher.publish(
+                Delivery::class.java,
+                DELIVERY_ID,
+                listOf(
+                    DeliveryDropoff(NOW),
+                ),
             )
         }
     }
