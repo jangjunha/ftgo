@@ -1,9 +1,7 @@
 package me.jangjunha.ftgo.delivery_service.domain
 
 import io.eventuate.tram.events.publisher.DomainEventPublisher
-import io.grpc.Status
 import jakarta.transaction.Transactional
-import me.jangjunha.ftgo.common.auth.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
@@ -73,19 +71,7 @@ class DeliveryService
     @Transactional
     fun pickUpDelivery(id: UUID) {
         val now = OffsetDateTime.now()
-
         val delivery = deliveryRepository.findByIdOrNull(id) ?: throw DeliveryNotFoundException(id)
-
-        val courierId = delivery.assignedCourierId
-        val authenticatedID = AuthInterceptor.AUTHENTICATED_ID.get()
-        val authenticated = when (authenticatedID) {
-            is AuthenticatedClient -> true
-            is AuthenticatedCourierID -> courierId == authenticatedID.courierId
-            is AuthenticatedConsumerID, is AuthenticatedRestaurantID, null -> false
-        }
-        if (!authenticated) {
-            throw Status.PERMISSION_DENIED.asRuntimeException()
-        }
 
         if (delivery.pickupTime != null) {
             throw AlreadyPerformedException("Already picked up at ${delivery.pickupTime}")
@@ -99,20 +85,9 @@ class DeliveryService
     @Transactional
     fun dropoffDelivery(id: UUID) {
         val now = OffsetDateTime.now()
-
         val delivery = deliveryRepository.findByIdOrNull(id) ?: throw DeliveryNotFoundException(id)
-
         val courierId = delivery.assignedCourierId
             ?: throw RuntimeException("Trying to dropoff delivery which is no courier assigned")
-        val authenticatedID = AuthInterceptor.AUTHENTICATED_ID.get()
-        val authenticated = when (authenticatedID) {
-            is AuthenticatedClient -> true
-            is AuthenticatedCourierID -> courierId == authenticatedID.courierId
-            is AuthenticatedConsumerID, is AuthenticatedRestaurantID, null -> false
-        }
-        if (!authenticated) {
-            throw Status.PERMISSION_DENIED.asRuntimeException()
-        }
 
         if (delivery.deliveryTime != null) {
             throw AlreadyPerformedException("Already dropped off at ${delivery.deliveryTime}")
