@@ -19,6 +19,9 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-json:$springBootVersion")
 
     implementation "io.eventuate.tram.core:eventuate-tram-events"
+    implementation "io.eventuate.tram.core:eventuate-tram-aggregate-domain-events"
+    implementation "io.eventuate.tram.core:eventuate-tram-spring-producer-jdbc"
+    implementation "io.eventuate.tram.core:eventuate-tram-spring-events-publisher"
     implementation "io.eventuate.tram.core:eventuate-tram-spring-consumer-kafka"
     implementation "io.eventuate.tram.core:eventuate-tram-spring-events-subscriber"
 
@@ -41,6 +44,7 @@ dependencies {
         }
     }
     implementation(project(":ftgo-common-jpa"))
+    implementation(project(":ftgo-delivery-service-api"))
     implementation(project(":ftgo-restaurant-service-api"))
     implementation(project(":ftgo-order-service-api"))
     implementation(project(":ftgo-kitchen-service-api"))
