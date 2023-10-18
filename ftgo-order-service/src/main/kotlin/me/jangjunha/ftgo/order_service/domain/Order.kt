@@ -61,12 +61,14 @@ data class Order(
             val events = listOf(
                 OrderCreated(
                     OrderDetails(
-                        orderLineItems.map { OrderDetails.LineItem(
-                            it.quantity,
-                            it.menuItemId,
-                            it.name,
-                            it.price,
-                        ) },
+                        orderLineItems.map {
+                            OrderDetails.LineItem(
+                                it.quantity,
+                                it.menuItemId,
+                                it.name,
+                                it.price,
+                            )
+                        },
                         order.orderLineItems.orderTotal,
                         restaurant.id,
                         consumerId,
@@ -79,20 +81,21 @@ data class Order(
         }
     }
 
-    fun noteApproved(): ResultWithDomainEvents<Order, OrderDomainEvent> {
+    fun noteApproved(): ResultWithDomainEvents<Order, OrderDomainEvent> =
         when (state) {
             OrderState.APPROVAL_PENDING -> {
-                return ResultWithDomainEvents(
+                ResultWithDomainEvents(
                     this.copy(state = OrderState.APPROVED),
                     OrderAuthorized()
                 )
             }
 
+            OrderState.APPROVED -> ResultWithDomainEvents(this, emptyList())
+
             else -> {
                 throw UnsupportedStateTransitionException(state)
             }
         }
-    }
 
     fun noteRejected(): ResultWithDomainEvents<Order, OrderDomainEvent> {
         when (state) {
