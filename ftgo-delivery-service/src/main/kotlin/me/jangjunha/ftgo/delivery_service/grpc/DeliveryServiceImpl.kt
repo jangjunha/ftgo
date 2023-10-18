@@ -3,11 +3,11 @@ package me.jangjunha.ftgo.delivery_service.grpc
 import com.google.protobuf.Empty
 import io.grpc.Status
 import me.jangjunha.ftgo.common.auth.*
+import me.jangjunha.ftgo.common.protobuf.TimestampUtils
 import me.jangjunha.ftgo.delivery_service.api.*
+import me.jangjunha.ftgo.delivery_service.api.Courier
 import me.jangjunha.ftgo.delivery_service.api.DeliveryServiceGrpcKt.DeliveryServiceCoroutineImplBase
-import me.jangjunha.ftgo.delivery_service.domain.CourierNotFoundException
-import me.jangjunha.ftgo.delivery_service.domain.DeliveryNotFoundException
-import me.jangjunha.ftgo.delivery_service.domain.DeliveryService
+import me.jangjunha.ftgo.delivery_service.domain.*
 import net.devh.boot.grpc.server.service.GrpcService
 import org.springframework.beans.factory.annotation.Autowired
 import java.util.*
@@ -35,6 +35,12 @@ class DeliveryServiceImpl
             deliveryInfo = deliveryInfo {
                 this.id = delivery.id.toString()
                 state = delivery.state
+                delivery.pickupTime?.also {
+                    pickupTime = TimestampUtils.toTimestamp(it)
+                }
+                delivery.deliveryTime?.also {
+                    deliveryTime = TimestampUtils.toTimestamp(it)
+                }
             }
             delivery.assignedCourierId?.also {
                 assignedCourierId = it.toString()
@@ -65,7 +71,19 @@ class DeliveryServiceImpl
         val id = UUID.fromString(request.deliveryId)
         validatePermissionForDelivery(id)
 
-        deliveryService.pickUpDelivery(id)
+        try {
+            deliveryService.pickUpDelivery(id)
+        } catch (e: InvalidPreconditionException) {
+            throw Status.FAILED_PRECONDITION
+                .withDescription("Delivery is not ready for pickup")
+                .withCause(e)
+                .asRuntimeException()
+        } catch (e: AlreadyPerformedException) {
+            throw Status.ALREADY_EXISTS
+                .withDescription("Delivery was already picked up")
+                .withCause(e)
+                .asRuntimeException()
+        }
         return Empty.newBuilder().build()
     }
 
@@ -118,6 +136,7 @@ class DeliveryServiceImpl
                 val delivery = deliveryService.getDelivery(deliveryId)
                 delivery.assignedCourierId == authenticatedID.courierId
             }
+
             is AuthenticatedConsumerID, is AuthenticatedRestaurantID, null -> false
         }
         if (!authenticated) {

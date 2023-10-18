@@ -2,6 +2,10 @@ package me.jangjunha.ftgo.delivery_service.domain
 
 import io.eventuate.tram.events.publisher.DomainEventPublisher
 import jakarta.transaction.Transactional
+import me.jangjunha.ftgo.delivery_service.grpc.ClientCallCredentials
+import me.jangjunha.ftgo.kitchen_service.api.KitchenServiceGrpcKt
+import me.jangjunha.ftgo.kitchen_service.api.TicketState
+import me.jangjunha.ftgo.kitchen_service.api.getTicketPayload
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
@@ -16,6 +20,7 @@ class DeliveryService
     private val restaurantRepository: RestaurantRepository,
     private val deliveryRepository: DeliveryRepository,
     private val courierRepository: CourierRepository,
+    private val kitchenService: KitchenServiceGrpcKt.KitchenServiceCoroutineStub,
     private val domainEventPublisher: DomainEventPublisher,
 ) {
 
@@ -69,12 +74,18 @@ class DeliveryService
     }
 
     @Transactional
-    fun pickUpDelivery(id: UUID) {
+    suspend fun pickUpDelivery(id: UUID) {
         val now = OffsetDateTime.now()
         val delivery = deliveryRepository.findByIdOrNull(id) ?: throw DeliveryNotFoundException(id)
 
         if (delivery.pickupTime != null) {
             throw AlreadyPerformedException("Already picked up at ${delivery.pickupTime}")
+        }
+        val ticket = kitchenService
+            .withCallCredentials(ClientCallCredentials())
+            .getTicket(getTicketPayload { ticketId = id.toString() })
+        if (ticket.state != TicketState.READY_FOR_PICKUP) {
+            throw InvalidPreconditionException("Delivery $id is not ready for pickup")
         }
 
         val re = delivery.pickedUp(now)
