@@ -41,6 +41,7 @@
 
 * [jangjunha/ftgo-proto][ftgo-proto] Protobuf/gRPC 인터페이스 라이브러리
 * [jangjunha/ftgo-graphql-server][ftgo-graphql-server] GraphQL version of API Gateway - 8장) 외부 API 패턴
+* [jangjunha/ftgo-web][ftgo-web] MVP 웹사이트
 
 ## Run Service via Compose
 
@@ -51,4 +52,5 @@ $ docker-compose up -d
 [microservices-patterns-book]: https://microservices.io/book
 [ftgo-proto]: https://github.com/jangjunha/ftgo-proto/
 [ftgo-graphql-server]: https://github.com/jangjunha/ftgo-graphql-server/
+[ftgo-web]: https://github.com/jangjunha/ftgo-web/
 [pact]: https://docs.pact.io
