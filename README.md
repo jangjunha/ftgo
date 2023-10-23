@@ -17,6 +17,7 @@
 * [**Order Service**](./ftgo-order-service) 주문 서비스 — 4,5장) 애그리거트 패턴 사용 및 오케스트레이션 사가 구현
 * [**Accounting Service**](./ftgo-accounting-service) 회계 서비스 — 6장) 이벤트 소싱 기법 사용
 * [**Order History Service**](./ftgo-order-history-service) 주문 내역 서비스 — 7장) CQRS, DynamoDB 사용
+* [Delivery Service](./ftgo-delivery-service) 배달 서비스
 * [API Gateway](./ftgo-api-gateway) Spring Cloud Gateway를 사용한 API Gateway 구현 — 8장) 외부 API 패턴
 
 ## 테스트 종류별 대표 예제
