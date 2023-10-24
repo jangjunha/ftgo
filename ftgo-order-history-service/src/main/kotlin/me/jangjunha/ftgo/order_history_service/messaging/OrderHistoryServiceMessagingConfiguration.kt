@@ -20,7 +20,6 @@ import org.springframework.context.annotation.Import
     TramEventSubscriberConfiguration::class,
     TramMessagingCommonAutoConfiguration::class,
     TramEventsCommonAutoConfiguration::class,
-    EventuateTramKafkaMessageConsumerConfiguration::class,
 ])
 class OrderHistoryServiceMessagingConfiguration {
 
