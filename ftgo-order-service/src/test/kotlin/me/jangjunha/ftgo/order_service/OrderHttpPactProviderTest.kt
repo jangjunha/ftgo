@@ -20,6 +20,7 @@ import me.jangjunha.ftgo.order_service.domain.OrderLineItem
 import me.jangjunha.ftgo.order_service.domain.OrderLineItems
 import me.jangjunha.ftgo.order_service.service.OrderService
 import me.jangjunha.ftgo.order_service.web.OrderController
+import me.jangjunha.ftgo.order_service.web.WebConfigurer
 import me.jangjunha.ftgo.pact.provider.junitsupport.filter.ByInteractionType
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.TestTemplate
@@ -82,6 +83,7 @@ class OrderHttpPactProviderTest {
             TramMessagingCommonAutoConfiguration::class,
             TramEventsCommonAutoConfiguration::class,
             TramInMemoryCommonConfiguration::class,
+            WebConfigurer::class,
         ]
     )
     class TestConfiguration {
