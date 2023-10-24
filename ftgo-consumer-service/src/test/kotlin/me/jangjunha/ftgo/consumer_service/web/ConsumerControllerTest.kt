@@ -3,6 +3,7 @@ package me.jangjunha.ftgo.consumer_service.web
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
 import io.mockk.verify
+import jakarta.persistence.EntityManager
 import me.jangjunha.ftgo.consumer_service.domain.Consumer
 import me.jangjunha.ftgo.consumer_service.domain.ConsumerService
 import org.junit.jupiter.api.Test
@@ -21,6 +22,9 @@ class ConsumerControllerTest
 ) {
     @MockkBean
     lateinit var consumerService: ConsumerService
+
+    @MockkBean
+    lateinit var entityManager: EntityManager
 
     @Test
     fun create() {
