@@ -1,10 +1,8 @@
 package me.jangjunha.ftgo.delivery_service.domain
 
 import io.eventuate.tram.events.publisher.DomainEventPublisher
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.mockkStatic
-import io.mockk.verify
+import io.mockk.*
+import kotlinx.coroutines.runBlocking
 import me.jangjunha.ftgo.delivery_service.DeliveryFixtures.COURIER_ID
 import me.jangjunha.ftgo.delivery_service.DeliveryFixtures.DELIVERY_ID
 import me.jangjunha.ftgo.delivery_service.DeliveryFixtures.RESTAURANT_ID
@@ -12,6 +10,9 @@ import me.jangjunha.ftgo.delivery_service.api.DeliveryActionType
 import me.jangjunha.ftgo.delivery_service.api.DeliveryState
 import me.jangjunha.ftgo.delivery_service.api.events.DeliveryDropoff
 import me.jangjunha.ftgo.delivery_service.api.events.DeliveryPickedUp
+import me.jangjunha.ftgo.kitchen_service.api.KitchenServiceGrpcKt
+import me.jangjunha.ftgo.kitchen_service.api.TicketState
+import me.jangjunha.ftgo.kitchen_service.api.ticket
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -26,6 +27,7 @@ class DeliveryServiceTest {
     private lateinit var restaurantRepository: RestaurantRepository
     private lateinit var deliveryRepository: DeliveryRepository
     private lateinit var courierRepository: CourierRepository
+    private lateinit var kitchenService: KitchenServiceGrpcKt.KitchenServiceCoroutineStub
     private lateinit var domainEventPublisher: DomainEventPublisher
 
     private lateinit var deliveryService: DeliveryService
@@ -37,12 +39,14 @@ class DeliveryServiceTest {
         restaurantRepository = mockk()
         deliveryRepository = mockk()
         courierRepository = mockk()
+        kitchenService = mockk()
         domainEventPublisher = mockk(relaxed = true)
 
         deliveryService = DeliveryService(
             restaurantRepository,
             deliveryRepository,
             courierRepository,
+            kitchenService,
             domainEventPublisher,
         )
     }
@@ -185,7 +189,7 @@ class DeliveryServiceTest {
     }
 
     @Test
-    fun pickupDelivery() {
+    fun pickupDelivery() = runBlocking {
         val DELIVERY = Delivery(
             id = DELIVERY_ID,
             restaurantId = RESTAURANT_ID,
@@ -195,6 +199,10 @@ class DeliveryServiceTest {
         )
         every { deliveryRepository.findByIdOrNull(any()) } returns DELIVERY
         every { deliveryRepository.save(any()) } returns mockk()
+        every { kitchenService.withCallCredentials(any()) } returns kitchenService
+        coEvery { kitchenService.getTicket(any(), any()) } returns ticket {
+            state = TicketState.READY_FOR_PICKUP
+        }
 
         mockkStatic(OffsetDateTime::class) {
             every { OffsetDateTime.now() } returns NOW

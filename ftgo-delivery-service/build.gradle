@@ -33,6 +33,7 @@ dependencies {
     implementation 'net.devh:grpc-server-spring-boot-starter:2.15.0.RELEASE'
     implementation "io.grpc:grpc-kotlin-stub:$grpcKotlinVersion"
     implementation "com.google.protobuf:protobuf-kotlin:$protobufVersion"
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core'
     implementation 'org.jetbrains.kotlin:kotlin-reflect'
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 
