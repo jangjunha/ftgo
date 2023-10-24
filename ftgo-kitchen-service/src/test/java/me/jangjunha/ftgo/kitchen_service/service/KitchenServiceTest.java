@@ -150,7 +150,7 @@ class KitchenServiceTest {
         OffsetDateTime pickedUpTime = OffsetDateTime.parse("2023-02-01T04:00Z");
         kitchenService.pickUpTicket(TICKET_1_ID, pickedUpTime);
 
-        assertEquals(TicketState.PICKED_UP, ticket1.getSequence());
+        assertEquals(TicketState.PICKED_UP, ticket1.getState());
         assertEquals(pickedUpTime, ticket1.getPickedUpTime());
         verify(domainEventPublisher).publish(ticket1, List.of());
     }
