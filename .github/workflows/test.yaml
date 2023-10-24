@@ -1,0 +1,34 @@
+name: Run Tests
+
+on: push
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ftgo/
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: .github
+      - uses: ./.github/actions/setup
+        with:
+          ref: ${{ env.GIT_COMMIT }}
+
+      - name: Execute Gradle test
+        run: ./gradlew test
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: Package
+          path: build/libs
+
+      - name: Store reports
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: reports
+          path: |
+            **/build/reports/
+            **/build/test-results/
