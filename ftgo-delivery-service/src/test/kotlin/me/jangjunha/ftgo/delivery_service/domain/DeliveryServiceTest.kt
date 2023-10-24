@@ -78,7 +78,7 @@ class DeliveryServiceTest {
             id = COURIER_ID,
             available = true,
         )
-        every { courierRepository.findByIdOrNull(COURIER_ID) } returns COURIER
+        every { courierRepository.findByIdOrNullWithPlan(COURIER_ID) } returns COURIER
 
         val courier = deliveryService.getCourier(COURIER_ID)
         assert(courier == COURIER)
@@ -86,7 +86,7 @@ class DeliveryServiceTest {
 
     @Test
     fun getNotExistingCourier() {
-        every { courierRepository.findByIdOrNull(any()) } returns null
+        every { courierRepository.findByIdOrNullWithPlan(any()) } returns null
 
         assertThrows<CourierNotFoundException> {
             deliveryService.getCourier(COURIER_ID)
