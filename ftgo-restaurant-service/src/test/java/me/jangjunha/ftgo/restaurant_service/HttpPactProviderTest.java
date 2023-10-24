@@ -61,6 +61,8 @@ public class HttpPactProviderTest {
         ).thenReturn(
                 Optional.of(A_CAFE)
         );
+
+        when(restaurantService.getAll()).thenReturn(List.of(A_CAFE));
     }
 
     private static final UUID A_CAFE_ID = UUID.fromString("97e3c4c2-f336-4435-9314-ad1a633495df");
