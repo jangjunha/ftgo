@@ -4,6 +4,7 @@ import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
 import io.mockk.mockkStatic
 import io.mockk.verify
+import jakarta.persistence.EntityManager
 import me.jangjunha.ftgo.common.Money
 import me.jangjunha.ftgo.order_service.api.OrderState
 import me.jangjunha.ftgo.order_service.domain.*
@@ -27,6 +28,9 @@ class OrderControllerTest
 ) {
     @MockkBean
     lateinit var orderService: OrderService
+
+    @MockkBean
+    lateinit var entityManager: EntityManager
 
     @BeforeEach
     fun setUp() {
