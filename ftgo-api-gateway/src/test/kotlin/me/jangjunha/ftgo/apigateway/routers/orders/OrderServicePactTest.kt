@@ -44,6 +44,7 @@ class OrderServicePactTest {
                                 .closeObject()!!
                                 .closeArray()!!
                         )
+                        .header("x-ftgo-authenticated-consumer-id", "627a9a8a-41af-4daf-a968-00ffc80b53ad")
                 }
                 .willRespondWith { response ->
                     response.body(
@@ -57,18 +58,23 @@ class OrderServicePactTest {
     @Test
     @PactTestFor(pactMethod = "createOrder")
     fun testCreateOrder(mockServer: MockServer) {
-        val response = Request.post("${mockServer.getUrl()}/orders/").bodyString(
-            """
-            {
-                "restaurantId": "97e3c4c2-f336-4435-9314-ad1a633495df",
-                "consumerId": "627a9a8a-41af-4daf-a968-00ffc80b53ad",
-                "deliveryAddress": "서울시 강남구 테헤란로 1",
-                "items": [
-                    {"menuItemId": "americano", "quantity": 2}
-                ]
-            }                
-            """.trimIndent(), ContentType.APPLICATION_JSON
-        ).execute().returnResponse() as ClassicHttpResponse
+        val response = Request
+            .post("${mockServer.getUrl()}/orders/")
+            .bodyString(
+                """
+                {
+                    "restaurantId": "97e3c4c2-f336-4435-9314-ad1a633495df",
+                    "consumerId": "627a9a8a-41af-4daf-a968-00ffc80b53ad",
+                    "deliveryAddress": "서울시 강남구 테헤란로 1",
+                    "items": [
+                        {"menuItemId": "americano", "quantity": 2}
+                    ]
+                }                
+                """.trimIndent(), ContentType.APPLICATION_JSON
+            )
+            .addHeader("x-ftgo-authenticated-consumer-id", "627a9a8a-41af-4daf-a968-00ffc80b53ad")
+            .execute()
+            .returnResponse() as ClassicHttpResponse
         val result = JSONParser.parseJSON(IOUtils.toString(response.entity.content, "utf-8")) as JSONObject
 
         assert(response.code == 200)
