@@ -17,6 +17,16 @@ class RestaurantService
     val destinations: Destinations,
     val client: WebClient,
 ) {
+    suspend fun listRestaurants(): List<Restaurant> = client
+        .get()
+        .uri(URI(destinations.restaurantServiceUrl).resolve("./restaurants/"))
+        .awaitExchange { response ->
+            when (response.statusCode()) {
+                HttpStatus.OK -> response.awaitBody<List<Restaurant>>()
+                else -> throw RuntimeException("Cannot retrieve restaurant list")
+            }
+        }
+
     suspend fun findRestaurantById(id: UUID): Restaurant = client
         .get()
         .uri(URI(destinations.restaurantServiceUrl).resolve("./restaurants/$id/"))
